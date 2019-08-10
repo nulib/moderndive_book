@@ -24,20 +24,20 @@ options(scipen = 99, digits = 3)
 set.seed(76)
 ```
 
-In this chapter we kick off the third segment of this book, statistical inference, by learning about **samples** and **populations**. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand trends in the sample but instead to make inferences from trends observed in this sample to trends in a larger population. This chapter provides a broad overview of these concepts of sample and population and the links between them. In Chapter 9 and 10 we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions, respectively. As mentioned before, the concepts throughout this text all build into a culmination allowing you to “think with data.”
+In this chapter we kick off the third segment of this book, statistical inference, by learning about **samples** and **populations**. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand trends in the sample but instead to make inferences from trends observed in this sample to trends in a larger population. This chapter provides a broad overview of these concepts of sample and population and the links between them. In Chapters 9 and 10 we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions, respectively. As mentioned before, the concepts throughout this text all build into a culmination allowing you to “think with data.”
 
 ---
 
 
 ## Terminology & Notation {#terminology}
 
-In the first two sections of this book, you were provided with a data set – a sample, methods for exploring this data visually, and methods for summarizing trends in this data. These methods are what we call **descriptive statistics**, as they are focused on the sample.
+In the first two sections of this book, you were provided with sample data, methods for exploring this data visually, and methods for summarizing trends in this data. These methods are what we call **descriptive statistics**, as they are focused on describing the observed sample.
 
-In science and policy, the goal of analysis is typically not just to understand trends in a sample but instead to make inferences from this sample to trends in a population. For example, in order to understand the relationship between party affiliation and voting, you might conduct a poll in a sample of $100$ (or $1,000$) voters by mail, phone-call, or by stopping them on the street. Or, in order to determine if a new drug effectively reduces high blood pressure, you might conduct a randomized experiment in a sample of $200$ patients experiencing high blood pressure. 
+In science and policy, the goal of analysis is typically not just to understand trends in a sample but instead to make inferences from this sample to trends in a population. For example, in order to understand the relationship between party affiliation and voting, you might conduct a poll in a sample of 100 (or 1,000) voters by mail, phone-call, or by stopping them on the street. Or, in order to determine if a new drug effectively reduces high blood pressure, you might conduct a randomized experiment in a sample of 200 patients experiencing high blood pressure. 
 
-Why not use population data instead? While a **census** of every person (or unit) in a population would be ideal, it’s not hard to see that doing so is costly in many regards – financially, in terms of personnel, and time. 
+Why not use population data instead? While a **census** of every person (or unit) in a population would be ideal, it’s not hard to see that doing so is costly in many regards – financially and in terms of time and personnel. 
 
-In order to begin understanding the relationship between samples and populations, we begin by providing some vocabulary and notation that we will use throughout the remainder of this section of the book. 
+In order to understand the relationship between samples and populations, we begin by providing some vocabulary and notation that we will use throughout the remainder of the book. 
 
 1. **Population**: A population is a collection of individuals or observations about which we are interested. We mathematically denote the population’s size using upper case $N$. 
 
@@ -45,7 +45,7 @@ In order to begin understanding the relationship between samples and populations
 
 3. **Population parameter**: A population parameter is a numerical summary quantity about the population that is unknown, but you wish you knew. These are typically denoted mathematically using Greek letters. For example, you may want to know the population mean, which is typically written as $\mu$ (pronounced “mu”).  Or, you might want to know the population proportion, which is typically written as $\pi$ (pronounced “pi”). 
 
-4. **Sample statistic / estimate **: A summary statistic computed from the sample that estimates an unknown population parameter. These are sometimes denoted mathematically using Roman letters (that correspond to Greek letters) or via inclusion of a “hat” above the population parameter.  For example, the population mean can be estimated using the sample mean denoted $\hat{\mu}$ or $m$ and the population proportion can be estimated from the sample proportion denoted $\hat{\mu}$ or $p$.
+4. **Sample statistic / estimate **: A summary statistic computed from the sample that estimates an unknown population parameter. These are sometimes denoted mathematically using Roman letters (that correspond to Greek letters) or via inclusion of a “hat” above the population parameter.  For example, the population mean can be estimated using the sample mean denoted $\hat{\mu}$ or $m$ and the population proportion can be estimated from the sample proportion denoted $\hat{\pi}$ or $p$.
 
 5. **Census**: An exhaustive enumeration or counting of all $N$ individuals or observations in the population in order to compute the population parameter’s value exactly.
 
@@ -72,7 +72,7 @@ In each case, the definition of the population includes clear inclusion / exclus
 In order to select a sample from a population, a **population frame** must be created. This frame includes a list of all possible individuals or observations within the population. Sometimes this frame is difficult to make – and the result is that the population frame may not be exactly the same as the population. For example, for the above populations, population frames might be:
 
 * A list of phone numbers registered to individuals in the United States. (Once contacted, only those that are citizens 18 and older would be able to be included.)
-* A list of public elementary *schools* available for the prior year in the Texas public education state longitudinal data system. 
+* A list of public elementary *schools* (not students), available for the prior year in the Texas public education state longitudinal data system. 
 * A list of private hospitals made available from the state of California government in a database collected every five years. (Once contacted, only those receiving > $0 Medicaid would be included). 
 * Areas of Lake Michigan where it is possible to fish (e.g, excluding coves).
 
@@ -80,31 +80,32 @@ When this population frame differs from the population, **undercoverage** can oc
 
 Once a population frame is defined, a **sampling** process is developed that, based upon a random procedure, allows for making clear inferences from the sample to the population. There are many possible sampling procedures, some of which include:
 
-*	**Random sampling**: Individuals or observations are selected randomly from the population.
+*	**Simple random sampling**: Individuals or observations are selected randomly from the population, each having an equal chance of being selected.
+* **Random sampling with unequal probability**: Individuals or observations are selected randomly, but the probability of selection varies proportional to size or some other relevant characteristic.
 *	**Cluster sampling**: In order to reach individuals or observations, first clusters are selected (e.g. schools, neighborhoods, hospitals, etc.), and then within these clusters, individuals or observations are randomly selected. 
 * **Stratified sampling**: In order to represent the population well, first the population is divided into sub-groups (strata) that are similar to one another, and then within these sub-groups (strata), individuals or observations are randomly selected. 
 
-With each of these methods, observations can be selected with **equal probability** or **unequal probability** -  the most important feature is that the probability of being selected is *known* and defined in *advance* of selection. Random sampling with equal probability of selection is a special case referred to as **simple random sampling**. In the above examples, these procedures might be used:
+Observations or clusters can be selected with **equal probability** or **unequal probability** -  the most important feature is that the probability of being selected is *known* and defined in *advance* of selection. In the above examples, these procedures might be used:
 
-*	**(Simple) random sampling**: Phone numbers are randomly selected with equal probability. 
+*	**Simple random sampling**: Phone numbers are randomly selected with equal probability. 
 * **Cluster sampling**: First schools (clusters) are randomly selected with unequal probability (e.g., larger schools have a bigger chance of being selected), and then within those schools selected, students are randomly selected with equal probability. 
-* **Random sampling**: Hospitals are selected randomly with unequal probability (e.g., larger hospitals have a bigger chance of being selected).
+* **Random sampling with unequal probability**: Hospitals are selected randomly with unequal probability (e.g., larger hospitals have a bigger chance of being selected).
 * **Stratified sampling**: Lake Michigan is geographically divided into four regions (strata): those nearby to the shore in urban areas, those nearby the shore in non-urban areas, those in the middle north, and those in the middle south. It is expected that the number and kinds of fish differ across these regions. Within each region, fish are selected randomly based upon a catch-and-release procedure. 
 
 In all of these cases, because the sample is selected randomly from the population, estimates from the sample can be used to make inferences regarding values of the population parameters. For example, a sample mean calculated in a random sample of a population can be used to make inferences regarding the value of the population mean. Without this random selection, these inferences would be unwarranted. 
 
-Finally, note that in the examples and data we use in this book and course, we focus on **random sampling with equal probabilities of selection** (simple random sampling). Methods to account for clustering, stratification, and unequal selection probabilities require use of weights and, sometimes, more complicated models. Courses on survey sampling, regression, and hierarchical linear models will provide more background and details on these cases.  
+Finally, note that in the examples and data we use in this book and course, we focus on **random sampling with equal probabilities of selection** (i.e. simple random sampling). Methods to account for clustering, stratification, and unequal selection probabilities require use of weights and, sometimes, more complicated models. Courses on survey sampling, regression, and hierarchical linear models will provide more background and details on these cases.  
 
 
 ---
 
 ## Samples & Populations {#samples}
 
-As an analyst, you will often encounter samples of data for which the populations they come from are not clear. For example, you:
+As an analyst, you will often encounter samples of data that come from unspecified or unclear populations. For example, you:
 
-* Developed a survey regarding relationship preferences on Survey Monkey and then promoted completing this survey on Facebook. Now you have a sample of $n = 200$ completed surveys – but what population do they come from?
-* Conducted an experiment in a psychology lab. The experiment is advertised to students in Introductory Psychology courses and in fliers around campus. You now have a sample of $n = 50$ participants in the experiment – but what population do they come from? 
-* Scraped some data off the web regarding movie reviews on Rotten Tomatoes. You now have a huge sample of $n = 10,000$ reviews by people – but what population do these reviews come from?    
+* developed a survey regarding relationship preferences on SurveyMonkey and then promoted completing this survey on Facebook. Now you have a sample of $n = 200$ completed surveys – but what population do they come from?
+* conducted an experiment in a psychology lab. The experiment is advertised to students in Introductory Psychology courses and in fliers around campus. You now have a sample of $n = 50$ participants in the experiment – but what population do they come from? 
+* scraped some data off the web regarding movie reviews on Rotten Tomatoes. You now have a huge sample of $n = 10,000$ reviews by people – but what population do these reviews come from?    
 
 In these situations, statistically you do two things:
 
