@@ -56,24 +56,24 @@ It’s not this simple! Statisticians approach this problem by focusing not on t
 
 * How would our estimate of the proportion of home fans at the football game change if instead of these $n = 100$ individuals we had randomly selected a *different* $n = 100$ individuals?
 
-While it is not possible to travel back in time for this particular question, we can instead generate a way to study this exact question by creating a **simulation**. To do so, we begin by creating a situation in which we know the outcome (e.g., what team they're cheering for) for every individual or observation in a population. As a result, we know what the population parameter value is (e.g. $\pi = 0.91$). Now we randomly select a sample of $n = 100$ observations and calculate the sample mean (e.g. $0.88$). And now we **repeat** this sampling process – each time selecting a different possible sample of $n = 100$ – many, many, many times (e.g., $10,000$ different samples of $n = 100$), each time calculating the sample proportion. At the end of this process, we now have many different estimates of the population proportion, each equally likely. Table XX shows the results for the first 10 samples, and Figure XX shows a histogram of these 10,000 sample estimates. 
+While it is not possible to travel back in time for this particular question, we can instead generate a way to study this exact question by creating a **simulation**. To do so, we begin by creating a situation in which we know the outcome (e.g., what team they're cheering for) for every individual or observation in a population. As a result, we know what the population parameter value is (e.g. $\pi = 0.91$). Now we randomly select a sample of $n = 100$ observations and calculate the sample proportion (e.g. $0.88$). And now we **repeat** this sampling process – each time selecting a different possible sample of $n = 100$ – many, many, many times (e.g., $10,000$ different samples of $n = 100$), each time calculating the sample proportion. At the end of this process, we now have many different estimates of the population proportion, each equally likely. Table \@ref(tab:fan_data_table) shows the results for the first 10 samples, and Figure XX shows a histogram of these 10,000 sample estimates. Later on in this chapter you will learn how to conduct this type of simulation yourself.
 
-```{r, warning = FALSE, error = FALSE, message = FALSE}
+```{r fan_data_table, warning = FALSE, error = FALSE, message = FALSE, echo = FALSE}
 set.seed(76)
 I <- 10000 ### number of iterations (number of samples)
 n <- 100 ##### sample size (number of individuals selected in a sample)
 pi <- 0.91 ### true population proportion
 fan_data <- data.frame(sample = seq(1:I),
-                                  num_home_fans = rbinom(I, n, pi)) %>% 
+                       num_home_fans = rbinom(I, n, pi)) %>% 
   mutate(prop_home_fans = num_home_fans / n)
 kable(fan_data[1:10,])
 ```
 
-We do this simulation in order to understand how close any one sample’s estimate is to the true population proportion. For example, it may be that we are usually within $\pm 1\%$? Or maybe $\pm 5\%$? We can ask further questions, like: on average, is the sample proportion the same as the population mean? In our simulated data, we see that only 13% of our samples results in a estimated proportion that is $\pm 1\%$ of the true $\pi = 0.91$, but 92% of samples are within $\pm 5\%$. Across our 10,000 samples, the average sample proportion is `r mean(fan_data$prop_home_fans)`, which is a good approximation of the true $\pi = 0.91$. 
+We do this simulation in order to understand how close any one sample’s estimate is to the true population proportion. For example, it may be that we are usually within $\pm 2\%$? Or maybe $\pm 5\%$? We can ask further questions, like: on average, is the sample proportion the same as the population proportion? 
 
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 #calculate the proportion of times the sample proportion falls within 1% of the true population proportion
-sum(fan_data$prop_home_fans < pi + 0.01 & fan_data$prop_home_fans > pi - 0.01) / I 
+sum(fan_data$prop_home_fans < pi + 0.02 & fan_data$prop_home_fans > pi - 0.02) / I 
 sum(fan_data$prop_home_fans < pi + 0.05 & fan_data$prop_home_fans > pi - 0.05) / I 
 mean(fan_data$prop_home_fans)
 ggplot(fan_data) +
@@ -208,8 +208,6 @@ In Section \@ref(sampling-simulation) we'll mimic the hands-on sampling activity
 
 The purpose of these simulations is to develop an understanding of two key concepts relating to repeated sampling: understanding the concept of sampling variation and the role that sample size plays in this variation. 
 ***
-
-
 
 ## Computer simulation {#sampling-simulation}
 
@@ -438,10 +436,124 @@ virtual_histogram +
        title = "Distribution of 1000 proportions red")
 ``` 
 
-Once again, the most frequently occurring proportions red occur between 35% and 40%. Every now and then, we obtain proportions as low as between 20% and 25%, and others as high as between 55% and 60%. These are rare however. Furthermore observe that we now have a much more symmetric and smoother bell-shaped distribution. This distribution is in fact a Normal distribution; see Appendix \@ref(appendixA) for a brief discussion on properties of the Normal distribution.
+Once again, the most frequently occurring proportions red occur between 35% and 40%. Every now and then, we obtain proportions as low as between 20% and 25%, and others as high as between 55% and 60%. These are rare however. Furthermore observe that we now have a much more symmetric and smoother bell-shaped distribution. 
 
 
 <!-- Albert will add Learning Checks throughout this chapter after going over this chapter with his students. We should aim for 10-15 multiple choice or explanation type questions for the chapter as a whole with a concluding lab at the end. Documenting student questions can help to write these. -->
+
+## Properties of Sampling Distributions {#properties_s}
+
+Once you have simulated many possible sample values across repeated samples, an important question is how you can summarize these. The way you summarize a sampling distribution is the same way you’d summarize any other data: 
+
+1. How can you characterize its distribution? 
+2. What is it’s average? 
+3. What is its standard deviation? 
+
+### Distribution {#dist}
+The sampling distribution of an estimator refers to the general shape of distribution of estimates across repeated samples.  Recall from **Chapter X** that we can, in general, characterize a distribution in terms of its modality (unimodal, bimodal), symmetry/ skew (none, right, or left), and kurtosis (heavy tails or not). 
+
+Most estimators follow one of a few common distributions. These include:
+
+*	Normal distribution: e.g., sample mean
+*	t-distribution: e.g., sample mean standardized by standard error
+*	Chi-squared distribution: e.g., sample variance
+*	F-distribution: e.g., ratio of sample variances in two groups
+
+Of these, the most common and important is the **Normal Distribution**. As a result of the Central Limit Theorem, when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in \@ref(fig:samplingdistribution-virtual-1000) that the sampling distribution of $\hat{pi}$ follows a Normal distribution.
+
+### Mean of the sampling distribution {#bias}
+If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value the sampling statistic is estimating.  Any difference is called **bias**:
+
+*	A sample statistic is a **biased estimator** of a population parameter if its average value is more or less than the population parameter it is meant to estimate. 
+*	A sample statistic is an **unbiased estimator** of a population parameter if in the average sample it equals the population parameter value.
+
+Note that the mean of our simulated sampling distribution is `r mean(virtual_prop_red$prop_red)`, which is a good approximation to the true proportion of red balls in the ball ($\pi =$ `r sum(bowl$color == "red")/dim(bowl)[1]`). This is because the sample proportion $\hat{\pi} = \frac{# of "successes"}{# of trials}$ is an unbiased estimator of the population proportion $\pi$. 
+
+```{r warning = FALSE, message = FALSE}
+mean(virtual_prop_red$prop_red) #mean of sampling distribution of pi_hat
+sum(bowl$color == "red")/dim(bowl)[1] #true population proportion
+```
+
+The difficulty with introducing this idea of bias in an introductory course is that most statistics used at this level (e.g., proportions, means, regression coefficients) are unbiased. Examples of biased statistics are more common in more complex models. One example, however, that illustrates this bias concept is that of sample variance estimator.
+
+Remember that we estimate the sample variance using 
+$ s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)} $
+where $n$ is the number of observations. Until now, we have simply provided this to you as the estimator without reason. You might ask: why is this divided by $n – 1$ instead of simply by $n$? To see why, examine the following case.
+
+Let's randomly generate a population of size N = 1,000 from the standard normal distribution (i.e. $\mu = 0$ and $\sigma = 1$) using the function `rnorm`. Then let's take 10,000 repeated samples of size n = 5. The data for the first 2 samples (replicates) is shown in \@ref(tab:s2_bias). 
+
+```{r s2_bias}
+set.seed(76)
+population <- data.frame(x = rnorm(n = 1000, mean = 0, sd = 1))
+samples <- rep_sample_n(population, size = 5, reps = 10000)
+kable(samples[1:10,])
+```
+
+We can then calculate the variance for each sample (replicate) using two different formulas:
+1. $s_n^2= \frac{\sum(x_i - \bar{x})^2}{(n)}$
+2. $s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}$
+
+Table \@ref(tab:s2_bias) shows the results for the first 10 samples. If we look at the average of $s_n^2$ and $s^2$ across all 10,000 samples, we find that $s_n^2$ is biased; on average it is equal to `r mean(s2$s2_n)`. By dividing by $n – 1$ instead of $n$, the bias is removed. 
+
+```{r s2_bias_2}
+sd2 <- samples %>% group_by(replicate) %>% 
+  summarise(s2_n = sum((x - mean(x))^2) / 5, #calculate the variance for each sample with n = 5 on the denominator
+            s2 = sum((x - mean(x))^2) / 4)#calculate the variance for each sample with n - 1 = 4 on the denominator
+kable(sd2)
+```
+```{r s2_bias_3}
+mean(s2$s2_n)
+mean(s2$s2)
+
+ggplot(sd2) + 
+  geom_histogram(aes(x = sd2_biased), fill = "red", alpha = 0.8) +
+  geom_histogram(aes(x = sd2_unbiased), fill = "green", alpha = 0.8) +
+  
+```
+
+
+
+### Standard deviation of the sampling distribution {#precision}
+While a sample statistic might on average be equal to the population parameter, any one sample estimate might be far from the population parameter. An estimator is precise when the estimate is close to the population parameter in most samples. 
+
+If we were analyzing a dataset in general, we might characterize this precision by a measure of the distribution’s spread, such as the standard deviation. We can do this with sampling distributions, too. The standard error of an estimator is the standard deviation of its sampling distribution:
+
+*	A *large* standard error means that an estimate (e.g., in the sample you have) may be far from the true population parameter. This means the estimate is *imprecise*. 
+*	A *small* standard error means an estimate (e.g., in the sample you have) is likely to be close to the true population parameter. This means the estimate is *precise*. 
+
+In statistics, we prefer estimators that are precise over those that are not. Again, this is tricky to understand at an introductory level, since nearly all sample statistics at this level can be proven to be the most precise estimators (out of all possible estimators) of the population parameters they are estimating. In more complex models, however, there are often competing estimators and statisticians spend time studying the behavior of these estimators in comparison to one another. 
+
+### Confusing concepts {#conf}
+On one level, sampling distributions should seem straightforward and like simple extensions to methods you’ve learned already in this course. That is, just like sample data you have in front of you, we can summarize these sampling distributions in terms of their shape (distribution), mean (bias), and standard deviation (standard error).  But this similarity to data analysis is exactly what makes this tricky.
+
+It is imperative to remember that **sampling distributions are inherently theoretical constructs**:
+
+*	Even if your estimator is unbiased, the number you see in your data (the value of the estimator) may *not* be the value of the parameter in the population.
+*	The *standard deviation* is a measure of spread in your data. The *standard error* is a property of an estimator across repeated samples. 
+*	The *distribution* of a variable is something you can directly examine in your data. The *sampling distribution* is a property of an estimator across repeated samples. 
+
+Remember, a sample statistic is a tool we use to estimate a parameter value in a population. The sampling distribution tells us how good this tool is: Does it work on average (bias)? Does it work most of the time (standard error)? Does it tend to over- or under- estimate (distribution)?
+
+## Sample Size and Sampling Distributions {#size} 
+Let’s return to our age at the football game example. Let’s say you could estimate the average age of attendees by selecting a sample of $n = 10$ or by selecting a sample of $n = 100$. Which would be better? Why? A larger sample will certainly cost more – is this worth it? What about a sample of $n = 500$? Is that worth the it?
+
+This question of appropriate sample size drives much of statistics. For example, you might be conducting an experiment in a psychology lab and ask: how many participants do I need to estimate this treatment effect precisely? Or you might be conducting a survey and need to know: how many respondents do I need in order to estimate the relationship between income and education well? 
+
+These questions are inherently about how sample size affects sampling distributions, in general, and in particular, how sample size affects standard errors (precision). 
+
+### Example using balls and sample distributions {#eg1} 
+{shows histograms with sampling distributions with different sample sizes}
+
+Overall, this simulation shows that compared to a smaller sample size (e.g., $n = 10$), with a larger sample size (e.g., $n = 100$), the sampling distribution has less spread and a smaller standard error. This means that an estimate from a larger sample is likely closer to the population parameter value than one from a smaller sample. 
+
+### Central Limit Theorem {#clt}
+{shows $n = 5$, $n = 30$, $n = 100$ for underlying data that is skewed}
+
+Overall, this simulation shows that not only might the precision of an estimate differ as a result of a larger sample size, but also the sampling distribution might be different for a smaller sample size (e.g., $n = 10$) than for a larger sample size (e.g., $n=100$). 
+
+In fact, in many cases, when the sample size is large, the sampling distribution is very close to a normal distribution. This is the Central Limit Theorem. 
+
+In our simulated data, we see that only 13% of our samples results in a estimated proportion that is $\pm 1\%$ of the true $\pi = 0.91$, but 92% of samples are within $\pm 5\%$. Across our 10,000 samples, the average sample proportion is `r mean(fan_data$prop_home_fans)`, which is a good approximation of the true $\pi = 0.91$. 
 
 ### Using different shovels
 
@@ -572,80 +684,4 @@ comparing_n_table  %>%
 As we observed visually in Figure \@ref(fig:comparing-sampling-distributions), as the sample size increases our numerical measure of spread decreases; there is less variation in our proportions red. In other words, as the sample size increases, our guesses at the true proportion of the bowl's balls that are red get more consistent and precise. 
 
 
-
-## Properties of Sampling Distributions {#properties_s}
-
-Once you have simulated many possible sample values across repeated samples, an important question is how you can summarize these. The way you summarize a sampling distribution is the same way you’d summarize any other data: 
-
-1. How can you characterize its distribution? 
-2. What is it’s average? 
-3. What is its standard deviation? 
-
-### Distribution {#dist}
-The sampling distribution of an estimator refers to the general shape of distribution of estimates across repeated samples.  Recall from **Chapter X** that we can, in general, characterize a distribution in terms of its modality (unimodal, bimodal), symmetry/ skew (none, right, or left), and kurtosis (heavy tails or not). 
-
-Most estimators follow one of a few common distributions. These include:
-
-*	Normal distribution: e.g., sample mean
-*	t-distribution: e.g., sample mean standardized by standard error
-*	Chi-squared distribution: e.g., sample variance
-*	F-distribution: e.g., ratio of sample variances in two groups
-
-Of these, the most common and important is the **Normal Distribution**. As a result of the Central Limit Theorem, when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. 
-
-### Mean of the sampling distribution {#bias}
-If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value the sampling statistic is estimating.  Any difference is called bias:
-
-*	A sample statistic is a biased estimator of a population parameter if its average value is more or less than the population parameter it is meant to estimate. 
-*	A sample statistic is an unbiased estimator of a population parameter if in the average sample it equals the population parameter value.
-
-A difficulty with introducing this idea of bias in an introductory course is that most statistics used at this level (e.g., means, regression coefficients) are unbiased. Examples of biased statistics are more common in more complex models. One example, however, that illustrates this bias concept is that of sample variance estimator.
-
-Remember that we estimate the sample variance using 
-$ s^2= \sum(x_i - \bar{x})^2 / (n-1) $
-where $n$ is the number of observations. Until now, we have simply provided this to you as the estimator without reason. You might ask: why is this divided by $n – 1$ instead of simply by $n$? To see why, examine the following case.
-
-{Data example with $n = 5$, $s^2$ calculated with $n$, show simulated values and average value given}
-
-The estimator that we use, $s^2$, is thus used because the original estimator, $s_n^2$, was biased. By dividing by $n – 1$ instead of $n$, the bias is removed. 
-
-### Standard deviation of the sampling distribution {#precision}
-While a sample statistic might on average be equal to the population parameter, any one sample estimate might be far from the population parameter. An estimator is precise when the estimate is close to the population parameter in most samples. 
-
-If we were analyzing a dataset in general, we might characterize this precision by a measure of the distribution’s spread, such as the standard deviation. We can do this with sampling distributions, too. The standard error of an estimator is the standard deviation of its sampling distribution:
-
-*	A *large* standard error means that an estimate (e.g., in the sample you have) may be far from the true population parameter. This means the estimate is *imprecise*. 
-*	A *small* standard error means an estimate (e.g., in the sample you have) is likely to be close to the true population parameter. This means the estimate is *precise*. 
-
-In statistics, we prefer estimators that are precise over those that are not. Again, this is tricky to understand at an introductory level, since nearly all sample statistics at this level can be proven to be the most precise estimators (out of all possible estimators) of the population parameters they are estimating. In more complex models, however, there are often competing estimators and statisticians spend time studying the behavior of these estimators in comparison to one another. 
-
-### Confusing concepts {#conf}
-On one level, sampling distributions should seem straightforward and like simple extensions to methods you’ve learned already in this course. That is, just like sample data you have in front of you, we can summarize these sampling distributions in terms of their shape (distribution), mean (bias), and standard deviation (standard error).  But this similarity to data analysis is exactly what makes this tricky.
-
-It is imperative to remember that **sampling distributions are inherently theoretical constructs**:
-
-*	Even if your estimator is unbiased, the number you see in your data (the value of the estimator) may *not* be the value of the parameter in the population.
-*	The *standard deviation* is a measure of spread in your data. The *standard error* is a property of an estimator across repeated samples. 
-*	The *distribution* of a variable is something you can directly examine in your data. The *sampling distribution* is a property of an estimator across repeated samples. 
-
-Remember, a sample statistic is a tool we use to estimate a parameter value in a population. The sampling distribution tells us how good this tool is: Does it work on average (bias)? Does it work most of the time (standard error)? Does it tend to over- or under- estimate (distribution)?
-
-## Sample Size and Sampling Distributions {#size} 
-Let’s return to our age at the football game example. Let’s say you could estimate the average age of attendees by selecting a sample of $n = 10$ or by selecting a sample of $n = 100$. Which would be better? Why? A larger sample will certainly cost more – is this worth it? What about a sample of $n = 500$? Is that worth the it?
-
-This question of appropriate sample size drives much of statistics. For example, you might be conducting an experiment in a psychology lab and ask: how many participants do I need to estimate this treatment effect precisely? Or you might be conducting a survey and need to know: how many respondents do I need in order to estimate the relationship between income and education well? 
-
-These questions are inherently about how sample size affects sampling distributions, in general, and in particular, how sample size affects standard errors (precision). 
-
-### Example using balls and sample distributions {#eg1} 
-{shows histograms with sampling distributions with different sample sizes}
-
-Overall, this simulation shows that compared to a smaller sample size (e.g., $n = 10$), with a larger sample size (e.g., $n = 100$), the sampling distribution has less spread and a smaller standard error. This means that an estimate from a larger sample is likely closer to the population parameter value than one from a smaller sample. 
-
-### Central Limit Theorem {#clt}
-{shows $n = 5$, $n = 30$, $n = 100$ for underlying data that is skewed}
-
-Overall, this simulation shows that not only might the precision of an estimate differ as a result of a larger sample size, but also the sampling distribution might be different for a smaller sample size (e.g., $n = 10$) than for a larger sample size (e.g., $n=100$). 
-
-In fact, in many cases, when the sample size is large, the sampling distribution is very close to a normal distribution. This is the Central Limit Theorem. 
 
