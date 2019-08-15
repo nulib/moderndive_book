@@ -32,6 +32,7 @@ Let's load all the packages needed for this chapter (this assumes you've already
 library(dplyr)
 library(ggplot2)
 library(moderndive)
+library(dslabs)
 ```
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
@@ -56,7 +57,7 @@ It’s not this simple! Statisticians approach this problem by focusing not on t
 
 * How would our estimate of the proportion of home fans at the football game change if instead of these $n = 100$ individuals we had randomly selected a *different* $n = 100$ individuals?
 
-While it is not possible to travel back in time for this particular question, we can instead generate a way to study this exact question by creating a **simulation**. To do so, we begin by creating a situation in which we know the outcome (e.g., what team they're cheering for) for every individual or observation in a population. As a result, we know what the population parameter value is (e.g. $\pi = 0.91$). Now we randomly select a sample of $n = 100$ observations and calculate the sample proportion (e.g. $0.88$). And now we **repeat** this sampling process – each time selecting a different possible sample of $n = 100$ – many, many, many times (e.g., $10,000$ different samples of $n = 100$), each time calculating the sample proportion. At the end of this process, we now have many different estimates of the population proportion, each equally likely. Table \@ref(tab:fan_data_table) shows the results for the first 10 samples, and Figure XX shows a histogram of these 10,000 sample estimates. Later on in this chapter you will learn how to conduct this type of simulation yourself.
+While it is not possible to travel back in time for this particular question, we can instead generate a way to study this exact question by creating a **simulation**. To do so, we begin by creating a situation in which we know the outcome (e.g., what team each person is cheering for) for every individual or observation in a population. As a result, we know what the population parameter value is (e.g. $\pi = 0.91$). Now we randomly select a sample of $n = 100$ observations and calculate the sample proportion (e.g. $\hat{\pi}=0.88$). And now we **repeat** this sampling process – each time selecting a different possible sample of $n = 100$ – many, many, many times (e.g., $10,000$ different samples of $n = 100$), each time calculating the sample proportion. At the end of this process, we now have many different estimates of the population proportion, each equally likely. 
 
 ```{r fan_data_table, warning = FALSE, error = FALSE, message = FALSE, echo = FALSE}
 set.seed(76)
@@ -68,13 +69,11 @@ fan_data <- data.frame(sample = seq(1:I),
   mutate(prop_home_fans = num_home_fans / n)
 kable(fan_data[1:10,])
 ```
+Table \@ref(tab:fan_data_table) shows the simulation results for the first 10 samples, and Figure \@ref(fig:fan_data_2) shows a histogram of all 10,000 sample estimates. Later on in this chapter you will learn how to conduct this type of simulation yourself.
 
 We do this simulation in order to understand how close any one sample’s estimate is to the true population proportion. For example, it may be that we are usually within $\pm 2\%$? Or maybe $\pm 5\%$? We can ask further questions, like: on average, is the sample proportion the same as the population proportion? 
 
-```{r, warning = FALSE, error = FALSE, message = FALSE}
-#calculate the proportion of times the sample proportion falls within 1% of the true population proportion
-sum(fan_data$prop_home_fans < pi + 0.02 & fan_data$prop_home_fans > pi - 0.02) / I 
-sum(fan_data$prop_home_fans < pi + 0.05 & fan_data$prop_home_fans > pi - 0.05) / I 
+```{r fan_data_2, warning = FALSE, error = FALSE, message = FALSE}
 mean(fan_data$prop_home_fans)
 ggplot(fan_data) +
   geom_histogram(aes(x = prop_home_fans), binwidth = 0.01, color = "white") +
@@ -85,7 +84,7 @@ ggplot(fan_data) +
 It is important to emphasize here that this process is *theoretical*. In real life, you do not know the values for all individuals or observations in a population. (If you did, why sample?) And in real life, you will not take repeated samples. Instead, you will have in front of you a **single sample** that you will need to use to make inferences to a population. What this simulation exercise provides is properties that can help you understand *how far off the sample estimate you have in hand might be for the population parameter you care about*. 
 
 
-## Sampling Activity {#activity}
+## Sampling Activity {#sampling-activity}
 
 In the previous section, we provided an overview of repeated sampling and why the theoretical exercise is useful for understanding how to make inferences. This way of thinking, however, can be hard in the abstract. In this section, we provide a concrete example. 
 
@@ -207,7 +206,6 @@ What we just demonstrated in this activity is the statistical concept of *repeat
 In Section \@ref(sampling-simulation) we'll mimic the hands-on sampling activity we just performed in a *computer simulation*; using a computer will allow us to repeat the above sampling activity much more than 33 times. Using a computer, not only will we be able to repeat the hands-on activity a very large number of times, but we will also be able to repeat it using different sized shovels. 
 
 The purpose of these simulations is to develop an understanding of two key concepts relating to repeated sampling: understanding the concept of sampling variation and the role that sample size plays in this variation. 
-***
 
 ## Computer simulation {#sampling-simulation}
 
@@ -459,15 +457,15 @@ Most estimators follow one of a few common distributions. These include:
 *	Chi-squared distribution: e.g., sample variance
 *	F-distribution: e.g., ratio of sample variances in two groups
 
-Of these, the most common and important is the **Normal Distribution**. As a result of the Central Limit Theorem, when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in \@ref(fig:samplingdistribution-virtual-1000) that the sampling distribution of $\hat{pi}$ follows a Normal distribution.
+Of these, the most common and important is the **Normal Distribution**. As a result of the Central Limit Theorem, when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in \@ref(fig:samplingdistribution-virtual-1000) that the sampling distribution of $\hat{\pi}$ follows a Normal distribution.
 
 ### Mean of the sampling distribution {#bias}
-If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value the sampling statistic is estimating.  Any difference is called **bias**:
+If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value the sampling statistic is estimating.  Any difference in these two values is called **bias**:
 
 *	A sample statistic is a **biased estimator** of a population parameter if its average value is more or less than the population parameter it is meant to estimate. 
 *	A sample statistic is an **unbiased estimator** of a population parameter if in the average sample it equals the population parameter value.
 
-Note that the mean of our simulated sampling distribution is `r mean(virtual_prop_red$prop_red)`, which is a good approximation to the true proportion of red balls in the ball ($\pi =$ `r sum(bowl$color == "red")/dim(bowl)[1]`). This is because the sample proportion $\hat{\pi} = \frac{# of "successes"}{# of trials}$ is an unbiased estimator of the population proportion $\pi$. 
+Note that the mean of our simulated sampling distribution is `r mean(virtual_prop_red$prop_red)`, which is a good approximation to the true proportion of red balls in the ball ($\pi =$ `r sum(bowl$color == "red")/dim(bowl)[1]`). This is because the sample proportion $\hat{\pi} = \frac{\# \  of \ "successes"}{\# \ of \ trials}$ is an unbiased estimator of the population proportion $\pi$. 
 
 ```{r warning = FALSE, message = FALSE}
 mean(virtual_prop_red$prop_red) #mean of sampling distribution of pi_hat
@@ -477,15 +475,21 @@ sum(bowl$color == "red")/dim(bowl)[1] #true population proportion
 The difficulty with introducing this idea of bias in an introductory course is that most statistics used at this level (e.g., proportions, means, regression coefficients) are unbiased. Examples of biased statistics are more common in more complex models. One example, however, that illustrates this bias concept is that of sample variance estimator.
 
 Remember that we estimate the sample variance using 
-$ s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)} $
-where $n$ is the number of observations. Until now, we have simply provided this to you as the estimator without reason. You might ask: why is this divided by $n – 1$ instead of simply by $n$? To see why, examine the following case.
+$s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}$, where $n$ is the number of observations. Until now, we have simply provided this to you as the estimator without reason. You might ask: why is this divided by $n – 1$ instead of simply by $n$? To see why, examine the following case.
 
-Let's randomly generate a population of size N = 1,000 from the standard normal distribution (i.e. $\mu = 0$ and $\sigma = 1$) using the function `rnorm`. Then let's draw 10,000 repeated samples of size n = 5 from this population. The data for the first 2 samples (replicates) is shown in \@ref(tab:s2_bias). 
+The `gapminder` dataset in the `dslabs` package has life expectancy data on 185 countries in 2016. We will consider these 185 countries to be our population. The true variance of life expectancy in this population is $\sigma^2 = 57.5$.  
+
+```{r gapminder data}
+data("gapminder", package = "dslabs")
+gapminder_2016 <- filter(gapminder, year == 2016)
+var(gapminder_2016$life_expectancy)
+```
+Let's draw 10,000 repeated samples of n = 5 countries from this population. The data for the first 2 samples (replicates) is shown in \@ref(tab:s2_bias).
 
 ```{r s2_bias}
 set.seed(76)
-population <- data.frame(x = rnorm(n = 1000, mean = 0, sd = 1))
-samples <- rep_sample_n(population, size = 5, reps = 10000)
+samples <- rep_sample_n(gapminder_2016, size = 5, reps = 10000) %>% 
+  select(replicate, country, year, life_expectancy, continent, region)
 kable(samples[1:10,])
 ```
 
@@ -493,24 +497,24 @@ We can then calculate the variance for each sample (replicate) using two differe
 1. $s_n^2= \frac{\sum(x_i - \bar{x})^2}{(n)}$
 2. $s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}$
 
-Table \@ref(tab:s2_bias) shows the results for the first 10 samples. If we look at the average of $s_n^2$ and $s^2$ across all 10,000 samples, we find that $s_n^2$ is biased; on average it is equal to `r mean(s2$s2_n)`. Remember that the true value of the variance in this population is $\sigma^2 = 1$. By dividing by $n – 1$ instead of $n$, however, the bias is removed. Therefore we use $s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}$ as our usual estimator for $\sigma^2$ because it is unbiased. Notice that the sampling distribution of the sample variances shown in Figure \@ref(fig:s2_bias_2) is not Normal but rather is skewed right; in fact, it follows a chi-square distribution with $n-1$ degrees of freedom. 
-
 ```{r s2_bias_2}
 variances <- samples %>% group_by(replicate) %>% 
-  summarise(s2_n = sum((x - mean(x))^2) / 5, #calculate the variance for each sample with n = 5 on the denominator
-            s2 = sum((x - mean(x))^2) / 4) #calculate the variance for each sample with n - 1 = 4 on the denominator
+  summarise(s2_n = sum((life_expectancy - mean(life_expectancy))^2) / 5, #calculate the variance for each sample with n = 5 on the denominator
+            s2 = sum((life_expectancy - mean(life_expectancy))^2) / 4) #calculate the variance for each sample with n - 1 = 4 on the denominator
 kable(variances[1:10,])
 ```
+
+Table \@ref(tab:s2_bias_2) shows the results for the first 10 samples. If we look at the average of $s_n^2$ and $s^2$ across all 10,000 samples, we find that $s_n^2$ is biased; on average it is equal to `r mean(variances$s2_n)`. Remember that the true value of the variance in this population is $\sigma^2 = 57.5$. By dividing by $n – 1$ instead of $n$, however, the bias is removed. Therefore we use $s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}$ as our usual estimator for $\sigma^2$ because it is unbiased. Notice that the sampling distribution of the sample variances shown in Figure \@ref(fig:s2_bias_3) is not Normal but rather is skewed right; in fact, it follows a chi-square distribution with $n-1$ degrees of freedom. 
 ```{r s2_bias_3}
 mean(variances$s2_n)
 mean(variances$s2)
 
 ggplot(variances) + 
-  geom_histogram(aes(x = s2_n, fill = "red"), color = "black", alpha = 0.6) +
-  geom_histogram(aes(x = s2, fill = "green"), color = "black", alpha = 0.6) +
+  geom_histogram(aes(x = s2_n, fill = "red"), color = "white", alpha = 0.6) +
+  geom_histogram(aes(x = s2, fill = "green"), color = "white", alpha = 0.6) +
   geom_vline(xintercept = mean(variances$s2_n), color = "red") +
   geom_vline(xintercept = mean(variances$s2), color = "green") +
-  geom_vline(xintercept = 1, linetype = 2) +
+  geom_vline(xintercept = var(gapminder_2016$life_expectancy), linetype = 2) +
   ggtitle("Sample variance estimates for 10,000 samples of size n = 5") +
   scale_fill_manual(name="Estimator", values = c('red' = 'red','green' = 'green'), 
           labels = expression(s_n^2, s^2)) +
@@ -681,10 +685,9 @@ Overall, this simulation shows that compared to a smaller sample size (e.g., $n 
 ### Central Limit Theorem {#clt}
 {shows $n = 5$, $n = 30$, $n = 100$ for underlying data that is skewed}
 ```{r}
-install.packages("dslabs")
-library(dslabs)
-data("gapminder")
-ggplot(gapminder) +
+data("gapminder", package = "dslabs") 
+gapminder_2015 <- filter(gapminder, year == 2015)
+ggplot(gapminder_2015) +
   geom_histogram(aes(x = infant_mortality), color = "black")
 infant_mortality_noNA <- filter(gapminder, !is.na(infant_mortality))
 sample_5 <- rep_sample_n(infant_mortality_noNA, size = 5, reps = 1000) %>% group_by(replicate) %>% 
@@ -700,6 +703,9 @@ all_samples <- bind_rows(sample_5, sample_30, sample_100)
 ggplot(all_samples) +
   geom_histogram(aes(x = mean_infant_mortality), color = "black") +
   facet_wrap(~n)
+```
+```{r}
+data("gapminder", package = "gapminder")
 ```
 
 Overall, this simulation shows that not only might the precision of an estimate differ as a result of a larger sample size, but also the sampling distribution might be different for a smaller sample size (e.g., $n = 10$) than for a larger sample size (e.g., $n=100$). 
