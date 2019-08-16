@@ -720,12 +720,16 @@ As we observed visually in Figure \@ref(fig:comparing-sampling-distributions), a
 Overall, this simulation shows that compared to a smaller sample size (e.g., $n = 10$), with a larger sample size (e.g., $n = 100$), the sampling distribution has less spread and a smaller standard error. This means that an estimate from a larger sample is likely closer to the population parameter value than one from a smaller sample. 
 
 ## Central Limit Theorem (CLT) {#clt}
+
+<!--Some of this language comes straight from your old 202 slides. Does this need to be cited? Not sure if it orignially came from you or OpenIntro-->
 There is a very useful result in statistics called the **Central Limit Theorem** which tells us that the sampling distribution of the sample mean is well approximated by the normal distribution. While not all variables follow a normal distribution, many estimators have sampling distributions that are normal. We have already seen this to be true with the sample proportion.
 
 More formally, the CLT tells us that $$\bar{x} \sim N(mean = \mu, SE = \frac{\sigma}{\sqrt{n}}),$$ where $\mu$ is the population mean of X, $\sigma$ is the population standard deviation of X, and $n$ is the sample size. 
 
 ###CLT conditions
 Certain conditions must be met for the CLT to apply:
+
+<!--same comment as above - citation needed for 202 slides?-->
 
 **Independence**: Sampled observations must be independent. This is difficult to verify, but is more likely if
 * random sampling / assignment is used, and
