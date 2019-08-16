@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 9 Sampling Distributions | Statistical Inference via Data Science</title>
+  <meta name="description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
+  <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 9 Sampling Distributions | Statistical Inference via Data Science" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://nulib.github.io/moderndive_book/" />
+  <meta property="og:image" content="https://nulib.github.io/moderndive_book/images/logos/book_cover.png" />
+  <meta property="og:description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
+  <meta name="github-repo" content="nulib/moderndive_book" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 9 Sampling Distributions | Statistical Inference via Data Science" />
+  
+  <meta name="twitter:description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
+  <meta name="twitter:image" content="https://nulib.github.io/moderndive_book/images/logos/book_cover.png" />
+
+<meta name="author" content="Chester Ismay, Albert Y. Kim, Arend M. Kuyper, Elizabeth Tipton, and Kaitlyn Fitzgerald" />
+
+
+<meta name="date" content="2019-08-15" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <link rel="apple-touch-icon-precomposed" sizes="152x152" href="images/logos/favicons/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="images/logos/favicons/favicon.ico" type="image/x-icon" />
+<link rel="prev" href="8-populations.html">
+<link rel="next" href="10-hypothesis-testing.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<link href="libs/dygraphs-1.1.1/dygraph.css" rel="stylesheet" />
+<script src="libs/dygraphs-1.1.1/dygraph-combined.js"></script>
+<script src="libs/dygraphs-1.1.1/shapes.js"></script>
+<script src="libs/moment-2.8.4/moment.js"></script>
+<script src="libs/moment-timezone-0.2.5/moment-timezone-with-data.js"></script>
+<script src="libs/moment-fquarter-1.0.0/moment-fquarter.min.js"></script>
+<script src="libs/dygraphs-binding-1.1.1.6/dygraphs.js"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-89938436-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#sec:intro-for-students"><i class="fa fa-check"></i><b>1.1</b> Introduction for students</a><ul>
+<li class="chapter" data-level="1.1.1" data-path="index.html"><a href="index.html#subsec:learning-goals"><i class="fa fa-check"></i><b>1.1.1</b> What you will learn from this book</a></li>
+<li class="chapter" data-level="1.1.2" data-path="index.html"><a href="index.html#subsec:pipeline"><i class="fa fa-check"></i><b>1.1.2</b> Data/science pipeline</a></li>
+<li class="chapter" data-level="1.1.3" data-path="index.html"><a href="index.html#subsec:reproducible"><i class="fa fa-check"></i><b>1.1.3</b> Reproducible research</a></li>
+<li class="chapter" data-level="1.1.4" data-path="index.html"><a href="index.html#final-note-for-students"><i class="fa fa-check"></i><b>1.1.4</b> Final note for students</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#sec:intro-instructors"><i class="fa fa-check"></i><b>1.2</b> Introduction for instructors</a><ul>
+<li class="chapter" data-level="1.2.1" data-path="index.html"><a href="index.html#who-is-this-book-for"><i class="fa fa-check"></i><b>1.2.1</b> Who is this book for?</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#datacamp"><i class="fa fa-check"></i><b>1.3</b> DataCamp</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#sec:connect-contribute"><i class="fa fa-check"></i><b>1.4</b> Connect and contribute</a></li>
+<li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#sec:about-book"><i class="fa fa-check"></i><b>1.5</b> About this book</a></li>
+<li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#sec:about-authors"><i class="fa fa-check"></i><b>1.6</b> About the authors</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-getting-started.html"><a href="2-getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started with Data in R</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-getting-started.html"><a href="2-getting-started.html#r-rstudio"><i class="fa fa-check"></i><b>2.1</b> What are R and RStudio?</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="2-getting-started.html"><a href="2-getting-started.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>2.1.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="2.1.2" data-path="2-getting-started.html"><a href="2-getting-started.html#using-r-via-rstudio"><i class="fa fa-check"></i><b>2.1.2</b> Using R via RStudio</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="2-getting-started.html"><a href="2-getting-started.html#code"><i class="fa fa-check"></i><b>2.2</b> How do I code in R?</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="2-getting-started.html"><a href="2-getting-started.html#programming-concepts"><i class="fa fa-check"></i><b>2.2.1</b> Basic programming concepts and terminology</a></li>
+<li class="chapter" data-level="2.2.2" data-path="2-getting-started.html"><a href="2-getting-started.html#errors-warnings-and-messages"><i class="fa fa-check"></i><b>2.2.2</b> Errors, warnings, and messages</a></li>
+<li class="chapter" data-level="2.2.3" data-path="2-getting-started.html"><a href="2-getting-started.html#tips-on-learning-to-code"><i class="fa fa-check"></i><b>2.2.3</b> Tips on learning to code</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2-getting-started.html"><a href="2-getting-started.html#packages"><i class="fa fa-check"></i><b>2.3</b> What are R packages?</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="2-getting-started.html"><a href="2-getting-started.html#package-installation"><i class="fa fa-check"></i><b>2.3.1</b> Package installation</a></li>
+<li class="chapter" data-level="2.3.2" data-path="2-getting-started.html"><a href="2-getting-started.html#package-loading"><i class="fa fa-check"></i><b>2.3.2</b> Package loading</a></li>
+<li class="chapter" data-level="2.3.3" data-path="2-getting-started.html"><a href="2-getting-started.html#package-use"><i class="fa fa-check"></i><b>2.3.3</b> Package use</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="2-getting-started.html"><a href="2-getting-started.html#nycflights13"><i class="fa fa-check"></i><b>2.4</b> Explore your first dataset</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="2-getting-started.html"><a href="2-getting-started.html#nycflights13-package"><i class="fa fa-check"></i><b>2.4.1</b> <code>nycflights13</code> package</a></li>
+<li class="chapter" data-level="2.4.2" data-path="2-getting-started.html"><a href="2-getting-started.html#flights-data-frame"><i class="fa fa-check"></i><b>2.4.2</b> <code>flights</code> data frame</a></li>
+<li class="chapter" data-level="2.4.3" data-path="2-getting-started.html"><a href="2-getting-started.html#exploredataframes"><i class="fa fa-check"></i><b>2.4.3</b> Exploring data frames</a></li>
+<li class="chapter" data-level="2.4.4" data-path="2-getting-started.html"><a href="2-getting-started.html#help-files"><i class="fa fa-check"></i><b>2.4.4</b> Help files</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="2-getting-started.html"><a href="2-getting-started.html#conclusion"><i class="fa fa-check"></i><b>2.5</b> Conclusion</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="2-getting-started.html"><a href="2-getting-started.html#additional-resources"><i class="fa fa-check"></i><b>2.5.1</b> Additional resources</a></li>
+<li class="chapter" data-level="2.5.2" data-path="2-getting-started.html"><a href="2-getting-started.html#whats-to-come"><i class="fa fa-check"></i><b>2.5.2</b> What’s to come?</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>I Data Science via the tidyverse</b></span></li>
+<li class="chapter" data-level="3" data-path="3-viz.html"><a href="3-viz.html"><i class="fa fa-check"></i><b>3</b> Data Visualization</a><ul>
+<li class="chapter" data-level="" data-path="3-viz.html"><a href="3-viz.html#needed-packages"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="3.1" data-path="3-viz.html"><a href="3-viz.html#grammarofgraphics"><i class="fa fa-check"></i><b>3.1</b> The Grammar of Graphics</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="3-viz.html"><a href="3-viz.html#components-of-the-grammar"><i class="fa fa-check"></i><b>3.1.1</b> Components of the Grammar</a></li>
+<li class="chapter" data-level="3.1.2" data-path="3-viz.html"><a href="3-viz.html#gapminder"><i class="fa fa-check"></i><b>3.1.2</b> Gapminder data</a></li>
+<li class="chapter" data-level="3.1.3" data-path="3-viz.html"><a href="3-viz.html#other-components"><i class="fa fa-check"></i><b>3.1.3</b> Other components</a></li>
+<li class="chapter" data-level="3.1.4" data-path="3-viz.html"><a href="3-viz.html#ggplot2-package"><i class="fa fa-check"></i><b>3.1.4</b> ggplot2 package</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="3-viz.html"><a href="3-viz.html#FiveNG"><i class="fa fa-check"></i><b>3.2</b> Five Named Graphs - The 5NG</a></li>
+<li class="chapter" data-level="3.3" data-path="3-viz.html"><a href="3-viz.html#scatterplots"><i class="fa fa-check"></i><b>3.3</b> 5NG#1: Scatterplots</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="3-viz.html"><a href="3-viz.html#geompoint"><i class="fa fa-check"></i><b>3.3.1</b> Scatterplots via geom_point</a></li>
+<li class="chapter" data-level="3.3.2" data-path="3-viz.html"><a href="3-viz.html#overplotting"><i class="fa fa-check"></i><b>3.3.2</b> Over-plotting</a></li>
+<li class="chapter" data-level="3.3.3" data-path="3-viz.html"><a href="3-viz.html#summary"><i class="fa fa-check"></i><b>3.3.3</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="3-viz.html"><a href="3-viz.html#linegraphs"><i class="fa fa-check"></i><b>3.4</b> 5NG#2: Linegraphs</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="3-viz.html"><a href="3-viz.html#geomline"><i class="fa fa-check"></i><b>3.4.1</b> Linegraphs via geom_line</a></li>
+<li class="chapter" data-level="3.4.2" data-path="3-viz.html"><a href="3-viz.html#summary-1"><i class="fa fa-check"></i><b>3.4.2</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="3-viz.html"><a href="3-viz.html#histograms"><i class="fa fa-check"></i><b>3.5</b> 5NG#3: Histograms</a><ul>
+<li class="chapter" data-level="3.5.1" data-path="3-viz.html"><a href="3-viz.html#geomhistogram"><i class="fa fa-check"></i><b>3.5.1</b> Histograms via geom_histogram</a></li>
+<li class="chapter" data-level="3.5.2" data-path="3-viz.html"><a href="3-viz.html#adjustbins"><i class="fa fa-check"></i><b>3.5.2</b> Adjusting the bins</a></li>
+<li class="chapter" data-level="3.5.3" data-path="3-viz.html"><a href="3-viz.html#summary-2"><i class="fa fa-check"></i><b>3.5.3</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="3-viz.html"><a href="3-viz.html#facets"><i class="fa fa-check"></i><b>3.6</b> Facets</a></li>
+<li class="chapter" data-level="3.7" data-path="3-viz.html"><a href="3-viz.html#boxplots"><i class="fa fa-check"></i><b>3.7</b> 5NG#4: Boxplots</a><ul>
+<li class="chapter" data-level="3.7.1" data-path="3-viz.html"><a href="3-viz.html#geomboxplot"><i class="fa fa-check"></i><b>3.7.1</b> Boxplots via geom_boxplot</a></li>
+<li class="chapter" data-level="3.7.2" data-path="3-viz.html"><a href="3-viz.html#summary-3"><i class="fa fa-check"></i><b>3.7.2</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="3.8" data-path="3-viz.html"><a href="3-viz.html#geombar"><i class="fa fa-check"></i><b>3.8</b> 5NG#5: Barplots</a><ul>
+<li class="chapter" data-level="3.8.1" data-path="3-viz.html"><a href="3-viz.html#barplots-via-geom_bar-or-geom_col"><i class="fa fa-check"></i><b>3.8.1</b> Barplots via geom_bar or geom_col</a></li>
+<li class="chapter" data-level="3.8.2" data-path="3-viz.html"><a href="3-viz.html#must-avoid-pie-charts"><i class="fa fa-check"></i><b>3.8.2</b> Must avoid pie charts!</a></li>
+<li class="chapter" data-level="3.8.3" data-path="3-viz.html"><a href="3-viz.html#two-categ-barplot"><i class="fa fa-check"></i><b>3.8.3</b> Two categorical variables</a></li>
+<li class="chapter" data-level="3.8.4" data-path="3-viz.html"><a href="3-viz.html#summary-4"><i class="fa fa-check"></i><b>3.8.4</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="3.9" data-path="3-viz.html"><a href="3-viz.html#conclusion-1"><i class="fa fa-check"></i><b>3.9</b> Conclusion</a><ul>
+<li class="chapter" data-level="3.9.1" data-path="3-viz.html"><a href="3-viz.html#summary-table"><i class="fa fa-check"></i><b>3.9.1</b> Summary table</a></li>
+<li class="chapter" data-level="3.9.2" data-path="3-viz.html"><a href="3-viz.html#argument-specification"><i class="fa fa-check"></i><b>3.9.2</b> Argument specification</a></li>
+<li class="chapter" data-level="3.9.3" data-path="3-viz.html"><a href="3-viz.html#additional-resources-1"><i class="fa fa-check"></i><b>3.9.3</b> Additional resources</a></li>
+<li class="chapter" data-level="3.9.4" data-path="3-viz.html"><a href="3-viz.html#whats-to-come-3"><i class="fa fa-check"></i><b>3.9.4</b> What’s to come</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-wrangling.html"><a href="4-wrangling.html"><i class="fa fa-check"></i><b>4</b> Data Wrangling</a><ul>
+<li class="chapter" data-level="" data-path="4-wrangling.html"><a href="4-wrangling.html#needed-packages-1"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="4.1" data-path="4-wrangling.html"><a href="4-wrangling.html#piping"><i class="fa fa-check"></i><b>4.1</b> The pipe operator: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="4.2" data-path="4-wrangling.html"><a href="4-wrangling.html#filter"><i class="fa fa-check"></i><b>4.2</b> <code>filter</code> rows</a></li>
+<li class="chapter" data-level="4.3" data-path="4-wrangling.html"><a href="4-wrangling.html#summarize"><i class="fa fa-check"></i><b>4.3</b> <code>summarize</code> variables</a></li>
+<li class="chapter" data-level="4.4" data-path="4-wrangling.html"><a href="4-wrangling.html#groupby"><i class="fa fa-check"></i><b>4.4</b> <code>group_by</code> rows</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="4-wrangling.html"><a href="4-wrangling.html#grouping-by-more-than-one-variable"><i class="fa fa-check"></i><b>4.4.1</b> Grouping by more than one variable</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="4-wrangling.html"><a href="4-wrangling.html#mutate"><i class="fa fa-check"></i><b>4.5</b> <code>mutate</code> existing variables</a></li>
+<li class="chapter" data-level="4.6" data-path="4-wrangling.html"><a href="4-wrangling.html#arrange"><i class="fa fa-check"></i><b>4.6</b> <code>arrange</code> and sort rows</a></li>
+<li class="chapter" data-level="4.7" data-path="4-wrangling.html"><a href="4-wrangling.html#joins"><i class="fa fa-check"></i><b>4.7</b> <code>join</code> data frames</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="4-wrangling.html"><a href="4-wrangling.html#matching-key-variable-names"><i class="fa fa-check"></i><b>4.7.1</b> Matching “key” variable names</a></li>
+<li class="chapter" data-level="4.7.2" data-path="4-wrangling.html"><a href="4-wrangling.html#diff-key"><i class="fa fa-check"></i><b>4.7.2</b> Different “key” variable names</a></li>
+<li class="chapter" data-level="4.7.3" data-path="4-wrangling.html"><a href="4-wrangling.html#multiple-key-variables"><i class="fa fa-check"></i><b>4.7.3</b> Multiple “key” variables</a></li>
+<li class="chapter" data-level="4.7.4" data-path="4-wrangling.html"><a href="4-wrangling.html#normal-forms"><i class="fa fa-check"></i><b>4.7.4</b> Normal forms</a></li>
+</ul></li>
+<li class="chapter" data-level="4.8" data-path="4-wrangling.html"><a href="4-wrangling.html#other-verbs"><i class="fa fa-check"></i><b>4.8</b> Other verbs</a><ul>
+<li class="chapter" data-level="4.8.1" data-path="4-wrangling.html"><a href="4-wrangling.html#select"><i class="fa fa-check"></i><b>4.8.1</b> <code>select</code> variables</a></li>
+<li class="chapter" data-level="4.8.2" data-path="4-wrangling.html"><a href="4-wrangling.html#rename"><i class="fa fa-check"></i><b>4.8.2</b> <code>rename</code> variables</a></li>
+<li class="chapter" data-level="4.8.3" data-path="4-wrangling.html"><a href="4-wrangling.html#top_n-values-of-a-variable"><i class="fa fa-check"></i><b>4.8.3</b> <code>top_n</code> values of a variable</a></li>
+</ul></li>
+<li class="chapter" data-level="4.9" data-path="4-wrangling.html"><a href="4-wrangling.html#conclusion-2"><i class="fa fa-check"></i><b>4.9</b> Conclusion</a><ul>
+<li class="chapter" data-level="4.9.1" data-path="4-wrangling.html"><a href="4-wrangling.html#summary-table-1"><i class="fa fa-check"></i><b>4.9.1</b> Summary table</a></li>
+<li class="chapter" data-level="4.9.2" data-path="4-wrangling.html"><a href="4-wrangling.html#additional-resources-2"><i class="fa fa-check"></i><b>4.9.2</b> Additional resources</a></li>
+<li class="chapter" data-level="4.9.3" data-path="4-wrangling.html"><a href="4-wrangling.html#whats-to-come-1"><i class="fa fa-check"></i><b>4.9.3</b> What’s to come?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="5-tidy.html"><a href="5-tidy.html"><i class="fa fa-check"></i><b>5</b> Data Importing &amp; “Tidy” Data</a><ul>
+<li class="chapter" data-level="" data-path="5-tidy.html"><a href="5-tidy.html#needed-packages-2"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="5.1" data-path="5-tidy.html"><a href="5-tidy.html#csv"><i class="fa fa-check"></i><b>5.1</b> Importing data</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="5-tidy.html"><a href="5-tidy.html#using-the-console"><i class="fa fa-check"></i><b>5.1.1</b> Using the console</a></li>
+<li class="chapter" data-level="5.1.2" data-path="5-tidy.html"><a href="5-tidy.html#using-rstudios-interface"><i class="fa fa-check"></i><b>5.1.2</b> Using RStudio’s interface</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="5-tidy.html"><a href="5-tidy.html#tidy-data-ex"><i class="fa fa-check"></i><b>5.2</b> Tidy data</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="5-tidy.html"><a href="5-tidy.html#definition-of-tidy-data"><i class="fa fa-check"></i><b>5.2.1</b> Definition of “tidy” data</a></li>
+<li class="chapter" data-level="5.2.2" data-path="5-tidy.html"><a href="5-tidy.html#converting-to-tidy-data"><i class="fa fa-check"></i><b>5.2.2</b> Converting to “tidy” data</a></li>
+<li class="chapter" data-level="5.2.3" data-path="5-tidy.html"><a href="5-tidy.html#nycflights13-package-1"><i class="fa fa-check"></i><b>5.2.3</b> <code>nycflights13</code> package</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="5-tidy.html"><a href="5-tidy.html#case-study-tidy"><i class="fa fa-check"></i><b>5.3</b> Case study: Democracy in Guatemala</a></li>
+<li class="chapter" data-level="5.4" data-path="5-tidy.html"><a href="5-tidy.html#conclusion-3"><i class="fa fa-check"></i><b>5.4</b> Conclusion</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="5-tidy.html"><a href="5-tidy.html#tidyverse-package"><i class="fa fa-check"></i><b>5.4.1</b> <code>tidyverse</code> package</a></li>
+<li class="chapter" data-level="5.4.2" data-path="5-tidy.html"><a href="5-tidy.html#additional-resources-3"><i class="fa fa-check"></i><b>5.4.2</b> Additional resources</a></li>
+<li class="chapter" data-level="5.4.3" data-path="5-tidy.html"><a href="5-tidy.html#whats-to-come-2"><i class="fa fa-check"></i><b>5.4.3</b> What’s to come?</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>II Data Modeling via moderndive</b></span></li>
+<li class="chapter" data-level="6" data-path="6-regression.html"><a href="6-regression.html"><i class="fa fa-check"></i><b>6</b> Basic Regression</a><ul>
+<li class="chapter" data-level="" data-path="6-regression.html"><a href="6-regression.html#needed-packages-3"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="6.1" data-path="6-regression.html"><a href="6-regression.html#model1"><i class="fa fa-check"></i><b>6.1</b> One numerical explanatory variable</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="6-regression.html"><a href="6-regression.html#model1EDA"><i class="fa fa-check"></i><b>6.1.1</b> Exploratory data analysis</a></li>
+<li class="chapter" data-level="6.1.2" data-path="6-regression.html"><a href="6-regression.html#model1table"><i class="fa fa-check"></i><b>6.1.2</b> Simple linear regression</a></li>
+<li class="chapter" data-level="6.1.3" data-path="6-regression.html"><a href="6-regression.html#model1points"><i class="fa fa-check"></i><b>6.1.3</b> Observed/fitted values and residuals</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="6-regression.html"><a href="6-regression.html#model2"><i class="fa fa-check"></i><b>6.2</b> One categorical explanatory variable</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="6-regression.html"><a href="6-regression.html#model2EDA"><i class="fa fa-check"></i><b>6.2.1</b> Exploratory data analysis</a></li>
+<li class="chapter" data-level="6.2.2" data-path="6-regression.html"><a href="6-regression.html#model2table"><i class="fa fa-check"></i><b>6.2.2</b> Linear regression</a></li>
+<li class="chapter" data-level="6.2.3" data-path="6-regression.html"><a href="6-regression.html#model2points"><i class="fa fa-check"></i><b>6.2.3</b> Observed/fitted values and residuals</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="6-regression.html"><a href="6-regression.html#related-topics"><i class="fa fa-check"></i><b>6.3</b> Related topics</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="6-regression.html"><a href="6-regression.html#correlationcoefficient"><i class="fa fa-check"></i><b>6.3.1</b> Correlation coefficient</a></li>
+<li class="chapter" data-level="6.3.2" data-path="6-regression.html"><a href="6-regression.html#correlation-is-not-causation"><i class="fa fa-check"></i><b>6.3.2</b> Correlation is not necessarily causation</a></li>
+<li class="chapter" data-level="6.3.3" data-path="6-regression.html"><a href="6-regression.html#leastsquares"><i class="fa fa-check"></i><b>6.3.3</b> Best fitting line</a></li>
+<li class="chapter" data-level="6.3.4" data-path="6-regression.html"><a href="6-regression.html#underthehood"><i class="fa fa-check"></i><b>6.3.4</b> <code>get_regression_x()</code> functions</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="6-regression.html"><a href="6-regression.html#conclusion-4"><i class="fa fa-check"></i><b>6.4</b> Conclusion</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="6-regression.html"><a href="6-regression.html#additional-resources-4"><i class="fa fa-check"></i><b>6.4.1</b> Additional resources</a></li>
+<li class="chapter" data-level="6.4.2" data-path="3-viz.html"><a href="3-viz.html#whats-to-come-3"><i class="fa fa-check"></i><b>6.4.2</b> What’s to come?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html"><i class="fa fa-check"></i><b>7</b> Multiple Regression</a><ul>
+<li class="chapter" data-level="" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#needed-packages-4"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="7.1" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#model3"><i class="fa fa-check"></i><b>7.1</b> Two numerical explanatory variables</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#model3EDA"><i class="fa fa-check"></i><b>7.1.1</b> Exploratory data analysis</a></li>
+<li class="chapter" data-level="7.1.2" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#model3table"><i class="fa fa-check"></i><b>7.1.2</b> Multiple regression</a></li>
+<li class="chapter" data-level="7.1.3" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#model3points"><i class="fa fa-check"></i><b>7.1.3</b> Observed/fitted values and residuals</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#model4"><i class="fa fa-check"></i><b>7.2</b> One numerical &amp; one categorical explanatory variable</a><ul>
+<li class="chapter" data-level="7.2.1" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#model4EDA"><i class="fa fa-check"></i><b>7.2.1</b> Exploratory data analysis</a></li>
+<li class="chapter" data-level="7.2.2" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#model4table"><i class="fa fa-check"></i><b>7.2.2</b> Multiple regression: Parallel slopes model</a></li>
+<li class="chapter" data-level="7.2.3" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#model4interactiontable"><i class="fa fa-check"></i><b>7.2.3</b> Multiple regression: Interaction model</a></li>
+<li class="chapter" data-level="7.2.4" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#model4points"><i class="fa fa-check"></i><b>7.2.4</b> Observed/fitted values and residuals</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#related-topics-1"><i class="fa fa-check"></i><b>7.3</b> Related topics</a><ul>
+<li class="chapter" data-level="7.3.1" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#correlationcoefficient2"><i class="fa fa-check"></i><b>7.3.1</b> More on the correlation coefficient</a></li>
+<li class="chapter" data-level="7.3.2" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#simpsonsparadox"><i class="fa fa-check"></i><b>7.3.2</b> Simpson’s Paradox</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#conclusion-5"><i class="fa fa-check"></i><b>7.4</b> Conclusion</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#additional-resources-5"><i class="fa fa-check"></i><b>7.4.1</b> Additional resources</a></li>
+<li class="chapter" data-level="7.4.2" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#whats-to-come-4"><i class="fa fa-check"></i><b>7.4.2</b> What’s to come?</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>III Inference via infer</b></span></li>
+<li class="chapter" data-level="8" data-path="8-populations.html"><a href="8-populations.html"><i class="fa fa-check"></i><b>8</b> Populations</a><ul>
+<li class="chapter" data-level="8.1" data-path="8-populations.html"><a href="8-populations.html#terminology"><i class="fa fa-check"></i><b>8.1</b> Terminology &amp; Notation</a></li>
+<li class="chapter" data-level="8.2" data-path="8-populations.html"><a href="8-populations.html#sample_selection"><i class="fa fa-check"></i><b>8.2</b> Populations &amp; Sampling</a></li>
+<li class="chapter" data-level="8.3" data-path="8-populations.html"><a href="8-populations.html#samples"><i class="fa fa-check"></i><b>8.3</b> Samples &amp; Populations</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="9-sampling.html"><a href="9-sampling.html"><i class="fa fa-check"></i><b>9</b> Sampling Distributions</a><ul>
+<li class="chapter" data-level="" data-path="9-sampling.html"><a href="9-sampling.html#needed-packages-5"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="9.1" data-path="9-sampling.html"><a href="9-sampling.html#theory"><i class="fa fa-check"></i><b>9.1</b> Theory of Repeated Samples</a></li>
+<li class="chapter" data-level="9.2" data-path="9-sampling.html"><a href="9-sampling.html#sampling-activity"><i class="fa fa-check"></i><b>9.2</b> Sampling Activity</a><ul>
+<li class="chapter" data-level="9.2.1" data-path="9-sampling.html"><a href="9-sampling.html#what-proportion-of-this-bowls-balls-are-red"><i class="fa fa-check"></i><b>9.2.1</b> What proportion of this bowl’s balls are red?</a></li>
+<li class="chapter" data-level="9.2.2" data-path="9-sampling.html"><a href="9-sampling.html#using-the-shovel-once"><i class="fa fa-check"></i><b>9.2.2</b> Using the shovel once</a></li>
+<li class="chapter" data-level="9.2.3" data-path="9-sampling.html"><a href="9-sampling.html#student-shovels"><i class="fa fa-check"></i><b>9.2.3</b> Using the shovel 33 times</a></li>
+<li class="chapter" data-level="9.2.4" data-path="9-sampling.html"><a href="9-sampling.html#what-are-we-doing-here"><i class="fa fa-check"></i><b>9.2.4</b> What are we doing here?</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="9-sampling.html"><a href="9-sampling.html#sampling-simulation"><i class="fa fa-check"></i><b>9.3</b> Computer simulation</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="9-sampling.html"><a href="9-sampling.html#using-the-virtual-shovel-once"><i class="fa fa-check"></i><b>9.3.1</b> Using the virtual shovel once</a></li>
+<li class="chapter" data-level="9.3.2" data-path="9-sampling.html"><a href="9-sampling.html#using-the-virtual-shovel-33-times"><i class="fa fa-check"></i><b>9.3.2</b> Using the virtual shovel 33 times</a></li>
+<li class="chapter" data-level="9.3.3" data-path="9-sampling.html"><a href="9-sampling.html#using-the-virtual-shovel-1000-times"><i class="fa fa-check"></i><b>9.3.3</b> Using the virtual shovel 1000 times</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="9-sampling.html"><a href="9-sampling.html#properties_s"><i class="fa fa-check"></i><b>9.4</b> Properties of Sampling Distributions</a><ul>
+<li class="chapter" data-level="9.4.1" data-path="9-sampling.html"><a href="9-sampling.html#dist"><i class="fa fa-check"></i><b>9.4.1</b> Distribution</a></li>
+<li class="chapter" data-level="9.4.2" data-path="9-sampling.html"><a href="9-sampling.html#bias"><i class="fa fa-check"></i><b>9.4.2</b> Mean of the sampling distribution</a></li>
+<li class="chapter" data-level="9.4.3" data-path="9-sampling.html"><a href="9-sampling.html#precision"><i class="fa fa-check"></i><b>9.4.3</b> Standard deviation of the sampling distribution</a></li>
+<li class="chapter" data-level="9.4.4" data-path="9-sampling.html"><a href="9-sampling.html#conf"><i class="fa fa-check"></i><b>9.4.4</b> Confusing concepts</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="9-sampling.html"><a href="9-sampling.html#size"><i class="fa fa-check"></i><b>9.5</b> Sample Size and Sampling Distributions</a><ul>
+<li class="chapter" data-level="9.5.1" data-path="9-sampling.html"><a href="9-sampling.html#eg1"><i class="fa fa-check"></i><b>9.5.1</b> Sampling balls with different sized shovels</a></li>
+</ul></li>
+<li class="chapter" data-level="9.6" data-path="9-sampling.html"><a href="9-sampling.html#clt"><i class="fa fa-check"></i><b>9.6</b> Central Limit Theorem (CLT)</a><ul>
+<li class="chapter" data-level="9.6.1" data-path="9-sampling.html"><a href="9-sampling.html#clt-conditions"><i class="fa fa-check"></i><b>9.6.1</b> CLT conditions</a></li>
+<li class="chapter" data-level="9.6.2" data-path="9-sampling.html"><a href="9-sampling.html#clt-example"><i class="fa fa-check"></i><b>9.6.2</b> CLT example</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html"><i class="fa fa-check"></i><b>10</b> Hypothesis Testing</a><ul>
+<li class="chapter" data-level="" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#needed-packages-6"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#needed-packages-7"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="10.1" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#when-inference-is-not-needed"><i class="fa fa-check"></i><b>10.1</b> When inference is not needed</a></li>
+<li class="chapter" data-level="10.2" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#ht-basics"><i class="fa fa-check"></i><b>10.2</b> Basics of hypothesis testing</a></li>
+<li class="chapter" data-level="10.3" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#trial"><i class="fa fa-check"></i><b>10.3</b> Criminal trial analogy</a><ul>
+<li class="chapter" data-level="10.3.1" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#two-possible-conclusions"><i class="fa fa-check"></i><b>10.3.1</b> Two possible conclusions</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#types-of-errors-in-hypothesis-testing"><i class="fa fa-check"></i><b>10.4</b> Types of errors in hypothesis testing</a><ul>
+<li class="chapter" data-level="10.4.1" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#logic-of-hypothesis-testing"><i class="fa fa-check"></i><b>10.4.1</b> Logic of hypothesis testing</a></li>
+</ul></li>
+<li class="chapter" data-level="10.5" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#statistical-significance"><i class="fa fa-check"></i><b>10.5</b> Statistical significance</a></li>
+<li class="chapter" data-level="10.6" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#hypothesis-testing-with-infer"><i class="fa fa-check"></i><b>10.6</b> Hypothesis testing with infer</a></li>
+<li class="chapter" data-level="10.7" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#example-comparing-two-means"><i class="fa fa-check"></i><b>10.7</b> Example: Comparing two means</a><ul>
+<li class="chapter" data-level="10.7.1" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#randomizationpermutation"><i class="fa fa-check"></i><b>10.7.1</b> Randomization/permutation</a></li>
+<li class="chapter" data-level="10.7.2" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#comparing-action-and-romance-movies"><i class="fa fa-check"></i><b>10.7.2</b> Comparing action and romance movies</a></li>
+<li class="chapter" data-level="10.7.3" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#sampling-rightarrow-randomization"><i class="fa fa-check"></i><b>10.7.3</b> Sampling <span class="math inline">\(\rightarrow\)</span> randomization</a></li>
+<li class="chapter" data-level="10.7.4" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#data"><i class="fa fa-check"></i><b>10.7.4</b> Data</a></li>
+<li class="chapter" data-level="10.7.5" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#model-of-h_0"><i class="fa fa-check"></i><b>10.7.5</b> Model of <span class="math inline">\(H_0\)</span></a></li>
+<li class="chapter" data-level="10.7.6" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#test-statistic-delta"><i class="fa fa-check"></i><b>10.7.6</b> Test statistic <span class="math inline">\(\delta\)</span></a></li>
+<li class="chapter" data-level="10.7.7" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#observed-effect-delta"><i class="fa fa-check"></i><b>10.7.7</b> Observed effect <span class="math inline">\(\delta^*\)</span></a></li>
+<li class="chapter" data-level="10.7.8" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#simulated-data"><i class="fa fa-check"></i><b>10.7.8</b> Simulated data</a></li>
+<li class="chapter" data-level="10.7.9" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#distribution-of-delta-under-h_0"><i class="fa fa-check"></i><b>10.7.9</b> Distribution of <span class="math inline">\(\delta\)</span> under <span class="math inline">\(H_0\)</span></a></li>
+<li class="chapter" data-level="10.7.10" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#the-p-value"><i class="fa fa-check"></i><b>10.7.10</b> The p-value</a></li>
+<li class="chapter" data-level="10.7.11" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#corresponding-confidence-interval"><i class="fa fa-check"></i><b>10.7.11</b> Corresponding confidence interval</a></li>
+<li class="chapter" data-level="10.7.12" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#summary-5"><i class="fa fa-check"></i><b>10.7.12</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="10.8" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#theory-hypo"><i class="fa fa-check"></i><b>10.8</b> Building theory-based methods using computation</a><ul>
+<li class="chapter" data-level="10.8.1" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#example-t-test-for-two-independent-samples"><i class="fa fa-check"></i><b>10.8.1</b> Example: <span class="math inline">\(t\)</span>-test for two independent samples</a></li>
+<li class="chapter" data-level="10.8.2" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#conditions-for-t-test"><i class="fa fa-check"></i><b>10.8.2</b> Conditions for t-test</a></li>
+</ul></li>
+<li class="chapter" data-level="10.9" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#conclusion-6"><i class="fa fa-check"></i><b>10.9</b> Conclusion</a><ul>
+<li class="chapter" data-level="10.9.1" data-path="10-hypothesis-testing.html"><a href="10-hypothesis-testing.html#script-of-r-code"><i class="fa fa-check"></i><b>10.9.1</b> Script of R code</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html"><i class="fa fa-check"></i><b>11</b> Inference for Regression</a><ul>
+<li class="chapter" data-level="" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#needed-packages-8"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="11.1" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#simulation-based-inference-for-regression"><i class="fa fa-check"></i><b>11.1</b> Simulation-based Inference for Regression</a><ul>
+<li class="chapter" data-level="11.1.1" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#data-1"><i class="fa fa-check"></i><b>11.1.1</b> Data</a></li>
+<li class="chapter" data-level="11.1.2" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#test-statistic-delta-1"><i class="fa fa-check"></i><b>11.1.2</b> Test statistic <span class="math inline">\(\delta\)</span></a></li>
+<li class="chapter" data-level="11.1.3" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#observed-effect-delta-1"><i class="fa fa-check"></i><b>11.1.3</b> Observed effect <span class="math inline">\(\delta^*\)</span></a></li>
+<li class="chapter" data-level="11.1.4" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#model-of-h_0-1"><i class="fa fa-check"></i><b>11.1.4</b> Model of <span class="math inline">\(H_0\)</span></a></li>
+<li class="chapter" data-level="11.1.5" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#simulated-data-1"><i class="fa fa-check"></i><b>11.1.5</b> Simulated data</a></li>
+<li class="chapter" data-level="11.1.6" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#distribution-of-delta-under-h_0-1"><i class="fa fa-check"></i><b>11.1.6</b> Distribution of <span class="math inline">\(\delta\)</span> under <span class="math inline">\(H_0\)</span></a></li>
+<li class="chapter" data-level="11.1.7" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#the-p-value-1"><i class="fa fa-check"></i><b>11.1.7</b> The p-value</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#bootstrapping-for-the-regression-slope"><i class="fa fa-check"></i><b>11.2</b> Bootstrapping for the regression slope</a></li>
+<li class="chapter" data-level="11.3" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#inference-for-multiple-regression"><i class="fa fa-check"></i><b>11.3</b> Inference for multiple regression</a><ul>
+<li class="chapter" data-level="11.3.1" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#refresher-professor-evaluations-data"><i class="fa fa-check"></i><b>11.3.1</b> Refresher: Professor evaluations data</a></li>
+<li class="chapter" data-level="11.3.2" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#refresher-visualizations"><i class="fa fa-check"></i><b>11.3.2</b> Refresher: Visualizations</a></li>
+<li class="chapter" data-level="11.3.3" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#refresher-regression-tables"><i class="fa fa-check"></i><b>11.3.3</b> Refresher: Regression tables</a></li>
+<li class="chapter" data-level="11.3.4" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#script-of-r-code-1"><i class="fa fa-check"></i><b>11.3.4</b> Script of R code</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#residual-analysis"><i class="fa fa-check"></i><b>11.4</b> Residual analysis</a><ul>
+<li class="chapter" data-level="11.4.1" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#model1residuals"><i class="fa fa-check"></i><b>11.4.1</b> Residual analysis</a></li>
+<li class="chapter" data-level="11.4.2" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#model2residuals"><i class="fa fa-check"></i><b>11.4.2</b> Residual analysis</a></li>
+<li class="chapter" data-level="11.4.3" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#model3residuals"><i class="fa fa-check"></i><b>11.4.3</b> Residual analysis</a></li>
+<li class="chapter" data-level="11.4.4" data-path="11-inference-for-regression.html"><a href="11-inference-for-regression.html#model4residuals"><i class="fa fa-check"></i><b>11.4.4</b> Residual analysis</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>IV Conclusion</b></span></li>
+<li class="chapter" data-level="12" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html"><i class="fa fa-check"></i><b>12</b> Thinking with Data</a><ul>
+<li class="chapter" data-level="" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#needed-packages-9"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="12.1" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#seattle-house-prices"><i class="fa fa-check"></i><b>12.1</b> Case study: Seattle house prices</a><ul>
+<li class="chapter" data-level="12.1.1" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#house-prices-EDA-I"><i class="fa fa-check"></i><b>12.1.1</b> Exploratory data analysis (EDA)</a></li>
+<li class="chapter" data-level="12.1.2" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#log10-transformations"><i class="fa fa-check"></i><b>12.1.2</b> log10 transformations</a></li>
+<li class="chapter" data-level="12.1.3" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#eda-part-ii"><i class="fa fa-check"></i><b>12.1.3</b> EDA Part II</a></li>
+<li class="chapter" data-level="12.1.4" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#house-prices-regression"><i class="fa fa-check"></i><b>12.1.4</b> Regression modeling</a></li>
+<li class="chapter" data-level="12.1.5" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#house-prices-making-predictions"><i class="fa fa-check"></i><b>12.1.5</b> Making predictions</a></li>
+</ul></li>
+<li class="chapter" data-level="12.2" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#data-journalism"><i class="fa fa-check"></i><b>12.2</b> Case study: Effective data storytelling</a><ul>
+<li class="chapter" data-level="12.2.1" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#bechdel-test-for-hollywood-gender-representation"><i class="fa fa-check"></i><b>12.2.1</b> Bechdel test for Hollywood gender representation</a></li>
+<li class="chapter" data-level="12.2.2" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#us-births-in-1999"><i class="fa fa-check"></i><b>12.2.2</b> US Births in 1999</a></li>
+<li class="chapter" data-level="12.2.3" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#other-examples"><i class="fa fa-check"></i><b>12.2.3</b> Other examples</a></li>
+<li class="chapter" data-level="12.2.4" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#script-of-r-code-2"><i class="fa fa-check"></i><b>12.2.4</b> Script of R code</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="12-thinking-with-data.html"><a href="12-thinking-with-data.html#concluding-remarks"><i class="fa fa-check"></i>Concluding remarks</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="A-appendixA.html"><a href="A-appendixA.html"><i class="fa fa-check"></i><b>A</b> Statistical Background</a><ul>
+<li class="chapter" data-level="A.1" data-path="A-appendixA.html"><a href="A-appendixA.html#basic-statistical-terms"><i class="fa fa-check"></i><b>A.1</b> Basic statistical terms</a><ul>
+<li class="chapter" data-level="A.1.1" data-path="A-appendixA.html"><a href="A-appendixA.html#mean"><i class="fa fa-check"></i><b>A.1.1</b> Mean</a></li>
+<li class="chapter" data-level="A.1.2" data-path="A-appendixA.html"><a href="A-appendixA.html#median"><i class="fa fa-check"></i><b>A.1.2</b> Median</a></li>
+<li class="chapter" data-level="A.1.3" data-path="A-appendixA.html"><a href="A-appendixA.html#standard-deviation"><i class="fa fa-check"></i><b>A.1.3</b> Standard deviation</a></li>
+<li class="chapter" data-level="A.1.4" data-path="A-appendixA.html"><a href="A-appendixA.html#five-number-summary"><i class="fa fa-check"></i><b>A.1.4</b> Five-number summary</a></li>
+<li class="chapter" data-level="A.1.5" data-path="A-appendixA.html"><a href="A-appendixA.html#distribution"><i class="fa fa-check"></i><b>A.1.5</b> Distribution</a></li>
+<li class="chapter" data-level="A.1.6" data-path="A-appendixA.html"><a href="A-appendixA.html#outliers"><i class="fa fa-check"></i><b>A.1.6</b> Outliers</a></li>
+</ul></li>
+<li class="chapter" data-level="A.2" data-path="A-appendixA.html"><a href="A-appendixA.html#normal-distribution-discussion"><i class="fa fa-check"></i><b>A.2</b> Normal distribution discussion</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="B-appendixB.html"><a href="B-appendixB.html"><i class="fa fa-check"></i><b>B</b> Inference Examples</a><ul>
+<li class="chapter" data-level="" data-path="B-appendixB.html"><a href="B-appendixB.html#needed-packages-10"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="B.1" data-path="B-appendixB.html"><a href="B-appendixB.html#inference-mind-map"><i class="fa fa-check"></i><b>B.1</b> Inference mind map</a></li>
+<li class="chapter" data-level="B.2" data-path="B-appendixB.html"><a href="B-appendixB.html#one-mean"><i class="fa fa-check"></i><b>B.2</b> One mean</a><ul>
+<li class="chapter" data-level="B.2.1" data-path="B-appendixB.html"><a href="B-appendixB.html#problem-statement"><i class="fa fa-check"></i><b>B.2.1</b> Problem statement</a></li>
+<li class="chapter" data-level="B.2.2" data-path="B-appendixB.html"><a href="B-appendixB.html#competing-hypotheses"><i class="fa fa-check"></i><b>B.2.2</b> Competing hypotheses</a></li>
+<li class="chapter" data-level="B.2.3" data-path="B-appendixB.html"><a href="B-appendixB.html#exploring-the-sample-data"><i class="fa fa-check"></i><b>B.2.3</b> Exploring the sample data</a></li>
+<li class="chapter" data-level="B.2.4" data-path="B-appendixB.html"><a href="B-appendixB.html#non-traditional-methods"><i class="fa fa-check"></i><b>B.2.4</b> Non-traditional methods</a></li>
+<li class="chapter" data-level="B.2.5" data-path="B-appendixB.html"><a href="B-appendixB.html#traditional-methods"><i class="fa fa-check"></i><b>B.2.5</b> Traditional methods</a></li>
+<li class="chapter" data-level="B.2.6" data-path="B-appendixB.html"><a href="B-appendixB.html#comparing-results"><i class="fa fa-check"></i><b>B.2.6</b> Comparing results</a></li>
+</ul></li>
+<li class="chapter" data-level="B.3" data-path="B-appendixB.html"><a href="B-appendixB.html#one-proportion"><i class="fa fa-check"></i><b>B.3</b> One proportion</a><ul>
+<li class="chapter" data-level="B.3.1" data-path="B-appendixB.html"><a href="B-appendixB.html#problem-statement-1"><i class="fa fa-check"></i><b>B.3.1</b> Problem statement</a></li>
+<li class="chapter" data-level="B.3.2" data-path="B-appendixB.html"><a href="B-appendixB.html#competing-hypotheses-1"><i class="fa fa-check"></i><b>B.3.2</b> Competing hypotheses</a></li>
+<li class="chapter" data-level="B.3.3" data-path="B-appendixB.html"><a href="B-appendixB.html#exploring-the-sample-data-1"><i class="fa fa-check"></i><b>B.3.3</b> Exploring the sample data</a></li>
+<li class="chapter" data-level="B.3.4" data-path="B-appendixB.html"><a href="B-appendixB.html#non-traditional-methods-1"><i class="fa fa-check"></i><b>B.3.4</b> Non-traditional methods</a></li>
+<li class="chapter" data-level="B.3.5" data-path="B-appendixB.html"><a href="B-appendixB.html#traditional-methods-1"><i class="fa fa-check"></i><b>B.3.5</b> Traditional methods</a></li>
+<li class="chapter" data-level="B.3.6" data-path="B-appendixB.html"><a href="B-appendixB.html#comparing-results-1"><i class="fa fa-check"></i><b>B.3.6</b> Comparing results</a></li>
+</ul></li>
+<li class="chapter" data-level="B.4" data-path="B-appendixB.html"><a href="B-appendixB.html#two-proportions"><i class="fa fa-check"></i><b>B.4</b> Two proportions</a><ul>
+<li class="chapter" data-level="B.4.1" data-path="B-appendixB.html"><a href="B-appendixB.html#problem-statement-2"><i class="fa fa-check"></i><b>B.4.1</b> Problem statement</a></li>
+<li class="chapter" data-level="B.4.2" data-path="B-appendixB.html"><a href="B-appendixB.html#competing-hypotheses-2"><i class="fa fa-check"></i><b>B.4.2</b> Competing hypotheses</a></li>
+<li class="chapter" data-level="B.4.3" data-path="B-appendixB.html"><a href="B-appendixB.html#exploring-the-sample-data-2"><i class="fa fa-check"></i><b>B.4.3</b> Exploring the sample data</a></li>
+<li class="chapter" data-level="B.4.4" data-path="B-appendixB.html"><a href="B-appendixB.html#non-traditional-methods-2"><i class="fa fa-check"></i><b>B.4.4</b> Non-traditional methods</a></li>
+<li class="chapter" data-level="B.4.5" data-path="B-appendixB.html"><a href="B-appendixB.html#traditional-methods-2"><i class="fa fa-check"></i><b>B.4.5</b> Traditional methods</a></li>
+<li class="chapter" data-level="B.4.6" data-path="B-appendixB.html"><a href="B-appendixB.html#check-conditions-2"><i class="fa fa-check"></i><b>B.4.6</b> Check conditions</a></li>
+<li class="chapter" data-level="B.4.7" data-path="B-appendixB.html"><a href="B-appendixB.html#test-statistic-2"><i class="fa fa-check"></i><b>B.4.7</b> Test statistic</a></li>
+<li class="chapter" data-level="B.4.8" data-path="B-appendixB.html"><a href="B-appendixB.html#state-conclusion-2"><i class="fa fa-check"></i><b>B.4.8</b> State conclusion</a></li>
+<li class="chapter" data-level="B.4.9" data-path="B-appendixB.html"><a href="B-appendixB.html#comparing-results-2"><i class="fa fa-check"></i><b>B.4.9</b> Comparing results</a></li>
+</ul></li>
+<li class="chapter" data-level="B.5" data-path="B-appendixB.html"><a href="B-appendixB.html#two-means-independent-samples"><i class="fa fa-check"></i><b>B.5</b> Two means (independent samples)</a><ul>
+<li class="chapter" data-level="B.5.1" data-path="B-appendixB.html"><a href="B-appendixB.html#problem-statement-3"><i class="fa fa-check"></i><b>B.5.1</b> Problem statement</a></li>
+<li class="chapter" data-level="B.5.2" data-path="B-appendixB.html"><a href="B-appendixB.html#competing-hypotheses-3"><i class="fa fa-check"></i><b>B.5.2</b> Competing hypotheses</a></li>
+<li class="chapter" data-level="B.5.3" data-path="B-appendixB.html"><a href="B-appendixB.html#exploring-the-sample-data-3"><i class="fa fa-check"></i><b>B.5.3</b> Exploring the sample data</a></li>
+<li class="chapter" data-level="B.5.4" data-path="B-appendixB.html"><a href="B-appendixB.html#non-traditional-methods-3"><i class="fa fa-check"></i><b>B.5.4</b> Non-traditional methods</a></li>
+<li class="chapter" data-level="B.5.5" data-path="B-appendixB.html"><a href="B-appendixB.html#traditional-methods-3"><i class="fa fa-check"></i><b>B.5.5</b> Traditional methods</a></li>
+<li class="chapter" data-level="B.5.6" data-path="B-appendixB.html"><a href="B-appendixB.html#test-statistic-3"><i class="fa fa-check"></i><b>B.5.6</b> Test statistic</a></li>
+<li class="chapter" data-level="B.5.7" data-path="B-appendixB.html"><a href="B-appendixB.html#compute-p-value-1"><i class="fa fa-check"></i><b>B.5.7</b> Compute <span class="math inline">\(p\)</span>-value</a></li>
+<li class="chapter" data-level="B.5.8" data-path="B-appendixB.html"><a href="B-appendixB.html#state-conclusion-3"><i class="fa fa-check"></i><b>B.5.8</b> State conclusion</a></li>
+<li class="chapter" data-level="B.5.9" data-path="B-appendixB.html"><a href="B-appendixB.html#comparing-results-3"><i class="fa fa-check"></i><b>B.5.9</b> Comparing results</a></li>
+</ul></li>
+<li class="chapter" data-level="B.6" data-path="B-appendixB.html"><a href="B-appendixB.html#two-means-paired-samples"><i class="fa fa-check"></i><b>B.6</b> Two means (paired samples)</a><ul>
+<li class="chapter" data-level="B.6.1" data-path="B-appendixB.html"><a href="B-appendixB.html#competing-hypotheses-4"><i class="fa fa-check"></i><b>B.6.1</b> Competing hypotheses</a></li>
+<li class="chapter" data-level="B.6.2" data-path="B-appendixB.html"><a href="B-appendixB.html#exploring-the-sample-data-4"><i class="fa fa-check"></i><b>B.6.2</b> Exploring the sample data</a></li>
+<li class="chapter" data-level="B.6.3" data-path="B-appendixB.html"><a href="B-appendixB.html#non-traditional-methods-4"><i class="fa fa-check"></i><b>B.6.3</b> Non-traditional methods</a></li>
+<li class="chapter" data-level="B.6.4" data-path="B-appendixB.html"><a href="B-appendixB.html#traditional-methods-4"><i class="fa fa-check"></i><b>B.6.4</b> Traditional methods</a></li>
+<li class="chapter" data-level="B.6.5" data-path="B-appendixB.html"><a href="B-appendixB.html#comparing-results-4"><i class="fa fa-check"></i><b>B.6.5</b> Comparing results</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="C" data-path="C-appendixC.html"><a href="C-appendixC.html"><i class="fa fa-check"></i><b>C</b> Reach for the Stars</a><ul>
+<li class="chapter" data-level="" data-path="C-appendixC.html"><a href="C-appendixC.html#needed-packages-11"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="C.1" data-path="C-appendixC.html"><a href="C-appendixC.html#sorted-barplots"><i class="fa fa-check"></i><b>C.1</b> Sorted barplots</a></li>
+<li class="chapter" data-level="C.2" data-path="C-appendixC.html"><a href="C-appendixC.html#interactive-graphics"><i class="fa fa-check"></i><b>C.2</b> Interactive graphics</a><ul>
+<li class="chapter" data-level="C.2.1" data-path="C-appendixC.html"><a href="C-appendixC.html#interactive-linegraphs"><i class="fa fa-check"></i><b>C.2.1</b> Interactive linegraphs</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="D" data-path="D-appendixD.html"><a href="D-appendixD.html"><i class="fa fa-check"></i><b>D</b> Learning Check Solutions</a><ul>
+<li class="chapter" data-level="D.1" data-path="D-appendixD.html"><a href="D-appendixD.html#chapter-2-solutions"><i class="fa fa-check"></i><b>D.1</b> Chapter 2 Solutions</a></li>
+<li class="chapter" data-level="D.2" data-path="D-appendixD.html"><a href="D-appendixD.html#chapter-3-solutions"><i class="fa fa-check"></i><b>D.2</b> Chapter 3 Solutions</a></li>
+<li class="chapter" data-level="D.3" data-path="D-appendixD.html"><a href="D-appendixD.html#chapter-4-solutions"><i class="fa fa-check"></i><b>D.3</b> Chapter 4 Solutions</a></li>
+<li class="chapter" data-level="D.4" data-path="D-appendixD.html"><a href="D-appendixD.html#chapter-5-solutions"><i class="fa fa-check"></i><b>D.4</b> Chapter 5 Solutions</a></li>
+<li class="chapter" data-level="D.5" data-path="D-appendixD.html"><a href="D-appendixD.html#chapter-6-solutions"><i class="fa fa-check"></i><b>D.5</b> Chapter 6 Solutions</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Statistical Inference via Data Science</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<html>
+<img src='https://moderndive.com/wide_format.png' alt="ModernDive">
+</html>
+<div id="sampling" class="section level1">
+<h1><span class="header-section-number">Chapter 9</span> Sampling Distributions</h1>
+<p>In Chapter <a href="8-populations.html#populations">8</a> we introduced inferential statistics by explaining that a sample can be treated as a random sample from some population and that estimates calculated in samples can be used to make inferences regarding parameter values in populations. In this chapter we focus on how these inferences can be made using the theory of <strong>repeated sampling</strong>.</p>
+<div id="needed-packages-5" class="section level3 unnumbered">
+<h3>Needed packages</h3>
+<p>Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). If needed, read Section <a href="2-getting-started.html#packages">2.3</a> for information on how to install and load R packages.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(moderndive)
+<span class="kw">library</span>(dslabs)</code></pre></div>
+<hr />
+</div>
+<div id="theory" class="section level2">
+<h2><span class="header-section-number">9.1</span> Theory of Repeated Samples</h2>
+<p>Imagine that you want to know the proportion of individuals at a football game that are cheering for the home team, so you take a random sample of <span class="math inline">\(n=100\)</span> people and find that <span class="math inline">\(88\)</span> of them are home team fans. From this sample you calculate <span class="math inline">\(\hat{\pi} = 88/100 = 0.88\)</span>, which is an <strong>estimate</strong> of the population proportion <span class="math inline">\(\pi\)</span>.</p>
+<p>Does this mean that the population proportion is <span class="math inline">\(\pi = 0.88\)</span>? The sample was selected randomly, so inferences are straightforward, right?</p>
+<p>It’s not this simple! Statisticians approach this problem by focusing not on the sample in hand, but instead on <em>possible other samples</em>. We will call this <strong>counter-factual thinking</strong>. This means that in order to understand the relationship between a sample estimate we are able to compute in our data and the population parameter we have to understand <em>how results might differ if instead of our sample, we had another possible (equally likely) sample</em>. That is,</p>
+<ul>
+<li>How would our estimate of the proportion of home fans at the football game change if instead of these <span class="math inline">\(n = 100\)</span> individuals we had randomly selected a <em>different</em> <span class="math inline">\(n = 100\)</span> individuals?</li>
+</ul>
+<p>While it is not possible to travel back in time for this particular question, we can instead generate a way to study this exact question by creating a <strong>simulation</strong>. To do so, we begin by creating a situation in which we know the outcome (e.g., what team each person is cheering for) for every individual or observation in a population. As a result, we know what the population parameter value is (e.g., <span class="math inline">\(\pi = 0.91\)</span>). Now we randomly select a sample of <span class="math inline">\(n = 100\)</span> observations and calculate the sample proportion (e.g. <span class="math inline">\(\hat{\pi}=0.88\)</span>). And then we <strong>repeat</strong> this sampling process – each time selecting a different possible sample of <span class="math inline">\(n = 100\)</span> – many, many, many times (e.g., <span class="math inline">\(10,000\)</span> different samples of <span class="math inline">\(n = 100\)</span>), each time calculating the sample proportion. At the end of this process, we now have many different estimates of the population proportion, each equally likely.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">76</span>)
+##simulate a population of 40000 fans that have a 91% chance of being a home fan using the rbinom function
+##for the variable home_fan, 1 = Yes and 0 = No
+football_fans &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">home_fan =</span> <span class="kw">rbinom</span>(<span class="dv">40000</span>, <span class="dv">1</span>, <span class="fl">0.91</span>))
+
+##take 10000 samples of 100 fans
+samples_football_fans &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(football_fans, <span class="dt">size =</span> <span class="dv">100</span>, <span class="dt">reps =</span> <span class="dv">10000</span>) 
+
+##compute the proportion of home fans for each of the 10,000 samples  
+home_fan_results &lt;-<span class="st"> </span>samples_football_fans <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">num_home_fans =</span> <span class="kw">sum</span>(home_fan),
+                                    <span class="dt">prop_home_fans =</span> num_home_fans <span class="op">/</span><span class="st"> </span><span class="dv">100</span>)</code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:fan-data">TABLE 9.1: </span>Proportion of home fans for 10 out of 10,000 samples of size 100
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+replicate
+</th>
+<th style="text-align:right;">
+num_home_fans
+</th>
+<th style="text-align:right;">
+prop_home_fans
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:right;">
+0.89
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+90
+</td>
+<td style="text-align:right;">
+0.90
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:right;">
+0.92
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+94
+</td>
+<td style="text-align:right;">
+0.94
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+90
+</td>
+<td style="text-align:right;">
+0.90
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+90
+</td>
+<td style="text-align:right;">
+0.90
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+88
+</td>
+<td style="text-align:right;">
+0.88
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+95
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+92
+</td>
+<td style="text-align:right;">
+0.92
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+90
+</td>
+<td style="text-align:right;">
+0.90
+</td>
+</tr>
+</tbody>
+</table>
+<p>Table <a href="9-sampling.html#tab:fan-data">9.1</a> shows the simulation results for the first 10 samples, and Figure <a href="9-sampling.html#fig:fan-data-2">9.1</a> shows a histogram of all 10,000 sample estimates. Later on in this chapter we will go through the code step-by-step, and you will learn how to conduct this type of simulation yourself.</p>
+<p>We do this simulation in order to understand how close any one sample’s estimate is to the true population proportion. For example, it may be that we are usually within <span class="math inline">\(\pm 2\%\)</span>? Or maybe <span class="math inline">\(\pm 5\%\)</span>? We can ask further questions, like: on average, is the sample proportion the same as the population proportion?</p>
+<div class="figure" style="text-align: center"><span id="fig:fan-data-2"></span>
+<img src="ismaykimkuyper_files/figure-html/fan-data-2-1.png" alt="Distribution of 10,000 proportions based on 10,000 samples of size 100" width="\textwidth" />
+<p class="caption">
+FIGURE 9.1: Distribution of 10,000 proportions based on 10,000 samples of size 100
+</p>
+</div>
+<pre><code>[1] 0.91</code></pre>
+<p>It is important to emphasize here that this process is <em>theoretical</em>. In real life, you do not know the values for all individuals or observations in a population. (If you did, why sample?) And in real life, you will not take repeated samples. Instead, you will have in front of you a <strong>single sample</strong> that you will need to use to make inferences to a population. What this simulation exercise provides is properties that can help you understand <em>how far off the sample estimate you have in hand might be for the population parameter you care about</em>.</p>
+</div>
+<div id="sampling-activity" class="section level2">
+<h2><span class="header-section-number">9.2</span> Sampling Activity</h2>
+<p>In the previous section, we provided an overview of repeated sampling and why the theoretical exercise is useful for understanding how to make inferences. This way of thinking, however, can be hard in the abstract. In this section, we provide a concrete example.</p>
+<div id="what-proportion-of-this-bowls-balls-are-red" class="section level3">
+<h3><span class="header-section-number">9.2.1</span> What proportion of this bowl’s balls are red?</h3>
+<p>Take a look at the bowl in Figure <a href="9-sampling.html#fig:sampling-exercise-1">9.2</a>. It has a certain number of red and a certain number of white balls all of equal size. Furthermore, it appears the bowl has been mixed beforehand as there does not seem to be any particular pattern to the spatial distribution of red and white balls.</p>
+<p>Let’s now ask ourselves, what proportion of this bowl’s balls are red?</p>
+<div class="figure" style="text-align: center"><span id="fig:sampling-exercise-1"></span>
+<img src="images/sampling_bowl_1.jpg" alt="A bowl with red and white balls." width="80%" />
+<p class="caption">
+FIGURE 9.2: A bowl with red and white balls.
+</p>
+</div>
+<p>One way to answer this question would be to perform an exhaustive count: remove each ball individually, count the number of red balls and the number of white balls, and divide the number of red balls by the total number of balls. However this would be a long and tedious process.</p>
+</div>
+<div id="using-the-shovel-once" class="section level3">
+<h3><span class="header-section-number">9.2.2</span> Using the shovel once</h3>
+<p>Instead of performing an exhaustive count, let’s insert a shovel into the bowl as seen in Figure <a href="9-sampling.html#fig:sampling-exercise-2">9.3</a>.</p>
+<div class="figure" style="text-align: center"><span id="fig:sampling-exercise-2"></span>
+<img src="images/sampling_bowl_2.jpg" alt="Inserting a shovel into the bowl." width="80%" />
+<p class="caption">
+FIGURE 9.3: Inserting a shovel into the bowl.
+</p>
+</div>
+<p>Using the shovel we remove a number of balls as seen in Figure <a href="9-sampling.html#fig:sampling-exercise-3">9.4</a>.</p>
+<div class="figure" style="text-align: center"><span id="fig:sampling-exercise-3"></span>
+<img src="images/sampling_bowl_3_cropped.jpg" alt="Fifty balls from the bowl." width="80%" />
+<p class="caption">
+FIGURE 9.4: Fifty balls from the bowl.
+</p>
+</div>
+<p>Observe that 17 of the balls are red and there are a total of 5 x 10 = 50 balls and thus 0.34 = 34% of the shovel’s balls are red. We can view the proportion of balls that are red <em>in this shovel</em> as a guess of the proportion of balls that are red <em>in the entire bowl</em>. While not as exact as doing an exhaustive count, our guess of 34% took much less time and energy to obtain.</p>
+<p>However, say, we started this activity over from the beginning. In other words, we replace the 50 balls back into the bowl and start over. Would we remove exactly 17 red balls again? In other words, would our guess at the proportion of the bowl’s balls that are red be exactly 34% again? Maybe?</p>
+<p>What if we repeated this exercise several times? Would I obtain exactly 17 red balls each time? In other words, would our guess at the proportion of the bowl’s balls that are red be exactly 34% every time? Surely not. Let’s actually do and observe the results with the help of 33 of our friends.</p>
+</div>
+<div id="student-shovels" class="section level3">
+<h3><span class="header-section-number">9.2.3</span> Using the shovel 33 times</h3>
+<p>Each of our 33 friends will do the following:</p>
+<ul>
+<li>use the shovel to remove 50 balls each,</li>
+<li>count the number of red balls,</li>
+<li>use this number to compute the proportion of the 50 balls they removed that are red,</li>
+<li>return the balls into the bowl, and</li>
+<li>mix the contents of the bowl a little to not let a previous group’s results influence the next group’s set of results.</li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:sampling-exercise-3b"></span>
+<img src="images/sampling/tactile_2_a.jpg" alt="Repeating sampling activity 33 times." width="20%" /><img src="images/sampling/tactile_2_b.jpg" alt="Repeating sampling activity 33 times." width="20%" /><img src="images/sampling/tactile_2_c.jpg" alt="Repeating sampling activity 33 times." width="20%" />
+<p class="caption">
+FIGURE 9.5: Repeating sampling activity 33 times.
+</p>
+</div>
+<p>However, before returning the balls into the bowl, they are going to mark the proportion of the 50 balls they removed that are red in a histogram as seen in Figure <a href="9-sampling.html#fig:sampling-exercise-4">9.6</a>.</p>
+<div class="figure" style="text-align: center"><span id="fig:sampling-exercise-4"></span>
+<img src="images/sampling/tactile_3_a.jpg" alt="Constructing a histogram of proportions." width="80%" />
+<p class="caption">
+FIGURE 9.6: Constructing a histogram of proportions.
+</p>
+</div>
+<p>Recall from Section <a href="3-viz.html#histograms">3.5</a> that histograms allow us to visualize the <em>distribution</em> of a numerical variable: where the values center and in particular how they vary. The resulting hand-drawn histogram can be seen in Figure <a href="9-sampling.html#fig:sampling-exercise-5">9.7</a>.</p>
+<div class="figure" style="text-align: center"><span id="fig:sampling-exercise-5"></span>
+<img src="images/sampling/tactile_3_c.jpg" alt="Hand-drawn histogram of 33 proportions." width="80%" />
+<p class="caption">
+FIGURE 9.7: Hand-drawn histogram of 33 proportions.
+</p>
+</div>
+<p>Observe the following about the histogram in Figure <a href="9-sampling.html#fig:sampling-exercise-5">9.7</a>:</p>
+<ul>
+<li>At the low end, one group removed 50 balls from the bowl with proportion between 0.20 = 20% and 0.25 = 25%</li>
+<li>At the high end, another group removed 50 balls from the bowl with proportion between 0.45 = 45% and 0.5 = 50% red.</li>
+<li>However the most frequently occurring proportions were between 0.30 = 30% and 0.35 = 35% red, right in the middle of the distribution.</li>
+<li>The shape of this distribution is somewhat bell-shaped.</li>
+</ul>
+<p>Let’s construct this same hand-drawn histogram in R using your data visualization skills that you honed in Chapter <a href="3-viz.html#viz">3</a>. We saved our 33 group of friends’ proportion red in a data frame <code>tactile_prop_red</code> which is included in the <code>moderndive</code> package you loaded earlier.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tactile_prop_red
+<span class="kw">View</span>(tactile_prop_red)</code></pre></div>
+<p>Let’s display only the first 10 out of 33 rows of <code>tactile_prop_red</code>’s contents in Table <a href="9-sampling.html#tab:tactilered">9.2</a>.</p>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:tactilered">TABLE 9.2: </span>First 10 out of 33 groups’ proportion of 50 balls that are red.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+group
+</th>
+<th style="text-align:right;">
+replicate
+</th>
+<th style="text-align:right;">
+red_balls
+</th>
+<th style="text-align:right;">
+prop_red
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Ilyas, Yohan
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Morgan, Terrance
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Martin, Thomas
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Clark, Frank
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Riddhi, Karina
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:right;">
+0.36
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Andrew, Tyler
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Julia
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Rachel, Lauren
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+0.22
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Daniel, Caroline
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+0.30
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Josh, Maeve
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+</tr>
+</tbody>
+</table>
+<p>Observe for each <code>group</code> we have their names, the number of <code>red_balls</code> they obtained, and the corresponding proportion out of 50 balls that were red named <code>prop_red</code>. Observe, we also have a variable <code>replicate</code> enumerating each of the 33 groups; we chose this name because each row can be viewed as one instance of a replicated activity: using the shovel to remove 50 balls and computing the proportion of those balls that are red.</p>
+<p>We visualize the distribution of these 33 proportions using a <code>geom_histogram()</code> with <code>binwidth = 0.05</code> in Figure <a href="9-sampling.html#fig:samplingdistribution-tactile">9.8</a>, which is appropriate since the variable <code>prop_red</code> is numerical. This computer-generated histogram matches our hand-drawn histogram from the earlier Figure <a href="9-sampling.html#fig:sampling-exercise-5">9.7</a>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(tactile_prop_red, <span class="kw">aes</span>(<span class="dt">x =</span> prop_red)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">boundary =</span> <span class="fl">0.4</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Proportion of 50 balls that were red&quot;</span>, 
+       <span class="dt">title =</span> <span class="st">&quot;Distribution of 33 proportions red&quot;</span>) </code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:samplingdistribution-tactile"></span>
+<img src="ismaykimkuyper_files/figure-html/samplingdistribution-tactile-1.png" alt="Distribution of 33 proportions based on 33 samples of size 50" width="\textwidth" />
+<p class="caption">
+FIGURE 9.8: Distribution of 33 proportions based on 33 samples of size 50
+</p>
+</div>
+<!-- Albert will make sure that the chalkboard histogram matches up 
+with the ggplot2 histogram so that `boundary` isn't needed. -->
+</div>
+<div id="what-are-we-doing-here" class="section level3">
+<h3><span class="header-section-number">9.2.4</span> What are we doing here?</h3>
+<p>What we just demonstrated in this activity is the statistical concept of <em>repeated sampling</em>. We would like to know the proportion of the bowl’s balls that are red, but because the bowl has a very large number of balls performing an exhaustive count of the number of red and white balls in the bowl would be very costly in terms of both time and energy. We therefore extract a sample of 50 balls using the shovel. Using this sample of 50 balls, we estimate the proportion of the bowl’s balls that are red using the proportion of the shovel’s balls that are red. This estimate in our earlier example was 17 red balls out of 50 balls = 34%. Moreover, because we mixed the balls before each use of the shovel, the samples were randomly selected. Because each sample was drawn at random, the samples were different from each other. Because the samples were different from each other, we obtained the different proportions red observed in Table <a href="9-sampling.html#tab:tactilered">9.2</a>. This is known as the concept of <em>sampling variation</em>.</p>
+<p>In Section <a href="9-sampling.html#sampling-simulation">9.3</a> we’ll mimic the hands-on sampling activity we just performed in a <em>computer simulation</em>; using a computer will allow us to repeat the above sampling activity much more than 33 times. Using a computer, not only will we be able to repeat the hands-on activity a very large number of times, but we will also be able to repeat it using different sized shovels.</p>
+<p>The purpose of these simulations is to develop an understanding of two key concepts relating to repeated sampling: understanding the concept of sampling variation and the role that sample size plays in this variation.</p>
+</div>
+</div>
+<div id="sampling-simulation" class="section level2">
+<h2><span class="header-section-number">9.3</span> Computer simulation</h2>
+<p>What we performed in Section <a href="9-sampling.html#sampling-activity">9.2</a> is a <em>simulation</em> of sampling. In other words, we were not in a real-life sampling scenario in order to answer a real-life question, but rather we were mimicking such a scenario with our bowl and shovel. The crowd-sourced Wikipedia definition of a simulation states: “A simulation is an approximate imitation of the operation of a process or system.”<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> One example of simulations in practice are a flight simulators: before pilots in training are allowed to fly an actual plane, they first practice on a computer that attempts to mimic the reality of flying an actual plane as best as possible.</p>
+<p>Now you might be thinking that simulations must necessarily take place on computer. However, this is not necessarily true. Take for example crash test dummies: before cars are made available to the market, automobile engineers test their safety by mimicking the reality for passengers of being in an automobile crash. To distinguish between these two simulation types, we’ll term a simulation performed in real-life as a “tactile” simulation done with your hands and to the touch as opposed to a “virtual” simulation performed on a computer.</p>
+<!-- Albert will check if images exist on shutterstock and link to those images if needed below. -->
+<table>
+<thead>
+<tr class="header">
+<th align="center">Example of a “tactile” simulation</th>
+<th align="center">Example of “virtual” simulation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><img src="images/crash-test-dummy.jpg" height="163" /></td>
+<td align="center"><img src="images/flight-simulator.jpg" height="163" /></td>
+</tr>
+</tbody>
+</table>
+<p>So while in Section <a href="9-sampling.html#sampling-activity">9.2</a> we performed a “tactile” simulation of sampling using an actual bowl and an actual shovel with our hands, in this section we’ll perform a “virtual” simulation using a “virtual” bowl and a “virtual” shovel with our computers.</p>
+<!--
+Supplement definition of simulation with idea of "replicates"?
+-->
+<div id="using-the-virtual-shovel-once" class="section level3">
+<h3><span class="header-section-number">9.3.1</span> Using the virtual shovel once</h3>
+<p>Let’s start by performing the virtual analogue of the tactile sampling simulation we performed in <a href="9-sampling.html#sampling-activity">9.2</a>. We first need a virtual analogue of the bowl seen in Figure <a href="9-sampling.html#fig:sampling-exercise-1">9.2</a>. To this end, we included a data frame <code>bowl</code> in the <code>moderndive</code> package whose rows correspond exactly with the contents of the actual bowl.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bowl</code></pre></div>
+<pre><code># A tibble: 2,400 x 2
+   ball_ID color
+     &lt;int&gt; &lt;chr&gt;
+ 1       1 white
+ 2       2 white
+ 3       3 white
+ 4       4 red  
+ 5       5 white
+ 6       6 white
+ 7       7 red  
+ 8       8 white
+ 9       9 red  
+10      10 white
+# … with 2,390 more rows</code></pre>
+<!-- Albert will make sure identification-vs-measurement matches the name of a Subsection. -->
+<p>Observe in the output that <code>bowl</code> has 2400 rows, telling us that the bowl contains 2400 equally-sized balls. The first variable <code>ball_ID</code> is used merely as an “identification variable” for this data frame as discussed in Subsection <a href="#identification-vs-measurement-variables"><strong>??</strong></a>; none of the balls in the actual bowl are marked with numbers. The second variable <code>color</code> indicates whether a particular virtual ball is red or white. View the contents of the bowl in RStudio’s data viewer and scroll through the contents to convince yourselves that <code>bowl</code> is indeed a virtual version of the actual bowl in Figure <a href="9-sampling.html#fig:sampling-exercise-1">9.2</a>.</p>
+<p>Now that we have a virtual analogue of our bowl, we now need a virtual analogue for the shovel seen in Figure <a href="9-sampling.html#fig:sampling-exercise-2">9.3</a>; we’ll use this virtual shovel to generate our virtual random samples of 50 balls. We’re going to use the <code>rep_sample_n()</code> function included in the <code>moderndive</code> package. This function allows us to take <code>rep</code>eated, or <code>rep</code>licated, <code>samples</code> of size <code>n</code>. Run the following and explore <code>virtual_shovel</code>’s contents in the RStudio viewer.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_shovel &lt;-<span class="st"> </span>bowl <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rep_sample_n</span>(<span class="dt">size =</span> <span class="dv">50</span>)
+<span class="kw">View</span>(virtual_shovel)</code></pre></div>
+<p>Let’s display only the first 10 out of 50 rows of <code>virtual_shovel</code>’s contents in Table <a href="9-sampling.html#tab:virtual-shovel">9.3</a>.</p>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:virtual-shovel">TABLE 9.3: </span>First 10 sampled balls of 50 in virtual sample
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+replicate
+</th>
+<th style="text-align:right;">
+ball_ID
+</th>
+<th style="text-align:right;">
+color
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1422
+</td>
+<td style="text-align:right;">
+white
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+828
+</td>
+<td style="text-align:right;">
+white
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+234
+</td>
+<td style="text-align:right;">
+red
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1038
+</td>
+<td style="text-align:right;">
+red
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+598
+</td>
+<td style="text-align:right;">
+white
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1254
+</td>
+<td style="text-align:right;">
+white
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1354
+</td>
+<td style="text-align:right;">
+red
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1430
+</td>
+<td style="text-align:right;">
+red
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+572
+</td>
+<td style="text-align:right;">
+white
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+338
+</td>
+<td style="text-align:right;">
+white
+</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>ball_ID</code> variable identifies which of the balls from <code>bowl</code> are included in our sample of 50 balls and <code>color</code> denotes its color. However what does the <code>replicate</code> variable indicate? In <code>virtual_shovel</code>’s case, <code>replicate</code> is equal to 1 for all 50 rows. This is telling us that these 50 rows correspond to a first repeated/replicated use of the shovel, in our case our first sample. We’ll see below when we “virtually” take 33 samples, <code>replicate</code> will take values between 1 and 33. Before we do this, let’s compute the proportion of balls in our virtual sample of size 50 that are red using the <code>dplyr</code> data wrangling verbs you learned in Chapter <a href="4-wrangling.html#wrangling">4</a>. Let’s breakdown the steps individually:</p>
+<p>First, for each of our 50 sampled balls, identify if it is red using a test for equality using <code>==</code>. For every row where <code>color == &quot;red&quot;</code>, the Boolean <code>TRUE</code> is returned and for every row where <code>color</code> is not equal to <code>&quot;red&quot;</code>, the Boolean <code>FALSE</code> is returned. Let’s create a new Boolean variable <code>is_red</code> using the <code>mutate()</code> function from Section <a href="4-wrangling.html#mutate">4.5</a>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_shovel <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">is_red =</span> (color <span class="op">==</span><span class="st"> &quot;red&quot;</span>))</code></pre></div>
+<pre><code># A tibble: 50 x 4
+# Groups:   replicate [1]
+   replicate ball_ID color is_red
+       &lt;int&gt;   &lt;int&gt; &lt;chr&gt; &lt;lgl&gt; 
+ 1         1    1422 white FALSE 
+ 2         1     828 white FALSE 
+ 3         1     234 red   TRUE  
+ 4         1    1038 red   TRUE  
+ 5         1     598 white FALSE 
+ 6         1    1254 white FALSE 
+ 7         1    1354 red   TRUE  
+ 8         1    1430 red   TRUE  
+ 9         1     572 white FALSE 
+10         1     338 white FALSE 
+# … with 40 more rows</code></pre>
+<p>Second, we compute the number of balls out of 50 that are red using the <code>summarize()</code> function. Recall from Section <a href="4-wrangling.html#summarize">4.3</a> that <code>summarize()</code> takes a data frame with many rows and returns a data frame with a single row containing summary statistics that you specify, like <code>mean()</code> and <code>median()</code>. In this case we use the <code>sum()</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_shovel <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">is_red =</span> (color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">num_red =</span> <span class="kw">sum</span>(is_red))  </code></pre></div>
+<pre><code># A tibble: 1 x 2
+  replicate num_red
+      &lt;int&gt;   &lt;int&gt;
+1         1      20</code></pre>
+<p>Why does this work? Because R treats <code>TRUE</code> like the number <code>1</code> and <code>FALSE</code> like the number <code>0</code>. So summing the number of <code>TRUE</code>’s and <code>FALSE</code>’s is equivalent to summing <code>1</code>’s and <code>0</code>’s, which in the end counts the number of balls where <code>color</code> is <code>red</code>. In our case, 17 of the 50 balls were red.</p>
+<p>Third and last, we compute the proportion of the 50 sampled balls that are red by dividing <code>num_red</code> by 50:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_shovel <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">is_red =</span> color <span class="op">==</span><span class="st"> &quot;red&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">num_red =</span> <span class="kw">sum</span>(is_red)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop_red =</span> num_red <span class="op">/</span><span class="st"> </span><span class="dv">50</span>)</code></pre></div>
+<pre><code># A tibble: 1 x 3
+  replicate num_red prop_red
+      &lt;int&gt;   &lt;int&gt;    &lt;dbl&gt;
+1         1      20      0.4</code></pre>
+<p>In other words, this “virtual” sample’s balls were 34% red. Let’s make the above code a little more compact and succinct by combining the first <code>mutate()</code> and the <code>summarize()</code> as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_shovel <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">num_red =</span> <span class="kw">sum</span>(color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop_red =</span> num_red <span class="op">/</span><span class="st"> </span><span class="dv">50</span>)</code></pre></div>
+<pre><code># A tibble: 1 x 3
+  replicate num_red prop_red
+      &lt;int&gt;   &lt;int&gt;    &lt;dbl&gt;
+1         1      20      0.4</code></pre>
+<p>Great! 34% of <code>virtual_shovel</code>’s 50 balls were red! So based on this particular sample, our guess at the proportion of the <code>bowl</code>’s balls that are red is 34%. But remember from our earlier tactile sampling activity that if we repeated this sampling, we would not necessarily obtain a sample of 50 balls with 34% of them being red again; there will likely be some variation. In fact in Table <a href="9-sampling.html#tab:virtual-shovel">9.3</a> we displayed 33 such proportions based on 33 tactile samples and then in Figure <a href="9-sampling.html#fig:sampling-exercise-5">9.7</a> we visualized the distribution of the 33 proportions in a histogram. Let’s now perform the virtual analogue of having 33 groups of students use the sampling shovel!</p>
+</div>
+<div id="using-the-virtual-shovel-33-times" class="section level3">
+<h3><span class="header-section-number">9.3.2</span> Using the virtual shovel 33 times</h3>
+<p>Recall that in our tactile sampling exercise in Section <a href="9-sampling.html#sampling-activity">9.2</a> we had 33 groups of students each use the shovel, yielding 33 samples of size 50 balls, which we then used to compute 33 proportions. In other words we repeated/replicated using the shovel 33 times. We can perform this repeated/replicated sampling virtually by once again using our virtual shovel function <code>rep_sample_n()</code>, but by adding the <code>reps = 33</code> argument, indicating we want to repeat the sampling 33 times. Be sure to scroll through the contents of <code>virtual_samples</code> in RStudio’s viewer.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_samples &lt;-<span class="st"> </span>bowl <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rep_sample_n</span>(<span class="dt">size =</span> <span class="dv">50</span>, <span class="dt">reps =</span> <span class="dv">33</span>)
+<span class="kw">View</span>(virtual_samples)</code></pre></div>
+<p>Observe that while the first 50 rows of <code>replicate</code> are equal to <code>1</code>, the next 50 rows of <code>replicate</code> are equal to <code>2</code>. This is telling us that the first 50 rows correspond to the first sample of 50 balls while the next 50 correspond to the second sample of 50 balls. This pattern continues for all <code>reps = 33</code> replicates and thus <code>virtual_samples</code> has 33 <span class="math inline">\(\times\)</span> 50 = 1650 rows.</p>
+<p>Let’s now take the data frame <code>virtual_samples</code> with 33 <span class="math inline">\(\times\)</span> 50 = 1650 rows corresponding to 33 samples of size 50 balls and compute the resulting 33 proportions red. We’ll use the same <code>dplyr</code> verbs as we did in the previous section, but this time with an additional <code>group_by()</code> of the <code>replicate</code> variable. Recall from Section <a href="4-wrangling.html#groupby">4.4</a> that by assigning the grouping variable “meta-data” before <code>summarizing()</code>, we’ll obtain 33 different proportions red:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_prop_red &lt;-<span class="st"> </span>virtual_samples <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">red =</span> <span class="kw">sum</span>(color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop_red =</span> red <span class="op">/</span><span class="st"> </span><span class="dv">50</span>)
+<span class="kw">View</span>(virtual_prop_red)</code></pre></div>
+<p>Let’s display only the first 10 out of 33 rows of <code>virtual_prop_red</code>’s contents in Table <a href="9-sampling.html#tab:tactilered">9.2</a>. As one would expect, there is variation in the resulting <code>prop_red</code> proportions red for the first 10 out 33 repeated/replicated samples.</p>
+<!-- Albert will remove `boundary` here on updates to chalkboard image. -->
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:virtualred">TABLE 9.4: </span>First 10 out of 33 virtual proportion of 50 balls that are red.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+replicate
+</th>
+<th style="text-align:right;">
+red
+</th>
+<th style="text-align:right;">
+prop_red
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+0.50
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:right;">
+0.44
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+0.30
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0.40
+</td>
+</tr>
+</tbody>
+</table>
+<p>Let’s visualize the distribution of these 33 proportions red based on 33 virtual samples using a histogram with <code>binwidth = 0.05</code> in Figure <a href="9-sampling.html#fig:samplingdistribution-virtual">9.9</a>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(virtual_prop_red, <span class="kw">aes</span>(<span class="dt">x =</span> prop_red)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">boundary =</span> <span class="fl">0.4</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Proportion of 50 balls that were red&quot;</span>, 
+       <span class="dt">title =</span> <span class="st">&quot;Distribution of 33 proportions red&quot;</span>) </code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:samplingdistribution-virtual"></span>
+<img src="ismaykimkuyper_files/figure-html/samplingdistribution-virtual-1.png" alt="Distribution of 33 proportions based on 33 samples of size 50" width="\textwidth" />
+<p class="caption">
+FIGURE 9.9: Distribution of 33 proportions based on 33 samples of size 50
+</p>
+</div>
+<p>Observe that occasionally we obtained proportions red that are less than 0.3 = 30%, while on the other hand we occasionally we obtained proportions that are greater than 0.45 = 45%. However, the most frequently occurring proportions red out of 50 balls were between 35% and 40% (for 11 out 33 samples). Why do we have these differences in proportions red? Because of sampling variation.</p>
+<p>Let’s now compare our virtual results with our tactile results from the previous section in Figure <a href="9-sampling.html#fig:tactile-vs-virtual">9.10</a>. We see that both histograms, in other words the distribution of the 33 proportions red, are <em>somewhat</em> similar in their center and spread although not identical. These slight differences are again due to random variation. Furthermore both distributions are <em>somewhat</em> bell-shaped.</p>
+<div class="figure" style="text-align: center"><span id="fig:tactile-vs-virtual"></span>
+<img src="ismaykimkuyper_files/figure-html/tactile-vs-virtual-1.png" alt="Comparing 33 virtual and 33 tactile proportions red." width="\textwidth" />
+<p class="caption">
+FIGURE 9.10: Comparing 33 virtual and 33 tactile proportions red.
+</p>
+</div>
+</div>
+<div id="using-the-virtual-shovel-1000-times" class="section level3">
+<h3><span class="header-section-number">9.3.3</span> Using the virtual shovel 1000 times</h3>
+<p>Now say we want study the variation in proportions red not based on 33 repeated/replicated samples, but rather a very large number of samples say 1000 samples. We have two choices at this point. We could have our students manually take 1000 samples of 50 balls and compute the corresponding 1000 proportion red out 50 balls. This would be cruel and unusual however, as this would be very tedious and time-consuming. This is where computers excel: automating long and repetitive tasks while performing them very quickly. Therefore at this point we will abandon tactile sampling in favor of only virtual sampling. Let’s once again use the <code>rep_sample_n()</code> function with sample <code>size</code> set to 50 once again, but this time with the number of replicates <code>reps = 1000</code>. Be sure to scroll through the contents of <code>virtual_samples</code> in RStudio’s viewer.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_samples &lt;-<span class="st"> </span>bowl <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rep_sample_n</span>(<span class="dt">size =</span> <span class="dv">50</span>, <span class="dt">reps =</span> <span class="dv">1000</span>)
+<span class="kw">View</span>(virtual_samples)</code></pre></div>
+<p>Observe that now <code>virtual_samples</code> has 1000 <span class="math inline">\(\times\)</span> 50 = 50,000 rows, instead of the 33 <span class="math inline">\(\times\)</span> 50 = 1650 rows from earlier. Using the same code as earlier, let’s take the data frame <code>virtual_samples</code> with 1000 <span class="math inline">\(\times\)</span> 50 = 50,000 and compute the resulting 1000 proportions red.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_prop_red &lt;-<span class="st"> </span>virtual_samples <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">red =</span> <span class="kw">sum</span>(color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop_red =</span> red <span class="op">/</span><span class="st"> </span><span class="dv">50</span>)
+<span class="kw">View</span>(virtual_prop_red)</code></pre></div>
+<p>Observe that we now have 1000 replicates of <code>prop_red</code>, the proportion of 50 balls that are red. Using the same code as earlier, let’s now visualize the distribution of these 1000 replicates of <code>prop_red</code> in a histogram in Figure <a href="9-sampling.html#fig:samplingdistribution-virtual-1000">9.11</a>.</p>
+<!-- Albert will remove `boundary` here on updates to chalkboard image. -->
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(virtual_prop_red, <span class="kw">aes</span>(<span class="dt">x =</span> prop_red)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">boundary =</span> <span class="fl">0.4</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Proportion of 50 balls that were red&quot;</span>, 
+       <span class="dt">title =</span> <span class="st">&quot;Distribution of 1000 proportions red&quot;</span>) </code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:samplingdistribution-virtual-1000"></span>
+<img src="ismaykimkuyper_files/figure-html/samplingdistribution-virtual-1000-1.png" alt="Distribution of 1000 proportions based on 33 samples of size 50" width="\textwidth" />
+<p class="caption">
+FIGURE 9.11: Distribution of 1000 proportions based on 33 samples of size 50
+</p>
+</div>
+<p>Once again, the most frequently occurring proportions red occur between 35% and 40%. Every now and then, we obtain proportions as low as between 20% and 25%, and others as high as between 55% and 60%. These are rare however. Furthermore observe that we now have a much more symmetric and smoother bell-shaped distribution.</p>
+<!-- Albert will add Learning Checks throughout this chapter after going over this chapter with his students. We should aim for 10-15 multiple choice or explanation type questions for the chapter as a whole with a concluding lab at the end. Documenting student questions can help to write these. -->
+</div>
+</div>
+<div id="properties_s" class="section level2">
+<h2><span class="header-section-number">9.4</span> Properties of Sampling Distributions</h2>
+<p>Once you have simulated many possible sample values of an estimator across repeated samples, an important question is how you can summarize these. The way you summarize a sampling distribution is the same way you’d summarize any other data:</p>
+<ol style="list-style-type: decimal">
+<li>How can you characterize its distribution?</li>
+<li>What is it’s average?</li>
+<li>What is its standard deviation?</li>
+</ol>
+<div id="dist" class="section level3">
+<h3><span class="header-section-number">9.4.1</span> Distribution</h3>
+<p>The sampling distribution of an estimator refers to the general shape of distribution of estimates across repeated samples. Recall from <strong>Chapter X</strong> that we can, in general, characterize a distribution in terms of its modality (unimodal, bimodal), symmetry/ skew (none, right, or left), and kurtosis (heavy tails or not).</p>
+<p>Most estimators follow one of a few common distributions. These include:</p>
+<ul>
+<li>Normal distribution: e.g., sample mean</li>
+<li>t-distribution: e.g., sample mean standardized by standard error</li>
+<li>Chi-squared distribution: e.g., sample variance</li>
+<li>F-distribution: e.g., ratio of sample variances in two groups</li>
+</ul>
+<p>Of these, the most common and important is the <strong>Normal Distribution</strong>. As a result of the Central Limit Theorem (CLT), when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in Figures <a href="9-sampling.html#fig:samplingdistribution-virtual-1000">9.11</a> and <a href="9-sampling.html#fig:fan-data-2">9.1</a> that the sampling distribution of <span class="math inline">\(\hat{\pi}\)</span> follows a Normal distribution. We will discuss the CLT further in Section <a href="9-sampling.html#clt">9.6</a></p>
+</div>
+<div id="bias" class="section level3">
+<h3><span class="header-section-number">9.4.2</span> Mean of the sampling distribution</h3>
+<p>If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value the sample statistic is estimating. Any difference in these two values is called <strong>bias</strong>:</p>
+<ul>
+<li>A sample statistic is a <strong>biased estimator</strong> of a population parameter if its average value is more or less than the population parameter it is meant to estimate.</li>
+<li>A sample statistic is an <strong>unbiased estimator</strong> of a population parameter if in the average sample it equals the population parameter value.</li>
+</ul>
+<p>Note that the mean of our simulated sampling distribution of proportion of red balls is 0.374, which is a good approximation to the true proportion of red balls in the bowl (<span class="math inline">\(\pi =\)</span> 0.375). This is because the sample proportion <span class="math inline">\(\hat{\pi} = \frac{\# \  of \ successes}{\# \ of \ trials}\)</span> is an unbiased estimator of the population proportion <span class="math inline">\(\pi\)</span>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#mean of sampling distribution of pi_hat</span>
+<span class="kw">mean</span>(virtual_prop_red<span class="op">$</span>prop_red) </code></pre></div>
+<pre><code>[1] 0.374</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#true population proportion</span>
+<span class="kw">sum</span>(bowl<span class="op">$</span>color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)<span class="op">/</span><span class="kw">dim</span>(bowl)[<span class="dv">1</span>] </code></pre></div>
+<pre><code>[1] 0.375</code></pre>
+<p>The difficulty with introducing this idea of bias in an introductory course is that most statistics used at this level (e.g., proportions, means, regression coefficients) are unbiased. Examples of biased statistics are more common in more complex models. One example, however, that illustrates this bias concept is that of sample variance estimator.</p>
+<p>Remember that we estimate the sample variance using <span class="math inline">\(s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}\)</span>, where <span class="math inline">\(n\)</span> is the number of observations. Until now, we have simply provided this to you as the estimator without reason. You might ask: why is this divided by <span class="math inline">\(n – 1\)</span> instead of simply by <span class="math inline">\(n\)</span>? To see why, examine the following case.</p>
+<p>The <code>gapminder</code> dataset in the <code>dslabs</code> package has life expectancy data on 185 countries in 2016. We will consider these 185 countries to be our population. The true variance of life expectancy in this population is <span class="math inline">\(\sigma^2 = 57.5\)</span>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;gapminder&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;dslabs&quot;</span>)
+gapminder_<span class="dv">2016</span> &lt;-<span class="st"> </span><span class="kw">filter</span>(gapminder, year <span class="op">==</span><span class="st"> </span><span class="dv">2016</span>)
+<span class="kw">var</span>(gapminder_<span class="dv">2016</span><span class="op">$</span>life_expectancy)</code></pre></div>
+<pre><code>[1] 57.5</code></pre>
+<p>Let’s draw 10,000 repeated samples of n = 5 countries from this population. The data for the first 2 samples (replicates) is shown in <a href="9-sampling.html#tab:s2-bias">9.5</a>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">76</span>)
+samples &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(gapminder_<span class="dv">2016</span>, <span class="dt">size =</span> <span class="dv">5</span>, <span class="dt">reps =</span> <span class="dv">10000</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(replicate, country, year, life_expectancy, continent, region)</code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:s2-bias">TABLE 9.5: </span>Life expectancy data for 2 out of 10,000 samples of size n = 5 countries
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+replicate
+</th>
+<th style="text-align:left;">
+country
+</th>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+life_expectancy
+</th>
+<th style="text-align:left;">
+continent
+</th>
+<th style="text-align:left;">
+region
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+Panama
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+78.5
+</td>
+<td style="text-align:left;">
+Americas
+</td>
+<td style="text-align:left;">
+Central America
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+Mauritania
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+69.8
+</td>
+<td style="text-align:left;">
+Africa
+</td>
+<td style="text-align:left;">
+Western Africa
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+Cambodia
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+69.7
+</td>
+<td style="text-align:left;">
+Asia
+</td>
+<td style="text-align:left;">
+South-Eastern Asia
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+Uzbekistan
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+72.1
+</td>
+<td style="text-align:left;">
+Asia
+</td>
+<td style="text-align:left;">
+Central Asia
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+Hong Kong, China
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+83.9
+</td>
+<td style="text-align:left;">
+Asia
+</td>
+<td style="text-align:left;">
+Eastern Asia
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+Belgium
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+80.5
+</td>
+<td style="text-align:left;">
+Europe
+</td>
+<td style="text-align:left;">
+Western Europe
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+Kazakhstan
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+70.2
+</td>
+<td style="text-align:left;">
+Asia
+</td>
+<td style="text-align:left;">
+Central Asia
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+Malta
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+82.2
+</td>
+<td style="text-align:left;">
+Europe
+</td>
+<td style="text-align:left;">
+Southern Europe
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+Singapore
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+82.1
+</td>
+<td style="text-align:left;">
+Asia
+</td>
+<td style="text-align:left;">
+South-Eastern Asia
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+Indonesia
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+71.4
+</td>
+<td style="text-align:left;">
+Asia
+</td>
+<td style="text-align:left;">
+South-Eastern Asia
+</td>
+</tr>
+</tbody>
+</table>
+<p>We can then calculate the variance for each sample (replicate) using two different formulas:</p>
+<ol style="list-style-type: decimal">
+<li><p><span class="math inline">\(s_n^2= \frac{\sum(x_i - \bar{x})^2}{n}\)</span></p></li>
+<li><p><span class="math inline">\(s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}\)</span></p></li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">variances &lt;-<span class="st"> </span>samples <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">s2_n =</span> <span class="kw">sum</span>((life_expectancy <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(life_expectancy))<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span><span class="dv">5</span>, <span class="co">#calculate the variance for each sample with n = 5 on the denominator</span>
+            <span class="dt">s2 =</span> <span class="kw">sum</span>((life_expectancy <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(life_expectancy))<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span><span class="dv">4</span>) <span class="co">#calculate the variance for each sample with n - 1 = 4 on the denominator</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">variances[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,] <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>,
+      <span class="dt">caption =</span> <span class="st">&quot;Sample variances of life expectancy for first 10 samples&quot;</span>, 
+      <span class="dt">booktabs =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">kable_styling</span>(<span class="dt">font_size =</span> <span class="kw">ifelse</span>(knitr<span class="op">:::</span><span class="kw">is_latex_output</span>(), <span class="dv">10</span>, <span class="dv">16</span>),
+                <span class="dt">latex_options =</span> <span class="kw">c</span>(<span class="st">&quot;HOLD_position&quot;</span>))</code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:s2-bias-2">TABLE 9.6: </span>Sample variances of life expectancy for first 10 samples
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+replicate
+</th>
+<th style="text-align:right;">
+s2_n
+</th>
+<th style="text-align:right;">
+s2
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+31.0
+</td>
+<td style="text-align:right;">
+38.7
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+28.5
+</td>
+<td style="text-align:right;">
+35.6
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+33.4
+</td>
+<td style="text-align:right;">
+41.7
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+72.1
+</td>
+<td style="text-align:right;">
+90.1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+13.9
+</td>
+<td style="text-align:right;">
+17.4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+39.0
+</td>
+<td style="text-align:right;">
+48.7
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+52.9
+</td>
+<td style="text-align:right;">
+66.1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+18.8
+</td>
+<td style="text-align:right;">
+23.6
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+40.3
+</td>
+<td style="text-align:right;">
+50.3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+19.1
+</td>
+<td style="text-align:right;">
+23.9
+</td>
+</tr>
+</tbody>
+</table>
+<p>Table <a href="9-sampling.html#tab:s2-bias-2">9.6</a> shows the results for the first 10 samples. If we look at the average of <span class="math inline">\(s_n^2\)</span> and <span class="math inline">\(s^2\)</span> across all 10,000 samples, we find that <span class="math inline">\(s_n^2\)</span> is biased; on average it is equal to 46.151. Remember that the true value of the variance in this population is <span class="math inline">\(\sigma^2 = 57.5\)</span>. By dividing by <span class="math inline">\(n – 1\)</span> instead of <span class="math inline">\(n\)</span>, however, the bias is removed; the average value of <span class="math inline">\(s^2\)</span> = 57.689. Therefore we use <span class="math inline">\(s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}\)</span> as our usual estimator for <span class="math inline">\(\sigma^2\)</span> because it is unbiased.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(variances<span class="op">$</span>s2_n)</code></pre></div>
+<pre><code>[1] 46.2</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(variances<span class="op">$</span>s2)</code></pre></div>
+<pre><code>[1] 57.7</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(variances) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> s2_n, <span class="dt">fill =</span> <span class="st">&quot;red&quot;</span>), <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> s2, <span class="dt">fill =</span> <span class="st">&quot;green&quot;</span>), <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="kw">mean</span>(variances<span class="op">$</span>s2_n), <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="kw">mean</span>(variances<span class="op">$</span>s2), <span class="dt">color =</span> <span class="st">&quot;green&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="kw">var</span>(gapminder_<span class="dv">2016</span><span class="op">$</span>life_expectancy), <span class="dt">linetype =</span> <span class="dv">2</span>) <span class="op">+</span>
+<span class="st">  </span><span class="co">#ggtitle(&quot;Sample variance estimates for 10,000 samples of size n = 5&quot;) +</span>
+<span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">name=</span><span class="st">&quot;Estimator&quot;</span>, <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&#39;red&#39;</span> =<span class="st"> &#39;red&#39;</span>,<span class="st">&#39;green&#39;</span> =<span class="st"> &#39;green&#39;</span>), 
+          <span class="dt">labels =</span> <span class="kw">expression</span>(s_n<span class="op">^</span><span class="dv">2</span>, s<span class="op">^</span><span class="dv">2</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Sample variance estimate&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Number of samples&quot;</span>)</code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:s2-bias-3"></span>
+<img src="ismaykimkuyper_files/figure-html/s2-bias-3-1.png" alt="Sample variance estimates for 10,000 samples of size n = 5" width="\textwidth" />
+<p class="caption">
+FIGURE 9.12: Sample variance estimates for 10,000 samples of size n = 5
+</p>
+</div>
+<p>Notice that the sampling distribution of the sample variance shown in Figure <a href="9-sampling.html#fig:s2-bias-3">9.12</a> is not Normal but rather is skewed right; in fact, it follows a chi-square distribution with <span class="math inline">\(n-1\)</span> degrees of freedom.</p>
+</div>
+<div id="precision" class="section level3">
+<h3><span class="header-section-number">9.4.3</span> Standard deviation of the sampling distribution</h3>
+<p>While a sample statistic might on average be equal to the population parameter, any one sample estimate might be far from the population parameter. An estimator is precise when the estimate is close to the population parameter in most samples.</p>
+<p>If we were analyzing a dataset in general, we might characterize this precision by a measure of the distribution’s spread, such as the standard deviation. We can do this with sampling distributions, too. The <strong>standard error</strong> of an estimator is the standard deviation of its sampling distribution:</p>
+<ul>
+<li>A <em>large</em> standard error means that an estimate (e.g., in the sample you have) may be far from the true population parameter. This means the estimate is <em>imprecise</em>.</li>
+<li>A <em>small</em> standard error means an estimate (e.g., in the sample you have) is likely to be close to the true population parameter. This means the estimate is <em>precise</em>.</li>
+</ul>
+<p>In statistics, we prefer estimators that are precise over those that are not. Again, this is tricky to understand at an introductory level, since nearly all sample statistics at this level can be proven to be the most precise estimators (out of all possible estimators) of the population parameters they are estimating. In more complex models, however, there are often competing estimators, and statisticians spend time studying the behavior of these estimators in comparison to one another.</p>
+</div>
+<div id="conf" class="section level3">
+<h3><span class="header-section-number">9.4.4</span> Confusing concepts</h3>
+<p>On one level, sampling distributions should seem straightforward and like simple extensions to methods you’ve learned already in this course. That is, just like sample data you have in front of you, we can summarize these sampling distributions in terms of their shape (distribution), mean (bias), and standard deviation (standard error). But this similarity to data analysis is exactly what makes this tricky.</p>
+<p>It is imperative to remember that <strong>sampling distributions are inherently theoretical constructs</strong>:</p>
+<ul>
+<li>Even if your estimator is unbiased, the number you see in your data (the value of the estimator) may <em>not</em> be the value of the parameter in the population.</li>
+<li>The <strong>standard deviation</strong> is a measure of spread in your data. The <strong>standard error</strong> is a property of an estimator across repeated samples.</li>
+<li>The <strong>distribution</strong> of a variable is something you can directly examine in your data. The <strong>sampling distribution</strong> is a property of an estimator across repeated samples.</li>
+</ul>
+<p>Remember, a sample statistic is a tool we use to estimate a parameter value in a population. The sampling distribution tells us how good this tool is: Does it work on average (bias)? Does it work most of the time (standard error)? Does it tend to over- or under- estimate (distribution)?</p>
+</div>
+</div>
+<div id="size" class="section level2">
+<h2><span class="header-section-number">9.5</span> Sample Size and Sampling Distributions</h2>
+<p>Let’s return to our football fan example. Let’s say you could estimate the proportions of attendees that are home fans by selecting a sample of <span class="math inline">\(n = 10\)</span> or by selecting a sample of <span class="math inline">\(n = 100\)</span>. Which would be better? Why? A larger sample will certainly cost more – is this worth it? What about a sample of <span class="math inline">\(n = 500\)</span>? Is that worth it?</p>
+<p>This question of appropriate sample size drives much of statistics. For example, you might be conducting an experiment in a psychology lab and ask: how many participants do I need to estimate this treatment effect precisely? Or you might be conducting a survey and need to know: how many respondents do I need in order to estimate the relationship between income and education well?</p>
+<p>These questions are inherently about how sample size affects sampling distributions, in general, and in particular, how sample size affects standard errors (precision).</p>
+<div id="eg1" class="section level3">
+<h3><span class="header-section-number">9.5.1</span> Sampling balls with different sized shovels</h3>
+<p>Returning to our ball example, now say instead of just one shovel, you had three choices of shovels to extract a sample of balls with.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">A shovel with 25 slots</th>
+<th align="center">A shovel with 50 slots</th>
+<th align="center">A shovel with 100 slots</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><img src="images/sampling/shovel_025.jpg" height="163" /></td>
+<td align="center"><img src="images/sampling/shovel_050.jpg" height="163" /></td>
+<td align="center"><img src="images/sampling/shovel_100.jpg" height="163" /></td>
+</tr>
+</tbody>
+</table>
+<p>If your goal was still to estimate the proportion of the bowl’s balls that were red, which shovel would you choose? In our experience, most people would choose the shovel with 100 slots since it has the biggest sample size and hence would yield the “best” guess of the proportion of the bowl’s 2400 balls that are red. Using our newly developed tools for virtual sampling simulations, let’s unpack the effect of having different sample sizes! In other words, let’s use <code>rep_sample_n()</code> with <code>size = 25</code>, <code>size = 50</code>, and <code>size = 100</code>, while keeping the number of repeated/replicated samples at 1000:</p>
+<ol style="list-style-type: decimal">
+<li>Virtually use the appropriate shovel to generate 1000 samples with <code>size</code> balls.</li>
+<li>Compute the resulting 1000 replicated of the proportion of the shovel’s balls that are red.</li>
+<li>Visualize the distribution of these 1000 proportion red using a histogram.</li>
+</ol>
+<p>Run each of the following code segments individually and then compare the three resulting histograms.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Segment 1: sample size = 25 ------------------------------</span>
+<span class="co"># 1.a) Virtually use shovel 1000 times</span>
+virtual_samples_<span class="dv">25</span> &lt;-<span class="st"> </span>bowl <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rep_sample_n</span>(<span class="dt">size =</span> <span class="dv">25</span>, <span class="dt">reps =</span> <span class="dv">1000</span>)
+<span class="co"># 1.b) Compute resulting 1000 replicates of proportion red</span>
+virtual_prop_red_<span class="dv">25</span> &lt;-<span class="st"> </span>virtual_samples_<span class="dv">25</span> <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">red =</span> <span class="kw">sum</span>(color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop_red =</span> red <span class="op">/</span><span class="st"> </span><span class="dv">25</span>)
+<span class="co"># 1.c) Plot distribution via a histogram</span>
+<span class="kw">ggplot</span>(virtual_prop_red_<span class="dv">25</span>, <span class="kw">aes</span>(<span class="dt">x =</span> prop_red)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">boundary =</span> <span class="fl">0.4</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Proportion of 25 balls that were red&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;25&quot;</span>) 
+<span class="co"># Segment 2: sample size = 50 ------------------------------</span>
+<span class="co"># 2.a) Virtually use shovel 1000 times</span>
+virtual_samples_<span class="dv">50</span> &lt;-<span class="st"> </span>bowl <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rep_sample_n</span>(<span class="dt">size =</span> <span class="dv">50</span>, <span class="dt">reps =</span> <span class="dv">1000</span>)
+<span class="co"># 2.b) Compute resulting 1000 replicates of proportion red</span>
+virtual_prop_red_<span class="dv">50</span> &lt;-<span class="st"> </span>virtual_samples_<span class="dv">50</span> <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">red =</span> <span class="kw">sum</span>(color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop_red =</span> red <span class="op">/</span><span class="st"> </span><span class="dv">50</span>)
+<span class="co"># 2.c) Plot distribution via a histogram</span>
+<span class="kw">ggplot</span>(virtual_prop_red_<span class="dv">50</span>, <span class="kw">aes</span>(<span class="dt">x =</span> prop_red)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">boundary =</span> <span class="fl">0.4</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Proportion of 50 balls that were red&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;50&quot;</span>)  
+<span class="co"># Segment 3: sample size = 100 ------------------------------</span>
+<span class="co"># 3.a) Virtually using shovel with 100 slots 1000 times</span>
+virtual_samples_<span class="dv">100</span> &lt;-<span class="st"> </span>bowl <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rep_sample_n</span>(<span class="dt">size =</span> <span class="dv">100</span>, <span class="dt">reps =</span> <span class="dv">1000</span>)
+<span class="co"># 3.b) Compute resulting 1000 replicates of proportion red</span>
+virtual_prop_red_<span class="dv">100</span> &lt;-<span class="st"> </span>virtual_samples_<span class="dv">100</span> <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">red =</span> <span class="kw">sum</span>(color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop_red =</span> red <span class="op">/</span><span class="st"> </span><span class="dv">100</span>)
+<span class="co"># 3.c) Plot distribution via a histogram</span>
+<span class="kw">ggplot</span>(virtual_prop_red_<span class="dv">100</span>, <span class="kw">aes</span>(<span class="dt">x =</span> prop_red)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">boundary =</span> <span class="fl">0.4</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Proportion of 100 balls that were red&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;100&quot;</span>) </code></pre></div>
+<p>For easy comparison, we present the three resulting histograms in a single row with matching x and y axes in Figure <a href="9-sampling.html#fig:comparing-sampling-distributions">9.13</a>. What do you observe?</p>
+<div class="figure" style="text-align: center"><span id="fig:comparing-sampling-distributions"></span>
+<img src="ismaykimkuyper_files/figure-html/comparing-sampling-distributions-1.png" alt="Comparing the distributions of proportion red for different sample sizes" width="\textwidth" />
+<p class="caption">
+FIGURE 9.13: Comparing the distributions of proportion red for different sample sizes
+</p>
+</div>
+<p>Observe that as the sample size increases, the spread of the 1000 replicates of the proportion red decreases. In other words, as the sample size increases, there are less differences due to sampling variation and the distribution centers more tightly around the same value. Eyeballing Figure <a href="9-sampling.html#fig:comparing-sampling-distributions">9.13</a>, things appear to center tightly around roughly 40%.</p>
+<p>We can be numerically explicit about the amount of spread in our 3 sets of 1000 values of <code>prop_red</code> by computing the standard deviation for each of the three sampling distributions. For all three sample sizes, let’s compute the standard deviation of the 1000 proportions red by running the following data wrangling code that uses the <code>sd()</code> summary function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># n = 25</span>
+virtual_prop_red_<span class="dv">25</span> <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">sd =</span> <span class="kw">sd</span>(prop_red))
+<span class="co"># n = 50</span>
+virtual_prop_red_<span class="dv">50</span> <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">sd =</span> <span class="kw">sd</span>(prop_red))
+<span class="co"># n = 100</span>
+virtual_prop_red_<span class="dv">100</span> <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">sd =</span> <span class="kw">sd</span>(prop_red))</code></pre></div>
+<p>Let’s compare these 3 measures of spread of the distributions in Table <a href="9-sampling.html#tab:comparing-n">9.7</a>.</p>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:comparing-n">TABLE 9.7: </span>Comparing standard deviations of proportions red for 3 different shovels.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Number of slots in shovel
+</th>
+<th style="text-align:right;">
+Standard deviation of proportions red
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+0.098
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+0.068
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+100
+</td>
+<td style="text-align:right;">
+0.047
+</td>
+</tr>
+</tbody>
+</table>
+<p>As we observed visually in Figure <a href="9-sampling.html#fig:comparing-sampling-distributions">9.13</a>, as the sample size increases our numerical measure of spread (i.e. our standard error) decreases; there is less variation in our proportions red. In other words, as the sample size increases, our guesses at the true proportion of the bowl’s balls that are red get more consistent and precise. Remember that because we are computing the standard deviation of an estimator <span class="math inline">\(\hat{\pi}\)</span>’s sampling distribution, we call this the <strong>standard error</strong> of <span class="math inline">\(\hat{\pi}\)</span>.</p>
+<p>Overall, this simulation shows that compared to a smaller sample size (e.g., <span class="math inline">\(n = 10\)</span>), with a larger sample size (e.g., <span class="math inline">\(n = 100\)</span>), the sampling distribution has less spread and a smaller standard error. This means that an estimate from a larger sample is likely closer to the population parameter value than one from a smaller sample.</p>
+</div>
+</div>
+<div id="clt" class="section level2">
+<h2><span class="header-section-number">9.6</span> Central Limit Theorem (CLT)</h2>
+<p>There is a very useful result in statistics called the <strong>Central Limit Theorem</strong> which tells us that the sampling distribution of the sample mean is well approximated by the normal distribution. While not all variables follow a normal distribution, many estimators have sampling distributions that are normal. We have already seen this to be true with the sample proportion.</p>
+<p>More formally, the CLT tells us that <span class="math display">\[\bar{x} \sim N(mean = \mu, SE = \frac{\sigma}{\sqrt{n}}),\]</span> where <span class="math inline">\(\mu\)</span> is the population mean of X, <span class="math inline">\(\sigma\)</span> is the population standard deviation of X, and <span class="math inline">\(n\)</span> is the sample size.</p>
+<div id="clt-conditions" class="section level3">
+<h3><span class="header-section-number">9.6.1</span> CLT conditions</h3>
+<p>Certain conditions must be met for the CLT to apply:</p>
+<p><strong>Independence</strong>: Sampled observations must be independent. This is difficult to verify, but is more likely if * random sampling / assignment is used, and * Sample size n &lt; 10% of the population</p>
+<p><strong>Sample size / skew</strong>: Either the population distribution is normal, or if the population distribution is skewed, the sample size is large. * the more skewed the population distribution, the larger sample size we need for the CLT to apply * for moderately skewed distributions n &gt; 30 is a widely used rule of thumb This is also difficult to verify for the population, but we can check it using the sample data, and assume that the sample mirrors the population.</p>
+</div>
+<div id="clt-example" class="section level3">
+<h3><span class="header-section-number">9.6.2</span> CLT example</h3>
+<p>Let’s return to the <code>gapminder</code> dataset, this time looking at the variable <code>infant_mortality</code>. We’ll first subset our data to only include the year 2015, and we’ll exclude the 7 countries that have missing data for <code>infant_mortality</code>. Figure <a href="9-sampling.html#fig:infant-mortality">9.14</a> shows the distribution of <code>infant_mortality</code>, which is skewed right.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;gapminder&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;dslabs&quot;</span>) 
+gapminder_<span class="dv">2015</span> &lt;-<span class="st"> </span><span class="kw">filter</span>(gapminder, year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>)
+infant_mortality_noNA &lt;-<span class="st"> </span><span class="kw">filter</span>(gapminder_<span class="dv">2015</span>, <span class="op">!</span><span class="kw">is.na</span>(infant_mortality))
+<span class="kw">ggplot</span>(infant_mortality_noNA) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> infant_mortality), <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>)  <span class="op">+</span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Infant mortality per 1,000 live births&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Number of countries&quot;</span>)</code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:infant-mortality"></span>
+<img src="ismaykimkuyper_files/figure-html/infant-mortality-1.png" alt="Infant mortality rates per 1,000 live births across 178 countries in 2015" width="\textwidth" />
+<p class="caption">
+FIGURE 9.14: Infant mortality rates per 1,000 live births across 178 countries in 2015
+</p>
+</div>
+<p>Let’s run 3 simulations where we take 10,000 samples of size <span class="math inline">\(n = 5\)</span>, <span class="math inline">\(n = 30\)</span> and <span class="math inline">\(n = 100\)</span> and plot the sampling distribution of the mean for each.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sample_<span class="dv">5</span> &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(infant_mortality_noNA, <span class="dt">size =</span> <span class="dv">5</span>, <span class="dt">reps =</span> <span class="dv">10000</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mean_infant_mortality =</span> <span class="kw">mean</span>(infant_mortality)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">n =</span> <span class="dv">5</span>)
+sample_<span class="dv">30</span> &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(infant_mortality_noNA, <span class="dt">size =</span> <span class="dv">30</span>, <span class="dt">reps =</span> <span class="dv">10000</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mean_infant_mortality =</span> <span class="kw">mean</span>(infant_mortality)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">n =</span> <span class="dv">30</span>)
+sample_<span class="dv">100</span> &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(infant_mortality_noNA, <span class="dt">size =</span> <span class="dv">100</span>, <span class="dt">reps =</span> <span class="dv">10000</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mean_infant_mortality =</span> <span class="kw">mean</span>(infant_mortality)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">n =</span> <span class="dv">100</span>)
+all_samples &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(sample_<span class="dv">5</span>, sample_<span class="dv">30</span>, sample_<span class="dv">100</span>)
+<span class="kw">ggplot</span>(all_samples) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> mean_infant_mortality), <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>n) <span class="op">+</span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Mean infant mortality&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Number of samples&quot;</span>)</code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:infant-mortality-2"></span>
+<img src="ismaykimkuyper_files/figure-html/infant-mortality-2-1.png" alt="Sampling distributions of the mean infant mortality for various sample sizes" width="\textwidth" />
+<p class="caption">
+FIGURE 9.15: Sampling distributions of the mean infant mortality for various sample sizes
+</p>
+</div>
+<p>Figure <a href="9-sampling.html#fig:infant-mortality-2">9.15</a> shows that for samples of size <span class="math inline">\(n = 5\)</span>, the sampling distribution is still skewed slightly right. However, with even a moderate sample size of <span class="math inline">\(n = 30\)</span>, the Central Limit Theorem kicks in, and we see that the sampling distribution of the mean (<span class="math inline">\(\bar{x}\)</span>) is normal, even though the underlying data was skewed. We again see that the standard error of the estimate decreases as the sample size increases.</p>
+<p>Overall, this simulation shows that not only might the precision of an estimate differ as a result of a larger sample size, but also the sampling distribution might be different for a smaller sample size (e.g., <span class="math inline">\(n = 5\)</span>) than for a larger sample size (e.g., <span class="math inline">\(n=100\)</span>).</p>
+
+</div>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p><a href="https://en.wikipedia.org/wiki/Simulation">Wikipedia entry for simulation</a><a href="9-sampling.html#fnref1">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="8-populations.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="10-hypothesis-testing.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/nulib/moderndive_book/edit/master/09-sampling-distributions.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

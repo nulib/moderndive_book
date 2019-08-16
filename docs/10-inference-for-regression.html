@@ -24,7 +24,7 @@
 <meta name="author" content="Chester Ismay, Albert Y. Kim, Arend M. Kuyper, Elizabeth Tipton, and Kaitlyn Fitzgerald" />
 
 
-<meta name="date" content="2019-08-14" />
+<meta name="date" content="2019-08-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -315,7 +315,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="8.5" data-path="8-sampling.html"><a href="8-sampling.html#size"><i class="fa fa-check"></i><b>8.5</b> Sample Size and Sampling Distributions</a><ul>
 <li class="chapter" data-level="8.5.1" data-path="8-sampling.html"><a href="8-sampling.html#eg1"><i class="fa fa-check"></i><b>8.5.1</b> Sampling balls with different sized shovels</a></li>
-<li class="chapter" data-level="8.5.2" data-path="8-sampling.html"><a href="8-sampling.html#clt"><i class="fa fa-check"></i><b>8.5.2</b> Central Limit Theorem</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="8-sampling.html"><a href="8-sampling.html#clt"><i class="fa fa-check"></i><b>8.6</b> Central Limit Theorem (CLT)</a><ul>
+<li class="chapter" data-level="8.6.1" data-path="8-sampling.html"><a href="8-sampling.html#clt-conditions"><i class="fa fa-check"></i><b>8.6.1</b> CLT conditions</a></li>
+<li class="chapter" data-level="8.6.2" data-path="8-sampling.html"><a href="8-sampling.html#clt-example"><i class="fa fa-check"></i><b>8.6.2</b> CLT example</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="9" data-path="9-hypothesis-testing.html"><a href="9-hypothesis-testing.html"><i class="fa fa-check"></i><b>9</b> Hypothesis Testing</a><ul>
@@ -570,7 +573,7 @@ Explanatory: bty_avg (numeric)
 <span class="st">  </span><span class="kw">calculate</span>(<span class="dt">stat =</span> <span class="st">&quot;slope&quot;</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">null_slope_distn <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">visualize</span>(<span class="dt">obs_stat =</span> slope_obs, <span class="dt">direction =</span> <span class="st">&quot;greater&quot;</span>)</code></pre></div>
-<p><img src="ismaykimkuyper_files/figure-html/unnamed-chunk-304-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ismaykimkuyper_files/figure-html/unnamed-chunk-307-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>In viewing the distribution above with shading to the right of our observed slope value of 0.067, we can see that we expect the p-value to be quite small. Let’s calculate it next using a similar syntax to what was done with <code>visualize()</code>.</p>
 </div>
 <div id="the-p-value-1" class="section level3">
@@ -609,7 +612,7 @@ Explanatory: bty_avg (numeric)
 <span class="st">  </span><span class="kw">generate</span>(<span class="dt">reps =</span> <span class="dv">10000</span>, <span class="dt">type =</span> <span class="st">&quot;bootstrap&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">calculate</span>(<span class="dt">stat =</span> <span class="st">&quot;slope&quot;</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bootstrap_slope_distn <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">visualize</span>()</code></pre></div>
-<p><img src="ismaykimkuyper_files/figure-html/unnamed-chunk-310-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p><img src="ismaykimkuyper_files/figure-html/unnamed-chunk-313-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>Next we can use the <code>get_ci()</code> function to determine the confidence interval. Let’s do this in two different ways obtaining 99% confidence intervals. Remember that these denote a range of plausible values for an unknown true population slope parameter regressing teaching score on beauty score.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">percentile_slope_ci &lt;-<span class="st"> </span>bootstrap_slope_distn <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">get_ci</span>(<span class="dt">level =</span> <span class="fl">0.99</span>, <span class="dt">type =</span> <span class="st">&quot;percentile&quot;</span>)
@@ -781,7 +784,7 @@ gendermale
 <span class="kw">get_regression_table</span>(score_model_<span class="dv">3</span>)</code></pre></div>
 <table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
-<span id="tab:unnamed-chunk-317">TABLE 10.2: </span>Model 2: Regression table with interaction effect included
+<span id="tab:unnamed-chunk-320">TABLE 10.2: </span>Model 2: Regression table with interaction effect included
 </caption>
 <thead>
 <tr>
@@ -1043,7 +1046,7 @@ FIGURE 10.7: Plot of residuals over continent
 <span class="st">  </span><span class="kw">arrange</span>(lifeExp)</code></pre></div>
 <table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
-<span id="tab:unnamed-chunk-326">TABLE 10.3: </span>Countries in Asia with shortest life expectancy
+<span id="tab:unnamed-chunk-329">TABLE 10.3: </span>Countries in Asia with shortest life expectancy
 </caption>
 <thead>
 <tr>
@@ -1184,8 +1187,8 @@ regression_points &lt;-<span class="st"> </span><span class="kw">get_regression_
 <span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Income (in $1000)&quot;</span>, 
        <span class="dt">y =</span> <span class="st">&quot;Residual&quot;</span>, 
        <span class="dt">title =</span> <span class="st">&quot;Residuals vs income&quot;</span>)</code></pre></div>
-<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-331"></span>
-<img src="ismaykimkuyper_files/figure-html/unnamed-chunk-331-1.png" alt="Residuals vs credit limit and income" width="\textwidth" />
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-334"></span>
+<img src="ismaykimkuyper_files/figure-html/unnamed-chunk-334-1.png" alt="Residuals vs credit limit and income" width="\textwidth" />
 <p class="caption">
 FIGURE 10.9: Residuals vs credit limit and income
 </p>

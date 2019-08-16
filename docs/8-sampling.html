@@ -24,7 +24,7 @@
 <meta name="author" content="Chester Ismay, Albert Y. Kim, Arend M. Kuyper, Elizabeth Tipton, and Kaitlyn Fitzgerald" />
 
 
-<meta name="date" content="2019-08-14" />
+<meta name="date" content="2019-08-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -315,7 +315,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="8.5" data-path="8-sampling.html"><a href="8-sampling.html#size"><i class="fa fa-check"></i><b>8.5</b> Sample Size and Sampling Distributions</a><ul>
 <li class="chapter" data-level="8.5.1" data-path="8-sampling.html"><a href="8-sampling.html#eg1"><i class="fa fa-check"></i><b>8.5.1</b> Sampling balls with different sized shovels</a></li>
-<li class="chapter" data-level="8.5.2" data-path="8-sampling.html"><a href="8-sampling.html#clt"><i class="fa fa-check"></i><b>8.5.2</b> Central Limit Theorem</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="8-sampling.html"><a href="8-sampling.html#clt"><i class="fa fa-check"></i><b>8.6</b> Central Limit Theorem (CLT)</a><ul>
+<li class="chapter" data-level="8.6.1" data-path="8-sampling.html"><a href="8-sampling.html#clt-conditions"><i class="fa fa-check"></i><b>8.6.1</b> CLT conditions</a></li>
+<li class="chapter" data-level="8.6.2" data-path="8-sampling.html"><a href="8-sampling.html#clt-example"><i class="fa fa-check"></i><b>8.6.2</b> CLT example</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="9" data-path="9-hypothesis-testing.html"><a href="9-hypothesis-testing.html"><i class="fa fa-check"></i><b>9</b> Hypothesis Testing</a><ul>
@@ -506,18 +509,33 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="theory" class="section level2">
 <h2><span class="header-section-number">8.1</span> Theory of Repeated Samples</h2>
-<p>Imagine that you want to know the proportion of individuals at a football game that are cheering for the home team, so you take a random sample of <span class="math inline">\(n=100\)</span> people and find that <span class="math inline">\(88\)</span> of them are fans of the home team. From this sample you calculate <span class="math inline">\(\hat{\pi} = 88/100 = 0.88\)</span>, which is an <em>estimate</em> of the population proportion <span class="math inline">\(\pi\)</span>.</p>
+<p>Imagine that you want to know the proportion of individuals at a football game that are cheering for the home team, so you take a random sample of <span class="math inline">\(n=100\)</span> people and find that <span class="math inline">\(88\)</span> of them are home team fans. From this sample you calculate <span class="math inline">\(\hat{\pi} = 88/100 = 0.88\)</span>, which is an <strong>estimate</strong> of the population proportion <span class="math inline">\(\pi\)</span>.</p>
 <p>Does this mean that the population proportion is <span class="math inline">\(\pi = 0.88\)</span>? The sample was selected randomly, so inferences are straightforward, right?</p>
 <p>It’s not this simple! Statisticians approach this problem by focusing not on the sample in hand, but instead on <em>possible other samples</em>. We will call this <strong>counter-factual thinking</strong>. This means that in order to understand the relationship between a sample estimate we are able to compute in our data and the population parameter we have to understand <em>how results might differ if instead of our sample, we had another possible (equally likely) sample</em>. That is,</p>
 <ul>
 <li>How would our estimate of the proportion of home fans at the football game change if instead of these <span class="math inline">\(n = 100\)</span> individuals we had randomly selected a <em>different</em> <span class="math inline">\(n = 100\)</span> individuals?</li>
 </ul>
-<p>While it is not possible to travel back in time for this particular question, we can instead generate a way to study this exact question by creating a <strong>simulation</strong>. To do so, we begin by creating a situation in which we know the outcome (e.g., what team each person is cheering for) for every individual or observation in a population. As a result, we know what the population parameter value is (e.g. <span class="math inline">\(\pi = 0.91\)</span>). Now we randomly select a sample of <span class="math inline">\(n = 100\)</span> observations and calculate the sample proportion (e.g. <span class="math inline">\(\hat{\pi}=0.88\)</span>). And now we <strong>repeat</strong> this sampling process – each time selecting a different possible sample of <span class="math inline">\(n = 100\)</span> – many, many, many times (e.g., <span class="math inline">\(10,000\)</span> different samples of <span class="math inline">\(n = 100\)</span>), each time calculating the sample proportion. At the end of this process, we now have many different estimates of the population proportion, each equally likely.</p>
-<table>
+<p>While it is not possible to travel back in time for this particular question, we can instead generate a way to study this exact question by creating a <strong>simulation</strong>. To do so, we begin by creating a situation in which we know the outcome (e.g., what team each person is cheering for) for every individual or observation in a population. As a result, we know what the population parameter value is (e.g., <span class="math inline">\(\pi = 0.91\)</span>). Now we randomly select a sample of <span class="math inline">\(n = 100\)</span> observations and calculate the sample proportion (e.g. <span class="math inline">\(\hat{\pi}=0.88\)</span>). And then we <strong>repeat</strong> this sampling process – each time selecting a different possible sample of <span class="math inline">\(n = 100\)</span> – many, many, many times (e.g., <span class="math inline">\(10,000\)</span> different samples of <span class="math inline">\(n = 100\)</span>), each time calculating the sample proportion. At the end of this process, we now have many different estimates of the population proportion, each equally likely.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">76</span>)
+##simulate a population of 40000 fans that have a 91% chance of being a home fan using the rbinom function
+##for the variable home_fan, 1 = Yes and 0 = No
+football_fans &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">home_fan =</span> <span class="kw">rbinom</span>(<span class="dv">40000</span>, <span class="dv">1</span>, <span class="fl">0.91</span>))
+
+##take 10000 samples of 100 fans
+samples_football_fans &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(football_fans, <span class="dt">size =</span> <span class="dv">100</span>, <span class="dt">reps =</span> <span class="dv">10000</span>) 
+
+##compute the proportion of home fans for each of the 10,000 samples  
+home_fan_results &lt;-<span class="st"> </span>samples_football_fans <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">num_home_fans =</span> <span class="kw">sum</span>(home_fan),
+                                    <span class="dt">prop_home_fans =</span> num_home_fans <span class="op">/</span><span class="st"> </span><span class="dv">100</span>)</code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:fan-data">TABLE 8.1: </span>Proportion of home fans for 10 out of 10,000 samples of size 100
+</caption>
 <thead>
 <tr>
 <th style="text-align:right;">
-sample
+replicate
 </th>
 <th style="text-align:right;">
 num_home_fans
@@ -533,10 +551,10 @@ prop_home_fans
 1
 </td>
 <td style="text-align:right;">
-90
+89
 </td>
 <td style="text-align:right;">
-0.90
+0.89
 </td>
 </tr>
 <tr>
@@ -544,10 +562,10 @@ prop_home_fans
 2
 </td>
 <td style="text-align:right;">
-89
+90
 </td>
 <td style="text-align:right;">
-0.89
+0.90
 </td>
 </tr>
 <tr>
@@ -566,10 +584,10 @@ prop_home_fans
 4
 </td>
 <td style="text-align:right;">
-95
+94
 </td>
 <td style="text-align:right;">
-0.95
+0.94
 </td>
 </tr>
 <tr>
@@ -577,10 +595,10 @@ prop_home_fans
 5
 </td>
 <td style="text-align:right;">
-91
+90
 </td>
 <td style="text-align:right;">
-0.91
+0.90
 </td>
 </tr>
 <tr>
@@ -588,10 +606,10 @@ prop_home_fans
 6
 </td>
 <td style="text-align:right;">
-89
+90
 </td>
 <td style="text-align:right;">
-0.89
+0.90
 </td>
 </tr>
 <tr>
@@ -599,10 +617,10 @@ prop_home_fans
 7
 </td>
 <td style="text-align:right;">
-93
+88
 </td>
 <td style="text-align:right;">
-0.93
+0.88
 </td>
 </tr>
 <tr>
@@ -610,10 +628,10 @@ prop_home_fans
 8
 </td>
 <td style="text-align:right;">
-89
+95
 </td>
 <td style="text-align:right;">
-0.89
+0.95
 </td>
 </tr>
 <tr>
@@ -640,15 +658,15 @@ prop_home_fans
 </tr>
 </tbody>
 </table>
-<p>Table @ref(tab:fan_data_table) shows the simulation results for the first 10 samples, and Figure @ref(fig:fan_data_2) shows a histogram of all 10,000 sample estimates. Later on in this chapter you will learn how to conduct this type of simulation yourself.</p>
+<p>Table <a href="8-sampling.html#tab:fan-data">8.1</a> shows the simulation results for the first 10 samples, and Figure <a href="8-sampling.html#fig:fan-data-2">8.1</a> shows a histogram of all 10,000 sample estimates. Later on in this chapter we will go through the code step-by-step, and you will learn how to conduct this type of simulation yourself.</p>
 <p>We do this simulation in order to understand how close any one sample’s estimate is to the true population proportion. For example, it may be that we are usually within <span class="math inline">\(\pm 2\%\)</span>? Or maybe <span class="math inline">\(\pm 5\%\)</span>? We can ask further questions, like: on average, is the sample proportion the same as the population proportion?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(fan_data<span class="op">$</span>prop_home_fans)</code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:fan-data-2"></span>
+<img src="ismaykimkuyper_files/figure-html/fan-data-2-1.png" alt="Distribution of 10,000 proportions based on 10,000 samples of size 100" width="\textwidth" />
+<p class="caption">
+FIGURE 8.1: Distribution of 10,000 proportions based on 10,000 samples of size 100
+</p>
+</div>
 <pre><code>[1] 0.91</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(fan_data) <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> prop_home_fans), <span class="dt">binwidth =</span> <span class="fl">0.01</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Number of samples&quot;</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Proportion of home fans (n = 100)&quot;</span>)</code></pre></div>
-<p><img src="ismaykimkuyper_files/figure-html/fan_data_2-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>It is important to emphasize here that this process is <em>theoretical</em>. In real life, you do not know the values for all individuals or observations in a population. (If you did, why sample?) And in real life, you will not take repeated samples. Instead, you will have in front of you a <strong>single sample</strong> that you will need to use to make inferences to a population. What this simulation exercise provides is properties that can help you understand <em>how far off the sample estimate you have in hand might be for the population parameter you care about</em>.</p>
 </div>
 <div id="sampling-activity" class="section level2">
@@ -656,30 +674,30 @@ prop_home_fans
 <p>In the previous section, we provided an overview of repeated sampling and why the theoretical exercise is useful for understanding how to make inferences. This way of thinking, however, can be hard in the abstract. In this section, we provide a concrete example.</p>
 <div id="what-proportion-of-this-bowls-balls-are-red" class="section level3">
 <h3><span class="header-section-number">8.2.1</span> What proportion of this bowl’s balls are red?</h3>
-<p>Take a look at the bowl in Figure <a href="8-sampling.html#fig:sampling-exercise-1">8.1</a>. It has a certain number of red and a certain number of white balls all of equal size. Furthermore, it appears the bowl has been mixed beforehand as there does not seem to be any particular pattern to the spatial distribution of red and white balls.</p>
+<p>Take a look at the bowl in Figure <a href="8-sampling.html#fig:sampling-exercise-1">8.2</a>. It has a certain number of red and a certain number of white balls all of equal size. Furthermore, it appears the bowl has been mixed beforehand as there does not seem to be any particular pattern to the spatial distribution of red and white balls.</p>
 <p>Let’s now ask ourselves, what proportion of this bowl’s balls are red?</p>
 <div class="figure" style="text-align: center"><span id="fig:sampling-exercise-1"></span>
 <img src="images/sampling_bowl_1.jpg" alt="A bowl with red and white balls." width="80%" />
 <p class="caption">
-FIGURE 8.1: A bowl with red and white balls.
+FIGURE 8.2: A bowl with red and white balls.
 </p>
 </div>
 <p>One way to answer this question would be to perform an exhaustive count: remove each ball individually, count the number of red balls and the number of white balls, and divide the number of red balls by the total number of balls. However this would be a long and tedious process.</p>
 </div>
 <div id="using-the-shovel-once" class="section level3">
 <h3><span class="header-section-number">8.2.2</span> Using the shovel once</h3>
-<p>Instead of performing an exhaustive count, let’s insert a shovel into the bowl as seen in Figure <a href="8-sampling.html#fig:sampling-exercise-2">8.2</a>.</p>
+<p>Instead of performing an exhaustive count, let’s insert a shovel into the bowl as seen in Figure <a href="8-sampling.html#fig:sampling-exercise-2">8.3</a>.</p>
 <div class="figure" style="text-align: center"><span id="fig:sampling-exercise-2"></span>
 <img src="images/sampling_bowl_2.jpg" alt="Inserting a shovel into the bowl." width="80%" />
 <p class="caption">
-FIGURE 8.2: Inserting a shovel into the bowl.
+FIGURE 8.3: Inserting a shovel into the bowl.
 </p>
 </div>
-<p>Using the shovel we remove a number of balls as seen in Figure <a href="8-sampling.html#fig:sampling-exercise-3">8.3</a>.</p>
+<p>Using the shovel we remove a number of balls as seen in Figure <a href="8-sampling.html#fig:sampling-exercise-3">8.4</a>.</p>
 <div class="figure" style="text-align: center"><span id="fig:sampling-exercise-3"></span>
 <img src="images/sampling_bowl_3_cropped.jpg" alt="Fifty balls from the bowl." width="80%" />
 <p class="caption">
-FIGURE 8.3: Fifty balls from the bowl.
+FIGURE 8.4: Fifty balls from the bowl.
 </p>
 </div>
 <p>Observe that 17 of the balls are red and there are a total of 5 x 10 = 50 balls and thus 0.34 = 34% of the shovel’s balls are red. We can view the proportion of balls that are red <em>in this shovel</em> as a guess of the proportion of balls that are red <em>in the entire bowl</em>. While not as exact as doing an exhaustive count, our guess of 34% took much less time and energy to obtain.</p>
@@ -699,24 +717,24 @@ FIGURE 8.3: Fifty balls from the bowl.
 <div class="figure" style="text-align: center"><span id="fig:sampling-exercise-3b"></span>
 <img src="images/sampling/tactile_2_a.jpg" alt="Repeating sampling activity 33 times." width="20%" /><img src="images/sampling/tactile_2_b.jpg" alt="Repeating sampling activity 33 times." width="20%" /><img src="images/sampling/tactile_2_c.jpg" alt="Repeating sampling activity 33 times." width="20%" />
 <p class="caption">
-FIGURE 8.4: Repeating sampling activity 33 times.
+FIGURE 8.5: Repeating sampling activity 33 times.
 </p>
 </div>
-<p>However, before returning the balls into the bowl, they are going to mark the proportion of the 50 balls they removed that are red in a histogram as seen in Figure <a href="8-sampling.html#fig:sampling-exercise-4">8.5</a>.</p>
+<p>However, before returning the balls into the bowl, they are going to mark the proportion of the 50 balls they removed that are red in a histogram as seen in Figure <a href="8-sampling.html#fig:sampling-exercise-4">8.6</a>.</p>
 <div class="figure" style="text-align: center"><span id="fig:sampling-exercise-4"></span>
 <img src="images/sampling/tactile_3_a.jpg" alt="Constructing a histogram of proportions." width="80%" />
 <p class="caption">
-FIGURE 8.5: Constructing a histogram of proportions.
+FIGURE 8.6: Constructing a histogram of proportions.
 </p>
 </div>
-<p>Recall from Section <a href="3-viz.html#histograms">3.5</a> that histograms allow us to visualize the <em>distribution</em> of a numerical variable: where the values center and in particular how they vary. The resulting hand-drawn histogram can be seen in Figure <a href="8-sampling.html#fig:sampling-exercise-5">8.6</a>.</p>
+<p>Recall from Section <a href="3-viz.html#histograms">3.5</a> that histograms allow us to visualize the <em>distribution</em> of a numerical variable: where the values center and in particular how they vary. The resulting hand-drawn histogram can be seen in Figure <a href="8-sampling.html#fig:sampling-exercise-5">8.7</a>.</p>
 <div class="figure" style="text-align: center"><span id="fig:sampling-exercise-5"></span>
 <img src="images/sampling/tactile_3_c.jpg" alt="Hand-drawn histogram of 33 proportions." width="80%" />
 <p class="caption">
-FIGURE 8.6: Hand-drawn histogram of 33 proportions.
+FIGURE 8.7: Hand-drawn histogram of 33 proportions.
 </p>
 </div>
-<p>Observe the following about the histogram in Figure <a href="8-sampling.html#fig:sampling-exercise-5">8.6</a>:</p>
+<p>Observe the following about the histogram in Figure <a href="8-sampling.html#fig:sampling-exercise-5">8.7</a>:</p>
 <ul>
 <li>At the low end, one group removed 50 balls from the bowl with proportion between 0.20 = 20% and 0.25 = 25%</li>
 <li>At the high end, another group removed 50 balls from the bowl with proportion between 0.45 = 45% and 0.5 = 50% red.</li>
@@ -726,10 +744,10 @@ FIGURE 8.6: Hand-drawn histogram of 33 proportions.
 <p>Let’s construct this same hand-drawn histogram in R using your data visualization skills that you honed in Chapter <a href="3-viz.html#viz">3</a>. We saved our 33 group of friends’ proportion red in a data frame <code>tactile_prop_red</code> which is included in the <code>moderndive</code> package you loaded earlier.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tactile_prop_red
 <span class="kw">View</span>(tactile_prop_red)</code></pre></div>
-<p>Let’s display only the first 10 out of 33 rows of <code>tactile_prop_red</code>’s contents in Table <a href="8-sampling.html#tab:tactilered">8.1</a>.</p>
+<p>Let’s display only the first 10 out of 33 rows of <code>tactile_prop_red</code>’s contents in Table <a href="8-sampling.html#tab:tactilered">8.2</a>.</p>
 <table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
-<span id="tab:tactilered">TABLE 8.1: </span>First 10 out of 33 groups’ proportion of 50 balls that are red.
+<span id="tab:tactilered">TABLE 8.2: </span>First 10 out of 33 groups’ proportion of 50 balls that are red.
 </caption>
 <thead>
 <tr>
@@ -891,7 +909,7 @@ Josh, Maeve
 </tbody>
 </table>
 <p>Observe for each <code>group</code> we have their names, the number of <code>red_balls</code> they obtained, and the corresponding proportion out of 50 balls that were red named <code>prop_red</code>. Observe, we also have a variable <code>replicate</code> enumerating each of the 33 groups; we chose this name because each row can be viewed as one instance of a replicated activity: using the shovel to remove 50 balls and computing the proportion of those balls that are red.</p>
-<p>We visualize the distribution of these 33 proportions using a <code>geom_histogram()</code> with <code>binwidth = 0.05</code> in Figure <a href="8-sampling.html#fig:samplingdistribution-tactile">8.7</a>, which is appropriate since the variable <code>prop_red</code> is numerical. This computer-generated histogram matches our hand-drawn histogram from the earlier Figure <a href="8-sampling.html#fig:sampling-exercise-5">8.6</a>.</p>
+<p>We visualize the distribution of these 33 proportions using a <code>geom_histogram()</code> with <code>binwidth = 0.05</code> in Figure <a href="8-sampling.html#fig:samplingdistribution-tactile">8.8</a>, which is appropriate since the variable <code>prop_red</code> is numerical. This computer-generated histogram matches our hand-drawn histogram from the earlier Figure <a href="8-sampling.html#fig:sampling-exercise-5">8.7</a>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(tactile_prop_red, <span class="kw">aes</span>(<span class="dt">x =</span> prop_red)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">boundary =</span> <span class="fl">0.4</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Proportion of 50 balls that were red&quot;</span>, 
@@ -899,7 +917,7 @@ Josh, Maeve
 <div class="figure" style="text-align: center"><span id="fig:samplingdistribution-tactile"></span>
 <img src="ismaykimkuyper_files/figure-html/samplingdistribution-tactile-1.png" alt="Distribution of 33 proportions based on 33 samples of size 50" width="\textwidth" />
 <p class="caption">
-FIGURE 8.7: Distribution of 33 proportions based on 33 samples of size 50
+FIGURE 8.8: Distribution of 33 proportions based on 33 samples of size 50
 </p>
 </div>
 <!-- Albert will make sure that the chalkboard histogram matches up 
@@ -907,7 +925,7 @@ with the ggplot2 histogram so that `boundary` isn't needed. -->
 </div>
 <div id="what-are-we-doing-here" class="section level3">
 <h3><span class="header-section-number">8.2.4</span> What are we doing here?</h3>
-<p>What we just demonstrated in this activity is the statistical concept of <em>repeated sampling</em>. We would like to know the proportion of the bowl’s balls that are red, but because the bowl has a very large number of balls performing an exhaustive count of the number of red and white balls in the bowl would be very costly in terms of both time and energy. We therefore extract a sample of 50 balls using the shovel. Using this sample of 50 balls, we estimate the proportion of the bowl’s balls that are red using the proportion of the shovel’s balls that are red. This estimate in our earlier example was 17 red balls out of 50 balls = 34%. Moreover, because we mixed the balls before each use of the shovel, the samples were randomly selected. Because each sample was drawn at random, the samples were different from each other. Because the samples were different from each other, we obtained the different proportions red observed in Table <a href="8-sampling.html#tab:tactilered">8.1</a>. This is known as the concept of <em>sampling variation</em>.</p>
+<p>What we just demonstrated in this activity is the statistical concept of <em>repeated sampling</em>. We would like to know the proportion of the bowl’s balls that are red, but because the bowl has a very large number of balls performing an exhaustive count of the number of red and white balls in the bowl would be very costly in terms of both time and energy. We therefore extract a sample of 50 balls using the shovel. Using this sample of 50 balls, we estimate the proportion of the bowl’s balls that are red using the proportion of the shovel’s balls that are red. This estimate in our earlier example was 17 red balls out of 50 balls = 34%. Moreover, because we mixed the balls before each use of the shovel, the samples were randomly selected. Because each sample was drawn at random, the samples were different from each other. Because the samples were different from each other, we obtained the different proportions red observed in Table <a href="8-sampling.html#tab:tactilered">8.2</a>. This is known as the concept of <em>sampling variation</em>.</p>
 <p>In Section <a href="8-sampling.html#sampling-simulation">8.3</a> we’ll mimic the hands-on sampling activity we just performed in a <em>computer simulation</em>; using a computer will allow us to repeat the above sampling activity much more than 33 times. Using a computer, not only will we be able to repeat the hands-on activity a very large number of times, but we will also be able to repeat it using different sized shovels.</p>
 <p>The purpose of these simulations is to develop an understanding of two key concepts relating to repeated sampling: understanding the concept of sampling variation and the role that sample size plays in this variation.</p>
 </div>
@@ -937,7 +955,7 @@ Supplement definition of simulation with idea of "replicates"?
 -->
 <div id="using-the-virtual-shovel-once" class="section level3">
 <h3><span class="header-section-number">8.3.1</span> Using the virtual shovel once</h3>
-<p>Let’s start by performing the virtual analogue of the tactile sampling simulation we performed in <a href="8-sampling.html#sampling-activity">8.2</a>. We first need a virtual analogue of the bowl seen in Figure <a href="8-sampling.html#fig:sampling-exercise-1">8.1</a>. To this end, we included a data frame <code>bowl</code> in the <code>moderndive</code> package whose rows correspond exactly with the contents of the actual bowl.</p>
+<p>Let’s start by performing the virtual analogue of the tactile sampling simulation we performed in <a href="8-sampling.html#sampling-activity">8.2</a>. We first need a virtual analogue of the bowl seen in Figure <a href="8-sampling.html#fig:sampling-exercise-1">8.2</a>. To this end, we included a data frame <code>bowl</code> in the <code>moderndive</code> package whose rows correspond exactly with the contents of the actual bowl.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bowl</code></pre></div>
 <pre><code># A tibble: 2,400 x 2
    ball_ID color
@@ -954,15 +972,15 @@ Supplement definition of simulation with idea of "replicates"?
 10      10 white
 # … with 2,390 more rows</code></pre>
 <!-- Albert will make sure identification-vs-measurement matches the name of a Subsection. -->
-<p>Observe in the output that <code>bowl</code> has 2400 rows, telling us that the bowl contains 2400 equally-sized balls. The first variable <code>ball_ID</code> is used merely as an “identification variable” for this data frame as discussed in Subsection <a href="#identification-vs-measurement-variables"><strong>??</strong></a>; none of the balls in the actual bowl are marked with numbers. The second variable <code>color</code> indicates whether a particular virtual ball is red or white. View the contents of the bowl in RStudio’s data viewer and scroll through the contents to convince yourselves that <code>bowl</code> is indeed a virtual version of the actual bowl in Figure <a href="8-sampling.html#fig:sampling-exercise-1">8.1</a>.</p>
-<p>Now that we have a virtual analogue of our bowl, we now need a virtual analogue for the shovel seen in Figure <a href="8-sampling.html#fig:sampling-exercise-2">8.2</a>; we’ll use this virtual shovel to generate our virtual random samples of 50 balls. We’re going to use the <code>rep_sample_n()</code> function included in the <code>moderndive</code> package. This function allows us to take <code>rep</code>eated, or <code>rep</code>licated, <code>samples</code> of size <code>n</code>. Run the following and explore <code>virtual_shovel</code>’s contents in the RStudio viewer.</p>
+<p>Observe in the output that <code>bowl</code> has 2400 rows, telling us that the bowl contains 2400 equally-sized balls. The first variable <code>ball_ID</code> is used merely as an “identification variable” for this data frame as discussed in Subsection <a href="#identification-vs-measurement-variables"><strong>??</strong></a>; none of the balls in the actual bowl are marked with numbers. The second variable <code>color</code> indicates whether a particular virtual ball is red or white. View the contents of the bowl in RStudio’s data viewer and scroll through the contents to convince yourselves that <code>bowl</code> is indeed a virtual version of the actual bowl in Figure <a href="8-sampling.html#fig:sampling-exercise-1">8.2</a>.</p>
+<p>Now that we have a virtual analogue of our bowl, we now need a virtual analogue for the shovel seen in Figure <a href="8-sampling.html#fig:sampling-exercise-2">8.3</a>; we’ll use this virtual shovel to generate our virtual random samples of 50 balls. We’re going to use the <code>rep_sample_n()</code> function included in the <code>moderndive</code> package. This function allows us to take <code>rep</code>eated, or <code>rep</code>licated, <code>samples</code> of size <code>n</code>. Run the following and explore <code>virtual_shovel</code>’s contents in the RStudio viewer.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_shovel &lt;-<span class="st"> </span>bowl <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">rep_sample_n</span>(<span class="dt">size =</span> <span class="dv">50</span>)
 <span class="kw">View</span>(virtual_shovel)</code></pre></div>
-<p>Let’s display only the first 10 out of 50 rows of <code>virtual_shovel</code>’s contents in Table <a href="8-sampling.html#tab:virtual-shovel">8.2</a>.</p>
+<p>Let’s display only the first 10 out of 50 rows of <code>virtual_shovel</code>’s contents in Table <a href="8-sampling.html#tab:virtual-shovel">8.3</a>.</p>
 <table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
-<span id="tab:virtual-shovel">TABLE 8.2: </span>First 10 sampled balls of 50 in virtual sample
+<span id="tab:virtual-shovel">TABLE 8.3: </span>First 10 sampled balls of 50 in virtual sample
 </caption>
 <thead>
 <tr>
@@ -983,7 +1001,29 @@ color
 1
 </td>
 <td style="text-align:right;">
-2005
+1422
+</td>
+<td style="text-align:right;">
+white
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+828
+</td>
+<td style="text-align:right;">
+white
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+234
 </td>
 <td style="text-align:right;">
 red
@@ -994,7 +1034,7 @@ red
 1
 </td>
 <td style="text-align:right;">
-993
+1038
 </td>
 <td style="text-align:right;">
 red
@@ -1005,7 +1045,29 @@ red
 1
 </td>
 <td style="text-align:right;">
-1662
+598
+</td>
+<td style="text-align:right;">
+white
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1254
+</td>
+<td style="text-align:right;">
+white
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1354
 </td>
 <td style="text-align:right;">
 red
@@ -1016,51 +1078,7 @@ red
 1
 </td>
 <td style="text-align:right;">
-2343
-</td>
-<td style="text-align:right;">
-white
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1566
-</td>
-<td style="text-align:right;">
-white
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-767
-</td>
-<td style="text-align:right;">
-white
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-603
-</td>
-<td style="text-align:right;">
-white
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1267
+1430
 </td>
 <td style="text-align:right;">
 red
@@ -1071,7 +1089,7 @@ red
 1
 </td>
 <td style="text-align:right;">
-2353
+572
 </td>
 <td style="text-align:right;">
 white
@@ -1082,7 +1100,7 @@ white
 1
 </td>
 <td style="text-align:right;">
-1192
+338
 </td>
 <td style="text-align:right;">
 white
@@ -1098,16 +1116,16 @@ white
 # Groups:   replicate [1]
    replicate ball_ID color is_red
        &lt;int&gt;   &lt;int&gt; &lt;chr&gt; &lt;lgl&gt; 
- 1         1    2005 red   TRUE  
- 2         1     993 red   TRUE  
- 3         1    1662 red   TRUE  
- 4         1    2343 white FALSE 
- 5         1    1566 white FALSE 
- 6         1     767 white FALSE 
- 7         1     603 white FALSE 
- 8         1    1267 red   TRUE  
- 9         1    2353 white FALSE 
-10         1    1192 white FALSE 
+ 1         1    1422 white FALSE 
+ 2         1     828 white FALSE 
+ 3         1     234 red   TRUE  
+ 4         1    1038 red   TRUE  
+ 5         1     598 white FALSE 
+ 6         1    1254 white FALSE 
+ 7         1    1354 red   TRUE  
+ 8         1    1430 red   TRUE  
+ 9         1     572 white FALSE 
+10         1     338 white FALSE 
 # … with 40 more rows</code></pre>
 <p>Second, we compute the number of balls out of 50 that are red using the <code>summarize()</code> function. Recall from Section <a href="4-wrangling.html#summarize">4.3</a> that <code>summarize()</code> takes a data frame with many rows and returns a data frame with a single row containing summary statistics that you specify, like <code>mean()</code> and <code>median()</code>. In this case we use the <code>sum()</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_shovel <span class="op">%&gt;%</span><span class="st"> </span>
@@ -1116,7 +1134,7 @@ white
 <pre><code># A tibble: 1 x 2
   replicate num_red
       &lt;int&gt;   &lt;int&gt;
-1         1      22</code></pre>
+1         1      20</code></pre>
 <p>Why does this work? Because R treats <code>TRUE</code> like the number <code>1</code> and <code>FALSE</code> like the number <code>0</code>. So summing the number of <code>TRUE</code>’s and <code>FALSE</code>’s is equivalent to summing <code>1</code>’s and <code>0</code>’s, which in the end counts the number of balls where <code>color</code> is <code>red</code>. In our case, 17 of the 50 balls were red.</p>
 <p>Third and last, we compute the proportion of the 50 sampled balls that are red by dividing <code>num_red</code> by 50:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_shovel <span class="op">%&gt;%</span><span class="st"> </span>
@@ -1126,7 +1144,7 @@ white
 <pre><code># A tibble: 1 x 3
   replicate num_red prop_red
       &lt;int&gt;   &lt;int&gt;    &lt;dbl&gt;
-1         1      22     0.44</code></pre>
+1         1      20      0.4</code></pre>
 <p>In other words, this “virtual” sample’s balls were 34% red. Let’s make the above code a little more compact and succinct by combining the first <code>mutate()</code> and the <code>summarize()</code> as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">virtual_shovel <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">summarize</span>(<span class="dt">num_red =</span> <span class="kw">sum</span>(color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -1134,8 +1152,8 @@ white
 <pre><code># A tibble: 1 x 3
   replicate num_red prop_red
       &lt;int&gt;   &lt;int&gt;    &lt;dbl&gt;
-1         1      22     0.44</code></pre>
-<p>Great! 34% of <code>virtual_shovel</code>’s 50 balls were red! So based on this particular sample, our guess at the proportion of the <code>bowl</code>’s balls that are red is 34%. But remember from our earlier tactile sampling activity that if we repeated this sampling, we would not necessarily obtain a sample of 50 balls with 34% of them being red again; there will likely be some variation. In fact in Table <a href="8-sampling.html#tab:virtual-shovel">8.2</a> we displayed 33 such proportions based on 33 tactile samples and then in Figure <a href="8-sampling.html#fig:sampling-exercise-5">8.6</a> we visualized the distribution of the 33 proportions in a histogram. Let’s now perform the virtual analogue of having 33 groups of students use the sampling shovel!</p>
+1         1      20      0.4</code></pre>
+<p>Great! 34% of <code>virtual_shovel</code>’s 50 balls were red! So based on this particular sample, our guess at the proportion of the <code>bowl</code>’s balls that are red is 34%. But remember from our earlier tactile sampling activity that if we repeated this sampling, we would not necessarily obtain a sample of 50 balls with 34% of them being red again; there will likely be some variation. In fact in Table <a href="8-sampling.html#tab:virtual-shovel">8.3</a> we displayed 33 such proportions based on 33 tactile samples and then in Figure <a href="8-sampling.html#fig:sampling-exercise-5">8.7</a> we visualized the distribution of the 33 proportions in a histogram. Let’s now perform the virtual analogue of having 33 groups of students use the sampling shovel!</p>
 </div>
 <div id="using-the-virtual-shovel-33-times" class="section level3">
 <h3><span class="header-section-number">8.3.2</span> Using the virtual shovel 33 times</h3>
@@ -1150,11 +1168,11 @@ white
 <span class="st">  </span><span class="kw">summarize</span>(<span class="dt">red =</span> <span class="kw">sum</span>(color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop_red =</span> red <span class="op">/</span><span class="st"> </span><span class="dv">50</span>)
 <span class="kw">View</span>(virtual_prop_red)</code></pre></div>
-<p>Let’s display only the first 10 out of 33 rows of <code>virtual_prop_red</code>’s contents in Table <a href="8-sampling.html#tab:tactilered">8.1</a>. As one would expect, there is variation in the resulting <code>prop_red</code> proportions red for the first 10 out 33 repeated/replicated samples.</p>
+<p>Let’s display only the first 10 out of 33 rows of <code>virtual_prop_red</code>’s contents in Table <a href="8-sampling.html#tab:tactilered">8.2</a>. As one would expect, there is variation in the resulting <code>prop_red</code> proportions red for the first 10 out 33 repeated/replicated samples.</p>
 <!-- Albert will remove `boundary` here on updates to chalkboard image. -->
 <table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
-<span id="tab:virtualred">TABLE 8.3: </span>First 10 out of 33 virtual proportion of 50 balls that are red.
+<span id="tab:virtualred">TABLE 8.4: </span>First 10 out of 33 virtual proportion of 50 balls that are red.
 </caption>
 <thead>
 <tr>
@@ -1175,10 +1193,10 @@ prop_red
 1
 </td>
 <td style="text-align:right;">
-15
+25
 </td>
 <td style="text-align:right;">
-0.30
+0.50
 </td>
 </tr>
 <tr>
@@ -1186,26 +1204,15 @@ prop_red
 2
 </td>
 <td style="text-align:right;">
-13
+17
 </td>
 <td style="text-align:right;">
-0.26
+0.34
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
 3
-</td>
-<td style="text-align:right;">
-14
-</td>
-<td style="text-align:right;">
-0.28
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
 </td>
 <td style="text-align:right;">
 22
@@ -1216,13 +1223,24 @@ prop_red
 </tr>
 <tr>
 <td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
 5
 </td>
 <td style="text-align:right;">
-23
+15
 </td>
 <td style="text-align:right;">
-0.46
+0.30
 </td>
 </tr>
 <tr>
@@ -1230,10 +1248,10 @@ prop_red
 6
 </td>
 <td style="text-align:right;">
-20
+17
 </td>
 <td style="text-align:right;">
-0.40
+0.34
 </td>
 </tr>
 <tr>
@@ -1241,15 +1259,37 @@ prop_red
 7
 </td>
 <td style="text-align:right;">
-16
+19
 </td>
 <td style="text-align:right;">
-0.32
+0.38
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
 8
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
 </td>
 <td style="text-align:right;">
 20
@@ -1258,31 +1298,9 @@ prop_red
 0.40
 </td>
 </tr>
-<tr>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:right;">
-18
-</td>
-<td style="text-align:right;">
-0.36
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-16
-</td>
-<td style="text-align:right;">
-0.32
-</td>
-</tr>
 </tbody>
 </table>
-<p>Let’s visualize the distribution of these 33 proportions red based on 33 virtual samples using a histogram with <code>binwidth = 0.05</code> in Figure <a href="8-sampling.html#fig:samplingdistribution-virtual">8.8</a>.</p>
+<p>Let’s visualize the distribution of these 33 proportions red based on 33 virtual samples using a histogram with <code>binwidth = 0.05</code> in Figure <a href="8-sampling.html#fig:samplingdistribution-virtual">8.9</a>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(virtual_prop_red, <span class="kw">aes</span>(<span class="dt">x =</span> prop_red)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">boundary =</span> <span class="fl">0.4</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Proportion of 50 balls that were red&quot;</span>, 
@@ -1290,15 +1308,15 @@ prop_red
 <div class="figure" style="text-align: center"><span id="fig:samplingdistribution-virtual"></span>
 <img src="ismaykimkuyper_files/figure-html/samplingdistribution-virtual-1.png" alt="Distribution of 33 proportions based on 33 samples of size 50" width="\textwidth" />
 <p class="caption">
-FIGURE 8.8: Distribution of 33 proportions based on 33 samples of size 50
+FIGURE 8.9: Distribution of 33 proportions based on 33 samples of size 50
 </p>
 </div>
 <p>Observe that occasionally we obtained proportions red that are less than 0.3 = 30%, while on the other hand we occasionally we obtained proportions that are greater than 0.45 = 45%. However, the most frequently occurring proportions red out of 50 balls were between 35% and 40% (for 11 out 33 samples). Why do we have these differences in proportions red? Because of sampling variation.</p>
-<p>Let’s now compare our virtual results with our tactile results from the previous section in Figure <a href="8-sampling.html#fig:tactile-vs-virtual">8.9</a>. We see that both histograms, in other words the distribution of the 33 proportions red, are <em>somewhat</em> similar in their center and spread although not identical. These slight differences are again due to random variation. Furthermore both distributions are <em>somewhat</em> bell-shaped.</p>
+<p>Let’s now compare our virtual results with our tactile results from the previous section in Figure <a href="8-sampling.html#fig:tactile-vs-virtual">8.10</a>. We see that both histograms, in other words the distribution of the 33 proportions red, are <em>somewhat</em> similar in their center and spread although not identical. These slight differences are again due to random variation. Furthermore both distributions are <em>somewhat</em> bell-shaped.</p>
 <div class="figure" style="text-align: center"><span id="fig:tactile-vs-virtual"></span>
 <img src="ismaykimkuyper_files/figure-html/tactile-vs-virtual-1.png" alt="Comparing 33 virtual and 33 tactile proportions red." width="\textwidth" />
 <p class="caption">
-FIGURE 8.9: Comparing 33 virtual and 33 tactile proportions red.
+FIGURE 8.10: Comparing 33 virtual and 33 tactile proportions red.
 </p>
 </div>
 </div>
@@ -1314,7 +1332,7 @@ FIGURE 8.9: Comparing 33 virtual and 33 tactile proportions red.
 <span class="st">  </span><span class="kw">summarize</span>(<span class="dt">red =</span> <span class="kw">sum</span>(color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop_red =</span> red <span class="op">/</span><span class="st"> </span><span class="dv">50</span>)
 <span class="kw">View</span>(virtual_prop_red)</code></pre></div>
-<p>Observe that we now have 1000 replicates of <code>prop_red</code>, the proportion of 50 balls that are red. Using the same code as earlier, let’s now visualize the distribution of these 1000 replicates of <code>prop_red</code> in a histogram in Figure <a href="8-sampling.html#fig:samplingdistribution-virtual-1000">8.10</a>.</p>
+<p>Observe that we now have 1000 replicates of <code>prop_red</code>, the proportion of 50 balls that are red. Using the same code as earlier, let’s now visualize the distribution of these 1000 replicates of <code>prop_red</code> in a histogram in Figure <a href="8-sampling.html#fig:samplingdistribution-virtual-1000">8.11</a>.</p>
 <!-- Albert will remove `boundary` here on updates to chalkboard image. -->
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(virtual_prop_red, <span class="kw">aes</span>(<span class="dt">x =</span> prop_red)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">boundary =</span> <span class="fl">0.4</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
@@ -1323,7 +1341,7 @@ FIGURE 8.9: Comparing 33 virtual and 33 tactile proportions red.
 <div class="figure" style="text-align: center"><span id="fig:samplingdistribution-virtual-1000"></span>
 <img src="ismaykimkuyper_files/figure-html/samplingdistribution-virtual-1000-1.png" alt="Distribution of 1000 proportions based on 33 samples of size 50" width="\textwidth" />
 <p class="caption">
-FIGURE 8.10: Distribution of 1000 proportions based on 33 samples of size 50
+FIGURE 8.11: Distribution of 1000 proportions based on 33 samples of size 50
 </p>
 </div>
 <p>Once again, the most frequently occurring proportions red occur between 35% and 40%. Every now and then, we obtain proportions as low as between 20% and 25%, and others as high as between 55% and 60%. These are rare however. Furthermore observe that we now have a much more symmetric and smoother bell-shaped distribution.</p>
@@ -1332,7 +1350,7 @@ FIGURE 8.10: Distribution of 1000 proportions based on 33 samples of size 50
 </div>
 <div id="properties_s" class="section level2">
 <h2><span class="header-section-number">8.4</span> Properties of Sampling Distributions</h2>
-<p>Once you have simulated many possible sample values across repeated samples, an important question is how you can summarize these. The way you summarize a sampling distribution is the same way you’d summarize any other data:</p>
+<p>Once you have simulated many possible sample values of an estimator across repeated samples, an important question is how you can summarize these. The way you summarize a sampling distribution is the same way you’d summarize any other data:</p>
 <ol style="list-style-type: decimal">
 <li>How can you characterize its distribution?</li>
 <li>What is it’s average?</li>
@@ -1348,19 +1366,21 @@ FIGURE 8.10: Distribution of 1000 proportions based on 33 samples of size 50
 <li>Chi-squared distribution: e.g., sample variance</li>
 <li>F-distribution: e.g., ratio of sample variances in two groups</li>
 </ul>
-<p>Of these, the most common and important is the <strong>Normal Distribution</strong>. As a result of the Central Limit Theorem, when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in <a href="8-sampling.html#fig:samplingdistribution-virtual-1000">8.10</a> that the sampling distribution of <span class="math inline">\(\hat{\pi}\)</span> follows a Normal distribution.</p>
+<p>Of these, the most common and important is the <strong>Normal Distribution</strong>. As a result of the Central Limit Theorem (CLT), when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in Figures <a href="8-sampling.html#fig:samplingdistribution-virtual-1000">8.11</a> and <a href="8-sampling.html#fig:fan-data-2">8.1</a> that the sampling distribution of <span class="math inline">\(\hat{\pi}\)</span> follows a Normal distribution. We will discuss the CLT further in Section <a href="8-sampling.html#clt">8.6</a></p>
 </div>
 <div id="bias" class="section level3">
 <h3><span class="header-section-number">8.4.2</span> Mean of the sampling distribution</h3>
-<p>If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value the sampling statistic is estimating. Any difference in these two values is called <strong>bias</strong>:</p>
+<p>If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value the sample statistic is estimating. Any difference in these two values is called <strong>bias</strong>:</p>
 <ul>
 <li>A sample statistic is a <strong>biased estimator</strong> of a population parameter if its average value is more or less than the population parameter it is meant to estimate.</li>
 <li>A sample statistic is an <strong>unbiased estimator</strong> of a population parameter if in the average sample it equals the population parameter value.</li>
 </ul>
-<p>Note that the mean of our simulated sampling distribution is 0.373, which is a good approximation to the true proportion of red balls in the ball (<span class="math inline">\(\pi =\)</span> 0.375). This is because the sample proportion <span class="math inline">\(\hat{\pi} = \frac{\# \  of \ &quot;successes&quot;}{\# \ of \ trials}\)</span> is an unbiased estimator of the population proportion <span class="math inline">\(\pi\)</span>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(virtual_prop_red<span class="op">$</span>prop_red) <span class="co">#mean of sampling distribution of pi_hat</span></code></pre></div>
-<pre><code>[1] 0.373</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(bowl<span class="op">$</span>color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)<span class="op">/</span><span class="kw">dim</span>(bowl)[<span class="dv">1</span>] <span class="co">#true population proportion</span></code></pre></div>
+<p>Note that the mean of our simulated sampling distribution of proportion of red balls is 0.374, which is a good approximation to the true proportion of red balls in the bowl (<span class="math inline">\(\pi =\)</span> 0.375). This is because the sample proportion <span class="math inline">\(\hat{\pi} = \frac{\# \  of \ successes}{\# \ of \ trials}\)</span> is an unbiased estimator of the population proportion <span class="math inline">\(\pi\)</span>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#mean of sampling distribution of pi_hat</span>
+<span class="kw">mean</span>(virtual_prop_red<span class="op">$</span>prop_red) </code></pre></div>
+<pre><code>[1] 0.374</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#true population proportion</span>
+<span class="kw">sum</span>(bowl<span class="op">$</span>color <span class="op">==</span><span class="st"> &quot;red&quot;</span>)<span class="op">/</span><span class="kw">dim</span>(bowl)[<span class="dv">1</span>] </code></pre></div>
 <pre><code>[1] 0.375</code></pre>
 <p>The difficulty with introducing this idea of bias in an introductory course is that most statistics used at this level (e.g., proportions, means, regression coefficients) are unbiased. Examples of biased statistics are more common in more complex models. One example, however, that illustrates this bias concept is that of sample variance estimator.</p>
 <p>Remember that we estimate the sample variance using <span class="math inline">\(s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}\)</span>, where <span class="math inline">\(n\)</span> is the number of observations. Until now, we have simply provided this to you as the estimator without reason. You might ask: why is this divided by <span class="math inline">\(n – 1\)</span> instead of simply by <span class="math inline">\(n\)</span>? To see why, examine the following case.</p>
@@ -1369,12 +1389,14 @@ FIGURE 8.10: Distribution of 1000 proportions based on 33 samples of size 50
 gapminder_<span class="dv">2016</span> &lt;-<span class="st"> </span><span class="kw">filter</span>(gapminder, year <span class="op">==</span><span class="st"> </span><span class="dv">2016</span>)
 <span class="kw">var</span>(gapminder_<span class="dv">2016</span><span class="op">$</span>life_expectancy)</code></pre></div>
 <pre><code>[1] 57.5</code></pre>
-<p>Let’s draw 10,000 repeated samples of n = 5 countries from this population. The data for the first 2 samples (replicates) is shown in @ref(tab:s2_bias).</p>
+<p>Let’s draw 10,000 repeated samples of n = 5 countries from this population. The data for the first 2 samples (replicates) is shown in <a href="8-sampling.html#tab:s2-bias">8.5</a>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">76</span>)
 samples &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(gapminder_<span class="dv">2016</span>, <span class="dt">size =</span> <span class="dv">5</span>, <span class="dt">reps =</span> <span class="dv">10000</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(replicate, country, year, life_expectancy, continent, region)
-<span class="kw">kable</span>(samples[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,])</code></pre></div>
-<table>
+<span class="st">  </span><span class="kw">select</span>(replicate, country, year, life_expectancy, continent, region)</code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:s2-bias">TABLE 8.5: </span>Life expectancy data for 2 out of 10,000 samples of size n = 5 countries
+</caption>
 <thead>
 <tr>
 <th style="text-align:right;">
@@ -1600,12 +1622,24 @@ South-Eastern Asia
 </tr>
 </tbody>
 </table>
-<p>We can then calculate the variance for each sample (replicate) using two different formulas: 1. <span class="math inline">\(s_n^2= \frac{\sum(x_i - \bar{x})^2}{(n)}\)</span> 2. <span class="math inline">\(s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}\)</span></p>
+<p>We can then calculate the variance for each sample (replicate) using two different formulas:</p>
+<ol style="list-style-type: decimal">
+<li><p><span class="math inline">\(s_n^2= \frac{\sum(x_i - \bar{x})^2}{n}\)</span></p></li>
+<li><p><span class="math inline">\(s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}\)</span></p></li>
+</ol>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">variances &lt;-<span class="st"> </span>samples <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">summarise</span>(<span class="dt">s2_n =</span> <span class="kw">sum</span>((life_expectancy <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(life_expectancy))<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span><span class="dv">5</span>, <span class="co">#calculate the variance for each sample with n = 5 on the denominator</span>
-            <span class="dt">s2 =</span> <span class="kw">sum</span>((life_expectancy <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(life_expectancy))<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span><span class="dv">4</span>) <span class="co">#calculate the variance for each sample with n - 1 = 4 on the denominator</span>
-<span class="kw">kable</span>(variances[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,])</code></pre></div>
-<table>
+            <span class="dt">s2 =</span> <span class="kw">sum</span>((life_expectancy <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(life_expectancy))<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span><span class="dv">4</span>) <span class="co">#calculate the variance for each sample with n - 1 = 4 on the denominator</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">variances[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,] <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>,
+      <span class="dt">caption =</span> <span class="st">&quot;Sample variances of life expectancy for first 10 samples&quot;</span>, 
+      <span class="dt">booktabs =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">kable_styling</span>(<span class="dt">font_size =</span> <span class="kw">ifelse</span>(knitr<span class="op">:::</span><span class="kw">is_latex_output</span>(), <span class="dv">10</span>, <span class="dv">16</span>),
+                <span class="dt">latex_options =</span> <span class="kw">c</span>(<span class="st">&quot;HOLD_position&quot;</span>))</code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:s2-bias-2">TABLE 8.6: </span>Sample variances of life expectancy for first 10 samples
+</caption>
 <thead>
 <tr>
 <th style="text-align:right;">
@@ -1732,7 +1766,7 @@ s2
 </tr>
 </tbody>
 </table>
-<p>Table @ref(tab:s2_bias_2) shows the results for the first 10 samples. If we look at the average of <span class="math inline">\(s_n^2\)</span> and <span class="math inline">\(s^2\)</span> across all 10,000 samples, we find that <span class="math inline">\(s_n^2\)</span> is biased; on average it is equal to 46.151. Remember that the true value of the variance in this population is <span class="math inline">\(\sigma^2 = 57.5\)</span>. By dividing by <span class="math inline">\(n – 1\)</span> instead of <span class="math inline">\(n\)</span>, however, the bias is removed. Therefore we use <span class="math inline">\(s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}\)</span> as our usual estimator for <span class="math inline">\(\sigma^2\)</span> because it is unbiased. Notice that the sampling distribution of the sample variances shown in Figure @ref(fig:s2_bias_3) is not Normal but rather is skewed right; in fact, it follows a chi-square distribution with <span class="math inline">\(n-1\)</span> degrees of freedom.</p>
+<p>Table <a href="8-sampling.html#tab:s2-bias-2">8.6</a> shows the results for the first 10 samples. If we look at the average of <span class="math inline">\(s_n^2\)</span> and <span class="math inline">\(s^2\)</span> across all 10,000 samples, we find that <span class="math inline">\(s_n^2\)</span> is biased; on average it is equal to 46.151. Remember that the true value of the variance in this population is <span class="math inline">\(\sigma^2 = 57.5\)</span>. By dividing by <span class="math inline">\(n – 1\)</span> instead of <span class="math inline">\(n\)</span>, however, the bias is removed; the average value of <span class="math inline">\(s^2\)</span> = 57.689. Therefore we use <span class="math inline">\(s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}\)</span> as our usual estimator for <span class="math inline">\(\sigma^2\)</span> because it is unbiased.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(variances<span class="op">$</span>s2_n)</code></pre></div>
 <pre><code>[1] 46.2</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(variances<span class="op">$</span>s2)</code></pre></div>
@@ -1743,14 +1777,18 @@ s2
 <span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="kw">mean</span>(variances<span class="op">$</span>s2_n), <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="kw">mean</span>(variances<span class="op">$</span>s2), <span class="dt">color =</span> <span class="st">&quot;green&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="kw">var</span>(gapminder_<span class="dv">2016</span><span class="op">$</span>life_expectancy), <span class="dt">linetype =</span> <span class="dv">2</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Sample variance estimates for 10,000 samples of size n = 5&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="co">#ggtitle(&quot;Sample variance estimates for 10,000 samples of size n = 5&quot;) +</span>
 <span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">name=</span><span class="st">&quot;Estimator&quot;</span>, <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&#39;red&#39;</span> =<span class="st"> &#39;red&#39;</span>,<span class="st">&#39;green&#39;</span> =<span class="st"> &#39;green&#39;</span>), 
           <span class="dt">labels =</span> <span class="kw">expression</span>(s_n<span class="op">^</span><span class="dv">2</span>, s<span class="op">^</span><span class="dv">2</span>)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Sample variance estimate&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Number of samples&quot;</span>)</code></pre></div>
-<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="ismaykimkuyper_files/figure-html/s2_bias_3-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<div class="figure" style="text-align: center"><span id="fig:s2-bias-3"></span>
+<img src="ismaykimkuyper_files/figure-html/s2-bias-3-1.png" alt="Sample variance estimates for 10,000 samples of size n = 5" width="\textwidth" />
+<p class="caption">
+FIGURE 8.12: Sample variance estimates for 10,000 samples of size n = 5
+</p>
+</div>
+<p>Notice that the sampling distribution of the sample variance shown in Figure <a href="8-sampling.html#fig:s2-bias-3">8.12</a> is not Normal but rather is skewed right; in fact, it follows a chi-square distribution with <span class="math inline">\(n-1\)</span> degrees of freedom.</p>
 </div>
 <div id="precision" class="section level3">
 <h3><span class="header-section-number">8.4.3</span> Standard deviation of the sampling distribution</h3>
@@ -1760,7 +1798,7 @@ s2
 <li>A <em>large</em> standard error means that an estimate (e.g., in the sample you have) may be far from the true population parameter. This means the estimate is <em>imprecise</em>.</li>
 <li>A <em>small</em> standard error means an estimate (e.g., in the sample you have) is likely to be close to the true population parameter. This means the estimate is <em>precise</em>.</li>
 </ul>
-<p>In statistics, we prefer estimators that are precise over those that are not. Again, this is tricky to understand at an introductory level, since nearly all sample statistics at this level can be proven to be the most precise estimators (out of all possible estimators) of the population parameters they are estimating. In more complex models, however, there are often competing estimators and statisticians spend time studying the behavior of these estimators in comparison to one another.</p>
+<p>In statistics, we prefer estimators that are precise over those that are not. Again, this is tricky to understand at an introductory level, since nearly all sample statistics at this level can be proven to be the most precise estimators (out of all possible estimators) of the population parameters they are estimating. In more complex models, however, there are often competing estimators, and statisticians spend time studying the behavior of these estimators in comparison to one another.</p>
 </div>
 <div id="conf" class="section level3">
 <h3><span class="header-section-number">8.4.4</span> Confusing concepts</h3>
@@ -1776,7 +1814,7 @@ s2
 </div>
 <div id="size" class="section level2">
 <h2><span class="header-section-number">8.5</span> Sample Size and Sampling Distributions</h2>
-<p>Let’s return to our football game example. Let’s say you could estimate the proportions of attendees that are home fans by selecting a sample of <span class="math inline">\(n = 10\)</span> or by selecting a sample of <span class="math inline">\(n = 100\)</span>. Which would be better? Why? A larger sample will certainly cost more – is this worth it? What about a sample of <span class="math inline">\(n = 500\)</span>? Is that worth it?</p>
+<p>Let’s return to our football fan example. Let’s say you could estimate the proportions of attendees that are home fans by selecting a sample of <span class="math inline">\(n = 10\)</span> or by selecting a sample of <span class="math inline">\(n = 100\)</span>. Which would be better? Why? A larger sample will certainly cost more – is this worth it? What about a sample of <span class="math inline">\(n = 500\)</span>? Is that worth it?</p>
 <p>This question of appropriate sample size drives much of statistics. For example, you might be conducting an experiment in a psychology lab and ask: how many participants do I need to estimate this treatment effect precisely? Or you might be conducting a survey and need to know: how many respondents do I need in order to estimate the relationship between income and education well?</p>
 <p>These questions are inherently about how sample size affects sampling distributions, in general, and in particular, how sample size affects standard errors (precision).</p>
 <div id="eg1" class="section level3">
@@ -1844,14 +1882,14 @@ virtual_prop_red_<span class="dv">100</span> &lt;-<span class="st"> </span>virtu
 <span class="kw">ggplot</span>(virtual_prop_red_<span class="dv">100</span>, <span class="kw">aes</span>(<span class="dt">x =</span> prop_red)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.05</span>, <span class="dt">boundary =</span> <span class="fl">0.4</span>, <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Proportion of 100 balls that were red&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;100&quot;</span>) </code></pre></div>
-<p>For easy comparison, we present the three resulting histograms in a single row with matching x and y axes in Figure <a href="8-sampling.html#fig:comparing-sampling-distributions">8.11</a>. What do you observe?</p>
+<p>For easy comparison, we present the three resulting histograms in a single row with matching x and y axes in Figure <a href="8-sampling.html#fig:comparing-sampling-distributions">8.13</a>. What do you observe?</p>
 <div class="figure" style="text-align: center"><span id="fig:comparing-sampling-distributions"></span>
 <img src="ismaykimkuyper_files/figure-html/comparing-sampling-distributions-1.png" alt="Comparing the distributions of proportion red for different sample sizes" width="\textwidth" />
 <p class="caption">
-FIGURE 8.11: Comparing the distributions of proportion red for different sample sizes
+FIGURE 8.13: Comparing the distributions of proportion red for different sample sizes
 </p>
 </div>
-<p>Observe that as the sample size increases, the spread of the 1000 replicates of the proportion red decreases. In other words, as the sample size increases, there are less differences due to sampling variation and the distribution centers more tightly around the same value. Eyeballing Figure <a href="8-sampling.html#fig:comparing-sampling-distributions">8.11</a>, things appear to center tightly around roughly 40%.</p>
+<p>Observe that as the sample size increases, the spread of the 1000 replicates of the proportion red decreases. In other words, as the sample size increases, there are less differences due to sampling variation and the distribution centers more tightly around the same value. Eyeballing Figure <a href="8-sampling.html#fig:comparing-sampling-distributions">8.13</a>, things appear to center tightly around roughly 40%.</p>
 <p>We can be numerically explicit about the amount of spread in our 3 sets of 1000 values of <code>prop_red</code> by computing the standard deviation for each of the three sampling distributions. For all three sample sizes, let’s compute the standard deviation of the 1000 proportions red by running the following data wrangling code that uses the <code>sd()</code> summary function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># n = 25</span>
 virtual_prop_red_<span class="dv">25</span> <span class="op">%&gt;%</span><span class="st"> </span>
@@ -1862,10 +1900,10 @@ virtual_prop_red_<span class="dv">50</span> <span class="op">%&gt;%</span><span 
 <span class="co"># n = 100</span>
 virtual_prop_red_<span class="dv">100</span> <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">summarize</span>(<span class="dt">sd =</span> <span class="kw">sd</span>(prop_red))</code></pre></div>
-<p>Let’s compare these 3 measures of spread of the distributions in Table <a href="8-sampling.html#tab:comparing-n">8.4</a>.</p>
+<p>Let’s compare these 3 measures of spread of the distributions in Table <a href="8-sampling.html#tab:comparing-n">8.7</a>.</p>
 <table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
-<span id="tab:comparing-n">TABLE 8.4: </span>Comparing standard deviations of proportions red for 3 different shovels.
+<span id="tab:comparing-n">TABLE 8.7: </span>Comparing standard deviations of proportions red for 3 different shovels.
 </caption>
 <thead>
 <tr>
@@ -1904,37 +1942,60 @@ Standard deviation of proportions red
 </tr>
 </tbody>
 </table>
-<p>As we observed visually in Figure <a href="8-sampling.html#fig:comparing-sampling-distributions">8.11</a>, as the sample size increases our numerical measure of spread (i.e. our standard error) decreases; there is less variation in our proportions red. In other words, as the sample size increases, our guesses at the true proportion of the bowl’s balls that are red get more consistent and precise. Remember that because we are computing the standard deviation of an estimator <span class="math inline">\(\hat{\pi}\)</span>}’s sampling distribution, we call this the <strong>standard error</strong> of <span class="math inline">\(\hat{\pi}\)</span>}.</p>
+<p>As we observed visually in Figure <a href="8-sampling.html#fig:comparing-sampling-distributions">8.13</a>, as the sample size increases our numerical measure of spread (i.e. our standard error) decreases; there is less variation in our proportions red. In other words, as the sample size increases, our guesses at the true proportion of the bowl’s balls that are red get more consistent and precise. Remember that because we are computing the standard deviation of an estimator <span class="math inline">\(\hat{\pi}\)</span>’s sampling distribution, we call this the <strong>standard error</strong> of <span class="math inline">\(\hat{\pi}\)</span>.</p>
 <p>Overall, this simulation shows that compared to a smaller sample size (e.g., <span class="math inline">\(n = 10\)</span>), with a larger sample size (e.g., <span class="math inline">\(n = 100\)</span>), the sampling distribution has less spread and a smaller standard error. This means that an estimate from a larger sample is likely closer to the population parameter value than one from a smaller sample.</p>
 </div>
-<div id="clt" class="section level3">
-<h3><span class="header-section-number">8.5.2</span> Central Limit Theorem</h3>
-<p>{shows <span class="math inline">\(n = 5\)</span>, <span class="math inline">\(n = 30\)</span>, <span class="math inline">\(n = 100\)</span> for underlying data that is skewed}</p>
+</div>
+<div id="clt" class="section level2">
+<h2><span class="header-section-number">8.6</span> Central Limit Theorem (CLT)</h2>
+<p>There is a very useful result in statistics called the <strong>Central Limit Theorem</strong> which tells us that the sampling distribution of the sample mean is well approximated by the normal distribution. While not all variables follow a normal distribution, many estimators have sampling distributions that are normal. We have already seen this to be true with the sample proportion.</p>
+<p>More formally, the CLT tells us that <span class="math display">\[\bar{x} \sim N(mean = \mu, SE = \frac{\sigma}{\sqrt{n}}),\]</span> where <span class="math inline">\(\mu\)</span> is the population mean of X, <span class="math inline">\(\sigma\)</span> is the population standard deviation of X, and <span class="math inline">\(n\)</span> is the sample size.</p>
+<div id="clt-conditions" class="section level3">
+<h3><span class="header-section-number">8.6.1</span> CLT conditions</h3>
+<p>Certain conditions must be met for the CLT to apply:</p>
+<p><strong>Independence</strong>: Sampled observations must be independent. This is difficult to verify, but is more likely if * random sampling / assignment is used, and * Sample size n &lt; 10% of the population</p>
+<p><strong>Sample size / skew</strong>: Either the population distribution is normal, or if the population distribution is skewed, the sample size is large. * the more skewed the population distribution, the larger sample size we need for the CLT to apply * for moderately skewed distributions n &gt; 30 is a widely used rule of thumb This is also difficult to verify for the population, but we can check it using the sample data, and assume that the sample mirrors the population.</p>
+</div>
+<div id="clt-example" class="section level3">
+<h3><span class="header-section-number">8.6.2</span> CLT example</h3>
+<p>Let’s return to the <code>gapminder</code> dataset, this time looking at the variable <code>infant_mortality</code>. We’ll first subset our data to only include the year 2015, and we’ll exclude the 7 countries that have missing data for <code>infant_mortality</code>. Figure <a href="8-sampling.html#fig:infant-mortality">8.14</a> shows the distribution of <code>infant_mortality</code>, which is skewed right.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;gapminder&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;dslabs&quot;</span>) 
 gapminder_<span class="dv">2015</span> &lt;-<span class="st"> </span><span class="kw">filter</span>(gapminder, year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>)
-<span class="kw">ggplot</span>(gapminder_<span class="dv">2015</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> infant_mortality), <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>)</code></pre></div>
-<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="ismaykimkuyper_files/figure-html/unnamed-chunk-246-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">infant_mortality_noNA &lt;-<span class="st"> </span><span class="kw">filter</span>(gapminder, <span class="op">!</span><span class="kw">is.na</span>(infant_mortality))
-sample_<span class="dv">5</span> &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(infant_mortality_noNA, <span class="dt">size =</span> <span class="dv">5</span>, <span class="dt">reps =</span> <span class="dv">1000</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+infant_mortality_noNA &lt;-<span class="st"> </span><span class="kw">filter</span>(gapminder_<span class="dv">2015</span>, <span class="op">!</span><span class="kw">is.na</span>(infant_mortality))
+<span class="kw">ggplot</span>(infant_mortality_noNA) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> infant_mortality), <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>)  <span class="op">+</span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Infant mortality per 1,000 live births&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Number of countries&quot;</span>)</code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:infant-mortality"></span>
+<img src="ismaykimkuyper_files/figure-html/infant-mortality-1.png" alt="Infant mortality rates per 1,000 live births across 178 countries in 2015" width="\textwidth" />
+<p class="caption">
+FIGURE 8.14: Infant mortality rates per 1,000 live births across 178 countries in 2015
+</p>
+</div>
+<p>Let’s run 3 simulations where we take 10,000 samples of size <span class="math inline">\(n = 5\)</span>, <span class="math inline">\(n = 30\)</span> and <span class="math inline">\(n = 100\)</span> and plot the sampling distribution of the mean for each.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sample_<span class="dv">5</span> &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(infant_mortality_noNA, <span class="dt">size =</span> <span class="dv">5</span>, <span class="dt">reps =</span> <span class="dv">10000</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mean_infant_mortality =</span> <span class="kw">mean</span>(infant_mortality)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">n =</span> <span class="dv">5</span>)
-sample_<span class="dv">30</span> &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(infant_mortality_noNA, <span class="dt">size =</span> <span class="dv">30</span>, <span class="dt">reps =</span> <span class="dv">1000</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+sample_<span class="dv">30</span> &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(infant_mortality_noNA, <span class="dt">size =</span> <span class="dv">30</span>, <span class="dt">reps =</span> <span class="dv">10000</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mean_infant_mortality =</span> <span class="kw">mean</span>(infant_mortality)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">n =</span> <span class="dv">30</span>)
-sample_<span class="dv">100</span> &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(infant_mortality_noNA, <span class="dt">size =</span> <span class="dv">100</span>, <span class="dt">reps =</span> <span class="dv">1000</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
+sample_<span class="dv">100</span> &lt;-<span class="st"> </span><span class="kw">rep_sample_n</span>(infant_mortality_noNA, <span class="dt">size =</span> <span class="dv">100</span>, <span class="dt">reps =</span> <span class="dv">10000</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(replicate) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">summarise</span>(<span class="dt">mean_infant_mortality =</span> <span class="kw">mean</span>(infant_mortality)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">n =</span> <span class="dv">100</span>)
 all_samples &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(sample_<span class="dv">5</span>, sample_<span class="dv">30</span>, sample_<span class="dv">100</span>)
 <span class="kw">ggplot</span>(all_samples) <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> mean_infant_mortality), <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>n)</code></pre></div>
-<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="ismaykimkuyper_files/figure-html/unnamed-chunk-246-2.png" width="\textwidth" style="display: block; margin: auto;" /></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;gapminder&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;gapminder&quot;</span>)</code></pre></div>
-<p>Overall, this simulation shows that not only might the precision of an estimate differ as a result of a larger sample size, but also the sampling distribution might be different for a smaller sample size (e.g., <span class="math inline">\(n = 10\)</span>) than for a larger sample size (e.g., <span class="math inline">\(n=100\)</span>).</p>
-<p>In fact, in many cases, when the sample size is large, the sampling distribution is very close to a normal distribution. This is the Central Limit Theorem.</p>
+<span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> mean_infant_mortality), <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>n) <span class="op">+</span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;Mean infant mortality&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Number of samples&quot;</span>)</code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:infant-mortality-2"></span>
+<img src="ismaykimkuyper_files/figure-html/infant-mortality-2-1.png" alt="Sampling distributions of the mean infant mortality for various sample sizes" width="\textwidth" />
+<p class="caption">
+FIGURE 8.15: Sampling distributions of the mean infant mortality for various sample sizes
+</p>
+</div>
+<p>Figure <a href="8-sampling.html#fig:infant-mortality-2">8.15</a> shows that for samples of size <span class="math inline">\(n = 5\)</span>, the sampling distribution is still skewed slightly right. However, with even a moderate sample size of <span class="math inline">\(n = 30\)</span>, the Central Limit Theorem kicks in, and we see that the sampling distribution of the mean (<span class="math inline">\(\bar{x}\)</span>) is normal, even though the underlying data was skewed. We again see that the standard error of the estimate decreases as the sample size increases.</p>
+<p>Overall, this simulation shows that not only might the precision of an estimate differ as a result of a larger sample size, but also the sampling distribution might be different for a smaller sample size (e.g., <span class="math inline">\(n = 5\)</span>) than for a larger sample size (e.g., <span class="math inline">\(n=100\)</span>).</p>
 
 </div>
 </div>
