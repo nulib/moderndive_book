@@ -1,0 +1,588 @@
+# Confidence Intervals {#CIs}
+
+```{r setup_sampling, include=FALSE, purl=FALSE}
+chap <- 10
+lc <- 0
+rq <- 0
+# **`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`**
+# **`r paste0("(RQ", chap, ".", (rq <- rq + 1), ")")`**
+
+knitr::opts_chunk$set(
+  tidy = FALSE, 
+  out.width = '\\textwidth', 
+  fig.height = 4,
+  fig.align='center',
+  warning = FALSE
+  )
+
+options(scipen = 99, digits = 3)
+
+# Set random number generator see value for replicable pseudorandomness. Why 76?
+# https://www.youtube.com/watch?v=xjJ7FheCkCU
+set.seed(76)
+```
+
+In Chapter \@ref(sampling), we developed a theory of repeated samples. But what does this mean for your data analysis? If you only have one sample in front of you, how are you supposed to understand properties of the sampling distribution and your estimators? In this chapter we tackle these questions using two approaches: 1) based upon formulas provided to us via mathematical theory, and 2) based upon approximations available computationally (bootstrap).  
+
+##Needed Packages
+
+Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). If needed, read Section \@ref(packages) for information on how to install and load R packages.
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(janitor)
+library(moderndive)
+library(infer)
+```
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+# Packages needed internally, but not in text.
+library(readr)
+library(knitr)
+library(kableExtra)
+```
+
+###Theory based upon assumptions and models {#theory}
+
+In the table below, we provide some basic properties of common sampling statistics you are likely to encounter in this course. (How do we know these properties are true? These have been proven mathematically by statisticians.)
+
+```{r SE-table, echo=FALSE, message=FALSE}
+if(!file.exists("rds/ch10_SE_table.rds")){
+  ch10_SE_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXpL0Gv4FJDpLdvfVOyyoUiwPzBxgzApeBrl9GGYOSRg6jBIGdonQFHvdQQl3lMFQQR3PAmxx7y6FQ/pub?gid=164147569&single=true&output=csv" %>% 
+    read_csv(na = "")
+    write_rds(ch10_SE_table, "rds/ch10_SE_table.rds")
+} else {
+  ch10_SE_table <- read_rds("rds/ch10_SE_table.rds")
+}
+
+ch10_SE_table %>% 
+  kable(
+    caption = "Properties of Sample Statistics", 
+    booktabs = TRUE,
+    escape = FALSE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("HOLD_position")) %>%
+  column_spec(1, width = "0.5in") %>% 
+  column_spec(2, width = "0.7in") %>%
+  column_spec(3, width = "1in") %>%
+  column_spec(4, width = "1.1in") %>% 
+  column_spec(5, width = "1in")
+```
+
+As an example, let’s say you are trying to estimate the population average age at the football game $\mu$. Let's use our simulated `football_fans` dataset again that has information on the whole population of 40,000 fans.
+
+```{r}
+set.seed(76)
+football_fans <- data.frame(home_fan = rbinom(40000, 1, 0.91),
+                            age = rnorm(40000, 30, 10))
+sample_10 <- sample_n(football_fans, size = 10)
+mean(sample_10$age)
+var(sample_10$age)
+```
+To estimate the average age, you take a sample of $n = 10$ participants, producing an estimate of $\bar{x} =$ `r round(mean(sample_10$age),1)` years old. Your question is simply: is this a good estimate?
+
+* The estimator here is the sample mean, $\bar{x}$. 
+* We know that the sample mean provides an unbiased estimate of the population mean. In the average possible sample, this statistic will be right.
+* We know that the sampling distribution of the sample mean is the normal distribution. This is unimodal and symmetric, meaning that our estimate is just as likely larger than this population mean as it is smaller. 
+* The standard error of a sample mean is $SE(\bar{x}) = s/\sqrt{n}$. In this sample, since $s^2 =$ `r round(var(sample_10$age),1)`, we can calculate this standard error to be  $SE(\bar{x}) =$ `r round(var(sample_10$age),1)`$/\sqrt{10} =$ `r round(sqrt(var(sample_10$age)) / sqrt(10), 2) `. Comparing this to the sample mean ($\bar{x} =$ `r round(mean(sample_10$age),1)`) this gives us a sense that we are somewhat close to the true parameter value. 
+
+Note that we can extend the above properties to *differences* between groups as well. In general,
+
+* $Bias(X_1 - X_2) = Bias(X_1) - Bias(X_2) \dashrightarrow$ If $X_1, X_2$ are unbiased, then $X_1 - X_2$ is unbiased.
+* $SE(X_1 – X_2) = \sqrt{[SE(X_1)]^2 + [SE(X_2)]^2} \dashrightarrow$ so long as $X_1$ and $X_2$ are independent. 
+* $Dist(X_1 - X_2) \dashrightarrow$ if $X_1, X_2$ are independent, then $X_1 – X_2$ are independent.
+
+This may seem really abstract. As an example, let’s focus on estimating the difference between two groups in the population $(\mu_1 - \mu_2)$. We can estimate this using $\bar{x}_1 - \bar{x}_2$. And, using information in Table \@ref(tab:SE-table) above, we have: 
+
+$$Bias(\bar{x}_1 - \bar{x}_2) = Bias(\bar{x}_1) - Bias(\bar{x}_2) = 0$$
+$$SE(\bar{x}_1 - \bar{x}_2) = \sqrt{[SE(\bar{x}_1)]^2 + [SE(\bar{x}_2)]^2} = \sqrt{(s_1^2/n_1 + s_2^2/n_2)}$$
+$$\bar{x}_1 - \bar{x}_2 \sim normally \ \ distributed$$
+
+What does this mean for your data analysis?
+
+* You need to think about sample size and how it might affect the sampling distribution. 
+* If you have a large enough sample (e.g., $n > 50$), you can probably assume the sampling distribution is normally distributed. 
+* If you have a smaller sample (e.g., $n < 50$), you should look up what the appropriate sampling distribution would be (e.g., t-distribution, F-distribution). 
+
+Importantly, what this does not mean is that you need to get a larger sample! 
+
+###10.2 Bootstrap
+The properties developed above are based on mathematical proofs. These proofs require assumptions and it is sometimes hard to know if the assumptions have been met. Also, the table we have provided only lists a small number of statistics. What if the parameter you are estimating requires a more complex estimator and you aren’t sure of its sampling distribution? 
+
+This problem provides the motivation for the **bootstrap**. The idea of the bootstrap is to approximate the sampling distribution of an estimator based upon the sample of data you have in front of you. The procedure is as follows:
+
+* You have a sample size of $n$ (e.g., $n = 100$)
+* Randomly select 1 observation and record its value. Return the observation to the sample. Now repeat this $n$ times. This is called **sampling with replacement** – note that in this procedure, the same observation may be selected multiple times, and other observations may not be selected at all. 
+* For that simulated sample of size $n$, calculate the sample statistic.
+* Repeat this process many, many, many (e.g., 10,000) times.
+Clearly, if you were to do this by hand this would be impossible. But this procedure can be conducted using a computer very quickly. 
+
+At the end of this bootstrap procedure, you are able to see:
+
+* An estimate of the sampling distribution 
+* A *bootstrap* estimate of the standard error
+
+In cases in which there are also mathematical formulas available, bootstrap results should be very similar to those based off the formulas. When they are very different, however, this suggests that some of the assumptions used to develop the mathematical results might have been violated in the data.
+
+## Pennies activity {#resampling-tactile}
+
+As we did in Chapter \@ref(sampling), we'll begin with a hands-on tactile activity.
+
+### What is the average year on US pennies in 2019?
+
+Try to imagine all pennies being used in the United States in 2019. That's a lot of pennies! Now say we're are interested in the average year of minting of *all* these pennies. One way to compute this value would be to gather up all pennies being used in the US, record the year, and compute the average. This would be near impossible! So instead, let's collect a sample of 50 pennies collected from a local bank in downtown Northampton, Massachusetts, the USA seen in Figure \@ref(fig:resampling-exercise-a).
+
+```{r resampling-exercise-a, echo=FALSE, fig.show='hold', fig.cap="Collecting a sample of 50 US pennies from a local bank.", purl=FALSE, out.width = "40%"}
+knitr::include_graphics(c("images/sampling/pennies/bank.jpg", "images/sampling/pennies/roll.jpg"))
+```
+
+An image of these 50 pennies can be seen in Figure \@ref(fig:resampling-exercise-b).
+
+```{r resampling-exercise-b, echo=FALSE, fig.cap="50 US pennies.", purl=FALSE, out.width="100%"}
+knitr::include_graphics("images/sampling/pennies/pennies_trim.jpg")
+```
+
+For each of the 50 pennies let's assign an "ID" label and mark the year of minting, starting in the top left and ending in the bottom right progressing row by row, as seen in Figure \@ref(fig:resampling-exercise-c).
+
+```{r resampling-exercise-c, echo=FALSE, fig.cap="50 US pennies labelled.", fig.show='hold', purl=FALSE, out.width = "100%"}
+knitr::include_graphics("images/sampling/pennies/deliverable/3.jpg")
+```
+
+The `moderndive` \index{moderndive!pennies\_sample} package contains this data on our 50 sampled pennies. Let's explore this sample data first:
+
+```{r}
+pennies_sample
+```
+
+The `pennies_sample` data frame has 50 rows corresponding to each penny with two variables. The first variable `ID` corresponds to the ID labels in Figure \@ref(fig:resampling-exercise-c) whereas the second variable `year` corresponds to the year of minting saved as an integer.
+
+Based on these 50 sampled pennies, what can we say about *all* US pennies in 2019? Let's study some properties of our sample by performing an exploratory data analysis. Let's first visualize the distribution of the year of these 50 pennies using our data visualization tools from Chapter \@ref(viz). Since `year` is a numerical variable, we use a histogram in Figure \@ref(fig:pennies-sample-histogram).
+
+```{r pennies-sample-histogram, fig.cap="Distribution of year on 50 US pennies."}
+ggplot(pennies_sample, aes(x = year)) +
+  geom_histogram(binwidth = 10, color = "white")
+```
+
+We observe a slightly left-skewed \index{skew} distribution since most values fall in between the 1980s through 2010s with only a few older than 1970. What is the average year for the 50 sampled pennies? Eyeballing the histogram it appears to be around 1990. Let's now compute this value exactly using our data wrangling tools from Chapter \@ref(wrangling).
+
+```{r}
+pennies_sample %>% 
+  summarize(mean_year = mean(year))
+```
+```{r, echo=FALSE}
+x_bar <- pennies_sample %>% 
+  summarize(mean_year = mean(year))
+```
+
+Thus assuming `pennies_sample` is a representative sample from the population of all US pennies, a "good guess" of the average year of minting of all US pennies would be `r x_bar %>% pull(mean_year) %>% round(2)`, the average year of minting of our 50 sampled pennies. This should all start sounding similar to what we did previously in Chapter \@ref(sampling)!
+
+In Chapter \@ref(sampling) our study population was the bowl of $N$ = 2400 balls. Our population parameter of interest was the population proportion of these balls that were red, denoted mathematically by $p$. In order to estimate $p$, we extracted a sample of 50 balls using the shovel and computed the relevant point estimate: the sample proportion of these 50 balls that were red, denoted mathematically by $\widehat{p}$.
+
+Here our study population is $N$ = whatever the number of pennies are being used in the US, a value which we don't know and probably never will. The population parameter of interest is now the *population mean* year of all these pennies, a value denoted mathematically by the Greek letter $\mu$ pronounced "mu". In order to estimate $\mu$, we went to the bank and obtained a sample of 50 pennies and computed the relevant point estimate: the *sample mean* year of these 50 pennies, denoted mathematically by $\overline{x}$ pronounced "x-bar". An alternative and more intuitive notation for the sample mean is $\widehat{\mu}$. However this is unfortunately not as commonly used, so in this text, we'll always denote the sample mean as $\overline{x}$.
+
+Going back to our 50 sampled pennies in Figure \@ref(fig:resampling-exercise-c), the point estimate of interest is the sample mean $\overline{x}$ of `r x_bar %>% pull(mean_year) %>% round(2)`. This quantity is an estimate of the population mean year of all US pennies $\mu$.
+
+Recall that we also saw in Chapter \@ref(sampling) that such estimates are prone to sampling variation. For example, in this particular sample in Figure \@ref(fig:resampling-exercise-c), we observed three pennies with the year of 1999. If we obtained other samples of size 50 would we always observe exactly three pennies with the year of 1999? More than likely not. We might observe none, or one, or two, or maybe even all 50! The same can be said for the other 26 unique years that are represented in our sample of 50 pennies.
+
+To study this sampling variation as we did in Chapter \@ref(sampling), we need more than one sample. In our case with pennies, how would we obtain another sample? We would go to the bank and get another roll of 50 pennies! However, in real-life sampling one doesn't obtain many samples as we did in Chapter \@ref(sampling); those were merely simulations. So what how can we study sample-to-sample variation when we have only a single sample as in our case?
+
+Just as different uses of the shovel in the bowl led to the different sample proportions red, different samples of 50 pennies will lead to different sample mean years. However, how can we study the effect of sampling variation using only our *single sample* seen in Figure \@ref(fig:resampling-exercise-c)? We will do so using a technique known as "bootstrap resampling with replacement", which we now illustrate.
+
+### Resampling once
+
+**Step 1**: Let's print out identically-sized slips of paper representing the 50 pennies in Figure \@ref(fig:resampling-exercise-c).
+
+```{r tactile-resampling-1, echo=FALSE, fig.cap="50 slips of paper representing 50 US pennies.", fig.show='hold', purl=FALSE, out.width="50%"}
+knitr::include_graphics("images/sampling/pennies/tactile_simulation/1_paper_slips.png")
+```
+
+**Step 2**: Put the 50 small pieces of paper into a hat or tuque.
+
+```{r tactile-resampling-2, echo=FALSE, fig.cap="Putting 50 slips of paper in a hat.", fig.show='hold', purl=FALSE, out.width = "50%"}
+knitr::include_graphics("images/sampling/pennies/tactile_simulation/2_insert_in_hat.png")
+```
+
+**Step 3**: Mix the hat's contents and draw one slip of paper at random. Record the year somewhere.
+
+```{r tactile-resampling-3, echo=FALSE, fig.cap="Drawing one slip of paper.", fig.show='hold', purl=FALSE, out.width = "50%"}
+knitr::include_graphics("images/sampling/pennies/tactile_simulation/3_draw_at_random.png")
+```
+
+**Step 4**: Put the slip of paper back in the hat! In other words, replace it! 
+
+```{r tactile-resampling-4, echo=FALSE, fig.cap="Replacing slip of paper.", fig.show='hold', purl=FALSE, out.width = "50%"}
+knitr::include_graphics("images/sampling/pennies/tactile_simulation/4_put_it_back.png")
+```
+
+**Step 5**: Repeat Steps 3 and 4 49 more times, resulting in 50 recorded years.
+
+What we just performed was a **resampling** \index{resampling} of the original sample of 50 pennies. We are not sampling 50 pennies from the population of all US pennies as we did in our trip to the bank. Instead, we are mimicking this act by "re"-sampling 50 pennies from our originally sampled 50 pennies. However, why did we replace our resampled slip of paper back into the hat in Step 4? Because if we left the slip of paper out of the hat each time we performed Step 4, we would obtain the same 50 pennies, in the end, each time! In other words, replacing the slips of paper induces variation.
+
+Being more precise with our terminology, we just performed a **resampling with replacement** of the original sample of 50 pennies. Had we left the slip of paper out of the hat each time we performed Step 4, this would be "resampling without replacement".
+
+Let's study our 50 resampled pennies via an exploratory data analysis. First, let's load the data into R by manually creating a data frame `pennies_resample` of our 50 resampled values. We'll do this using the `tibble()` command from the `dplyr` package. Note that the 50 values you obtained will almost certainly not be the same as ours.
+
+```{r}
+pennies_resample <- tibble(
+  year = c(1976, 1962, 1976, 1983, 2017, 2015, 2015, 1962, 2016, 1976, 
+           2006, 1997, 1988, 2015, 2015, 1988, 2016, 1978, 1979, 1997, 
+           1974, 2013, 1978, 2015, 2008, 1982, 1986, 1979, 1981, 2004, 
+           2000, 1995, 1999, 2006, 1979, 2015, 1979, 1998, 1981, 2015, 
+           2000, 1999, 1988, 2017, 1992, 1997, 1990, 1988, 2006, 2000)
+)
+```
+
+The 50 values of `year` in `pennies_resample` represent the resample of size 50 from the original sample of 50 pennies from the bank. We display the 50 resampled pennies in Figure \@ref(fig:resampling-exercise-d).
+
+```{r resampling-exercise-d, echo=FALSE, fig.cap="50 resampled US pennies labelled.", fig.show='hold', purl=FALSE, out.width="100%"}
+# Need this for ID column
+if(!file.exists("rds/pennies_resample.rds")){
+  pennies_resample <- pennies_sample %>% 
+    rep_sample_n(size = 50, replace = TRUE, reps = 1) %>% 
+    ungroup() %>% 
+    select(-replicate)
+  write_rds(pennies_resample, "rds/pennies_resample.rds")
+} else {
+  pennies_resample <- read_rds("rds/pennies_resample.rds")
+}
+knitr::include_graphics("images/sampling/pennies/deliverable/4.jpg")
+```
+
+Let's compare the distribution of the numerical variable `year` of our 50 resampled pennies with the distribution of the numerical variable `year` of our original sample of 50 pennies from the bank in Figure \@ref(fig:origandresample).
+
+```{r eval=FALSE}
+ggplot(pennies_resample, aes(x = year)) +
+  geom_histogram(binwidth = 10, color = "white") +
+  labs(title = "Resample of 50 pennies")
+ggplot(pennies_sample, aes(x = year)) +
+  geom_histogram(binwidth = 10, color = "white") +
+  labs(title = "Original sample of 50 pennies")
+```
+
+(ref:compare-plots) Comparing `year` in the resample `pennies_resample` with the original sample `pennies_sample`.
+
+```{r origandresample, echo=FALSE, fig.cap="(ref:compare-plots)", purl=FALSE}
+p1 <- ggplot(pennies_resample, aes(x = year)) +
+  geom_histogram(binwidth = 10, color = "white") +
+  labs(title = "Resample of 50 pennies") +
+  scale_x_continuous(limits = c(1960, 2020), breaks = seq(1960, 2020, 20)) #+ 
+  scale_y_continuous(limits = c(0, 15), breaks = seq(0, 15, 5))
+p2 <- ggplot(pennies_sample, aes(x = year)) +
+  geom_histogram(binwidth = 10, color = "white") +
+  labs(title = "Original sample of 50 pennies") +
+  scale_x_continuous(limits = c(1960, 2020), breaks = seq(1960, 2020, 20)) #+ 
+  scale_y_continuous(limits = c(0, 15), breaks = seq(0, 15, 5))
+p1
+p2
+```
+
+Observe that while the general shape of the distribution of `year` is roughly similar, they are not identical. This is due to the variation induced by replacing the slips of paper each time we pull one out and recorded the year. 
+
+Recall from the previous section that the sample mean of the original sample of 50 pennies from the bank was `r x_bar %>% pull(mean_year) %>% round(2)`. What about for the `year` variable in `pennies_resample`? Any guesses? Let's have `dplyr` help us out as before:
+
+```{r}
+pennies_resample %>% 
+  summarize(mean_year = mean(year))
+```
+```{r, echo=FALSE}
+resample_mean <- pennies_resample %>% 
+  summarize(mean_year = mean(year))
+```
+
+We obtained a different mean year of `r resample_mean %>% pull(mean_year) %>% round(2)`. Again, this variation is induced by the "with replacement" from the "resampling with replacement" terminology we defined earlier. 
+
+What if we repeated several times this resampling exercise many times? Would we obtain the same sample mean `year` value each time? In other words, would our guess at the mean year of all pennies in the US in 2019 be exactly `r resample_mean %>% pull(mean_year) %>% round(2)` every time? Just as we did in Chapter \@ref(sampling), let's perform this resampling activity with the help of 35 of our friends.
+
+
+### Resampling 35 times {#student-resamples}
+
+Each of our 35 friends will repeat the same 5 steps above:
+
+1. Start with 50 identically-sized slips of paper representing the 50 pennies. 
+1. Put the 50 small pieces of paper into a hat or tuque.
+1. Mix the hat's contents and draw one slip of paper at random. Record the year somewhere.
+1. Replace the slip of paper back in the hat! 
+1. Repeat Steps 3 and 4 49 more times, resulting in 50 recorded years.
+
+Since we had 35 of our friends perform this task, we ended up with 35 $\times$ 50 = 1750 values. We recorded these values in a [shared spreadsheet](https://docs.google.com/spreadsheets/d/1y3kOsU_wDrDd5eiJbEtLeHT9L5SvpZb_TrzwFBsouk0/) with 50 rows (plus a header row) and 35 columns; we display a snapshot of the first 10 rows and 5 columns in Figure \@ref(fig:tactile-resampling-5)
+
+```{r tactile-resampling-5, echo=FALSE, fig.cap = "Snapshot of shared spreadsheet of resampled pennies.", fig.show='hold', purl=FALSE, out.width = "70%"}
+knitr::include_graphics("images/sampling/pennies/tactile_simulation/5_shared_spreadsheet.png")
+```
+
+For your convenience, we've taken these 35 $\times$ 50 = 1750 values and saved them in `virtual_resamples`, a "tidy" data frame included in the `moderndive` package: 
+
+```{r}
+pennies_resamples
+```
+
+What did each of our 35 friends obtain as the mean year? `dplyr` to the rescue once more! After grouping the rows by `name`, we summarize each group of rows with their mean `year`:
+
+```{r}
+resampled_means <- pennies_resamples %>% 
+  group_by(name) %>% 
+  summarize(mean_year = mean(year))
+resampled_means
+```
+
+Observe that `resampled_means` has 35 rows corresponding to the 35 resample means based the 35 resamples performed by our friends. Furthermore, observe the variation in the 35 values in the variable `mean_year`. This variation exists because by "resampling with replacement", our 35 friends obtained different resamples of 50 pennies, and thus obtained different resample mean year. 
+
+Since the variable `mean_year` is numerical, let's visualize its distribution using a histogram in Figure \@ref(fig:tactile-resampling-6). Note that adding the argument `boundary = 1990` to `geom_histogram()` sets the binning structure of the histogram so that one of the boundaries between bins is at the year 1990 exactly. 
+
+```{r tactile-resampling-6, echo=TRUE, fig.cap="Distribution of 35 sample means from 35 resamples.", purl=FALSE}
+ggplot(resampled_means, aes(x = mean_year)) +
+  geom_histogram(binwidth = 1, color = "white", boundary = 1990) +
+  labs(x = "Resampled mean year")
+```
+
+Observe the following about the histogram in Figure \@ref(fig:tactile-resampling-6):
+
+* The distribution looks roughly normal.
+* We rarely observe sample mean years less than in 1992.
+* On the other side of the distribution, we rarely observe sample mean years greater than in 2000.
+* The most frequently occurring values occur between roughly 1992 and 1998.
+* The distribution of these 35 sample means based on 35 resamples is roughly centered at 1995, which is the sample mean of `r x_bar %>% pull(mean_year) %>% round(2)` of the original sample of 50 pennies from the bank.
+
+
+### What did we just do?
+
+What we just demonstrated in this activity is the statistical procedure known as *bootstrap resampling with replacement* \index{bootstrap}. We used *resampling* to mimic the sampling variation we observe from sample-to-sample as we did in Chapter \@ref(sampling) on sampling, but this time using a *single* sample from the population.
+
+In fact, the histogram of sample means from 35 resamples in Figure \@ref(fig:tactile-resampling-6) is called the *bootstrap distribution* \index{bootstrap!distribution} of the sample mean and it is an approximation of the *sampling distribution* of the same mean, a concept we introduced in Chapter \@ref(sampling). In Section \@ref(ci-conclusion) we'll show you that the *bootstrap distribution* is an approximation to the *sampling distribution*. Using this bootstrap distribution, we can study the effect of sampling variation on our estimates, in particular study the typical "error" of our estimates, known as the *standard error* \index{standard error}. 
+
+In Section \@ref(resampling-simulation) we'll mimic our tactile resampling activity virtually on the computer. We can use a computer to do the resampling many more times than our 35 friends could possibly do. This will allow us to better understand the bootstrap distribution. In Section \@ref(ci-build-up) we'll explicitly articulate our goals for this chapter: understanding resampling variation, defining the statistical concept of a *confidence interval* by building on our pennies example, and discussing the interpretation of confidence intervals.
+
+Following this framework on confidence intervals, we'll discuss the `dplyr` and `infer` package code needed to complete the process of *bootstrapping*, which is another name for this resampling approach that is most commonly found in developing confidence intervals. We've used one of the functions in the `infer` package already with `rep_sample_n()`, but there's a lot more to this package than just that. We'll introduce the tidy statistical inference framework that was the motivation for the `infer` package pipeline that will be the driving package throughout the rest of this book.
+
+As we did in Chapter \@ref(sampling), we'll tie all these ideas together with a real-life case study in Section \@ref(case-study-two-prop-ci) involving data from an experiment about yawning from the US television show Mythbusters. The chapter concludes with a comparison of the sampling distribution and a bootstrap distribution using the balls data from Chapter \@ref(sampling) on sampling. 
+
+
+
+
+
+
+
+## Computer simulation of resampling {#resampling-simulation}
+
+Let's now mimic our tactile resampling activity virtually by using our computer.
+
+### Virtually resampling once
+
+First, let's perform the virtual analog of resampling once. Recall that the `pennies_sample` data frame included in the `moderndive` package contains the years of our original sample of 50 pennies from the bank. Furthermore, recall in Chapter \@ref(sampling) on sampling that we used the `rep_sample_n()` function as a virtual shovel to sample balls from our virtual bowl of `r nrow(bowl)` balls. 
+
+```{r, eval=FALSE, purl=FALSE}
+virtual_shovel <- bowl %>% 
+  rep_sample_n(size = 50)
+```
+
+Let's combine these two elements to virtually mimic our resampling with replacement exercise involving the slips of paper representing our 50 pennies in Figure \@ref(fig:resampling-exercise-c):
+
+```{r eval=FALSE}
+virtual_resample <- pennies_sample %>% 
+  rep_sample_n(size = 50, replace = TRUE)
+```
+
+Observe how we explicitly set the `replace` argument to `TRUE` in order to tell `rep_sample_n()` that we would like to sample pennies \index{sampling!with replacement} *with* replacement. Had we not set `replace = TRUE`, the function would've assumed the default value of `FALSE`. Additionally, since we didn't specify the number of replicates via the `reps` argument, the function assumes the default of one replicate `reps = 1`. Note also that the `size` argument is set to match the original sample size of 50 pennies. So what does `virtual_resample` look like?
+
+```{r eval=FALSE}
+View(virtual_resample)
+```
+
+We'll display only the first 10 out of 50 rows of `virtual_resample`'s contents in Table \@ref(tab:virtual-shovel).
+
+```{r virtual-resample, echo=FALSE}
+virtual_resample <- pennies_sample %>% 
+  rep_sample_n(size = 50, replace = TRUE, reps = 1)
+virtual_resample %>% 
+  slice(1:10) %>%
+  knitr::kable(
+    align = c("r", "r", "r"),
+    digits = 3,
+    caption = "First 10 resampled rows of 50 in virtual sample",
+    booktabs = TRUE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("HOLD_position"))
+```
+
+The `replicate` variable only takes on the value of 1 corresponding to us only having `reps = 1`, the `ID` variable indexes which of the 50 pennies from `pennies_sample` was resampled, and `year` denotes the year of minting. 
+
+Let's compute the mean `year` in our virtual resample of size 50 using data wrangling functions included in the `dplyr` package:
+
+```{r}
+virtual_resample %>% 
+  summarize(resample_mean = mean(year))
+```
+
+As when we did our tactile resampling, the resulting mean year is different than that mean year of our 50 originally sampled pennies of `r x_bar %>% pull(mean_year) %>% round(2)`.
+
+<!-- 
+Chester: Not sure if needed, but those trying to follow along may be mystified if we don't include this. 
+Note that tibbles will try to print as pretty as possible which may result in numbers being rounded. In this chapter, we have set the default number of values to be printed to six in tibbles with `options(pillar.sigfig = 6)`.
+Albert: I'm not sure if it's worth trouble to explain that command and why tidyverse opts for 3 sigfigs.
+-->
+
+### Virtually resampling 35 times
+
+Let's now have 35 virtual friends perform our virtual resampling exercise. Using these results, we'll be able to study the variability in the sample means from 35 resamples of size 50. Let's first add a `reps = 35` argument to `rep_sample_n()` \index{infer!rep\_sample\_n()} to indicate we would like 35 replicates, or in other words, repeat the resampling with the replacement of 50 pennies 35 times.
+
+```{r}
+virtual_resamples <- pennies_sample %>% 
+  rep_sample_n(size = 50, replace = TRUE, reps = 35)
+virtual_resamples
+```
+
+The resulting `virtual_resamples` data frame has 35 $\times$ 50 = `r 35*50` rows corresponding to 35 resamples of 50 pennies. What did each of our 35 virtual friends obtain as the mean year? We'll use the same `dplyr` verbs as we did in the previous section, but computing the mean for each of our virtual friends separately by adding a `group_by(replicate)`:
+
+```{r, eval=TRUE}
+virtual_resampled_means <- virtual_resamples %>% 
+  group_by(replicate) %>% 
+  summarize(mean_year = mean(year))
+virtual_resampled_means
+```
+
+Observe that `virtual_resampled_means` has 35 rows corresponding to the 35 resampled means and that the values of `mean_year` vary. Let's visualize the distribution of the numerical variable `mean_year` using a histogram in Figure \@ref(fig:tactile-resampling-7).
+
+```{r tactile-resampling-7, echo=TRUE, fig.cap="Distribution of 35 sample means from 35 resamples.", purl=FALSE}
+ggplot(virtual_resampled_means, aes(x = mean_year)) +
+  geom_histogram(binwidth = 1, color = "white", boundary = 1990) +
+  labs(x = "Resampled mean year")
+```
+
+To convince ourselves that our virtual resampling indeed mimics the resampling done by our 35 friends, let's compare the bootstrap distribution we just virtually constructed with the bootstrap distribution our 35 friends constructed via tactile resampling in the previous section.
+
+```{r orig-and-resample-means, echo=FALSE, fig.cap="Comparing distributions of means from resamples.", purl=FALSE}
+p3 <- ggplot(virtual_resampled_means, aes(x = mean_year)) +
+  geom_histogram(binwidth = 1, color = "white", boundary = 1990) +
+  labs(x = "Resampled mean year", title = "35 means of tactile resamples") +
+  scale_x_continuous(breaks = seq(1990, 2000, 2))
+p4 <- ggplot(resampled_means, aes(x = mean_year)) +
+  geom_histogram(binwidth = 1, color = "white", boundary = 1990) +
+  labs(x = "Resampled mean year", title = "35 means of virtual resamples") +
+  scale_x_continuous(breaks = seq(1990, 2000, 2))
+p3
+p4
+```
+
+Recall that in the "resampling with replacement" scenario we are illustrating here both the above histograms have a special name: the *bootstrap distribution of the sample mean*. Furthermore, they are an approximation to the *sampling distribution* of the sample mean, a concept you saw in Chapter \@ref(sampling) on sampling. These distributions allow us to study the effect of sampling variation on our estimates of the true population mean, in this case the true mean year for *all* US pennies. However, unlike in Chapter \@ref(sampling) where we simulated the act of taking multiple samples, something one would never do in practice, bootstrap distributions are constructed from a *single* sample, in this case the 50 original pennies from the bank. 
+
+```{block, type='learncheck', purl=FALSE}
+**_Learning check_**
+```
+
+<!--
+**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** Ask learners to compare the distributions since we did something similar in Chapter 8 and they should be well versed on this by now.
+-->
+
+```{block, type='learncheck', purl=FALSE}
+```
+
+
+### Virtually resampling 1000 times {#bootstrap-1000-replicates}
+
+Remember that one of the goals of resampling with replacement is to construct the bootstrap distribution, which is an approximation of the sampling distribution of the point estimate of interest, here the sample mean year. However, the bootstrap distribution of in Figure \@ref(fig:tactile-resampling-7) is based only on 35 resamples and hence looks a little coarse. Let's increase the number of resamples to 1000 to better observe the shape and the variability from one resample to the next. 
+
+```{r}
+# Repeat resampling 1000 times
+virtual_resamples <- pennies_sample %>% 
+  rep_sample_n(size = 50, replace = TRUE, reps = 1000)
+# Compute 1000 sample means
+virtual_resampled_means <- virtual_resamples %>% 
+  group_by(replicate) %>% 
+  summarize(mean_year = mean(year))
+```
+
+However, in the interest of brevity, going forward let's combine the above two operations into a single chain of `%>%` pipe operators:
+
+```{r}
+virtual_resampled_means <- pennies_sample %>% 
+  rep_sample_n(size = 50, replace = TRUE, reps = 1000) %>% 
+  group_by(replicate) %>% 
+  summarize(mean_year = mean(year))
+virtual_resampled_means
+```
+
+Let's visualize the bootstrap distribution of these 1000 sample means from 1000 virtual resamples looks like in Figure \@ref(fig:one-thousand-sample-means):
+
+```{r one-thousand-sample-means, echo=FALSE, message=FALSE, fig.cap="Bootstrap resampling distribution based on 1000 resamples."}
+ggplot(virtual_resampled_means, aes(x = mean_year)) +
+  geom_histogram(binwidth = 1, color = "white", boundary = 1990) +
+  labs(x = "sample mean")
+```
+
+Note here the bell shape starting to become more apparent. We now have a general sense for the range of values that the sample mean may take on in these resamples from this histogram of the bootstrap distribution. Do you have a guess as to where this histogram is centered? With it being close to symmetric, either the mean or the median would serve as a good estimate for the center here. Let's compute the mean:
+
+```{r eval=TRUE}
+virtual_resampled_means %>% 
+  summarize(mean_of_means = mean(mean_year))
+```
+```{r echo=FALSE}
+mean_of_means <- virtual_resampled_means %>% 
+  summarize(mean(mean_year)) %>% 
+  pull()
+```
+
+The mean of the 1000 means from 1000 resamples is `r mean_of_means`. Note that this is quite close to the mean of our original sample of 50 pennies from the bank: `r x_bar %>% pull(mean_year) %>% round(2)`. This is the case since each of the 1000 resamples are based on the original sample of 50 pennies.
+
+
+
+```{block, type='learncheck', purl=FALSE}
+**_Learning check_**
+```
+
+**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** What is the difference between a bootstrap distribution and a sampling distribution?
+
+<!--
+**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** Ask learners to summarize important features of the plot as was done in Chapter 8.
+-->
+
+```{block, type='learncheck', purl=FALSE}
+```
+
+
+
+
+###10.3 Combining an estimate with its precision
+
+A **confidence interval** gives a range of plausible values for a parameter. It depends on a specified confidence level with higher confidence levels corresponding to wider confidence intervals and lower confidence levels corresponding to narrower confidence intervals. Common confidence levels include 90%, 95%, and 99%.
+
+
+Usually we don’t just begin sections with a definition, but *confidence intervals* are simple to define and play an important role in the sciences and any field that uses data. 
+You can think of a confidence interval as playing the role of a net when fishing. Instead of just trying to catch a fish with a single spear (estimating an unknown parameter by using a single point estimate/statistic), we can use a net to try to provide a range of possible locations for the fish (use a range of possible values based around our statistic to make a plausible guess as to the location of the parameter).
+
+###10.4 CI with the Normal distribution
+If the sampling distribution of an estimator is normally distributed, then we can use properties of the standard normal distribution to create a confidence interval:
+* 95% of the values are between -1.96 and +1.96. 
+* 90% of values are between -1.68 and +1.68. 
+
+Using this, we can define a 95% confidence interval for a population parameter as,
+$$(Estimate – 1.96*SE(Estimate), \ Estimate + 1.96*SE(Estimate))$$
+For example, a 95% confidence interval for the population mean $\mu$ can be constructed based upon the sample mean as, $$(\bar{x} - 1.96 * SE(\bar{x}), \ \bar{x} + 1.96*SE(\bar{x}))$$
+
+A few properties are worth keeping in mind:
+* This interval is *symmetric*. This symmetry falls from the fact that the normal distribution is a symmetric distribution. *If the sampling distribution is not normal, the confidence interval may not be symmetric*.
+* The multiplier 1.96 used in this interval corresponding to 95% comes directly from properties of the normal distribution. *If the sampling distribution is not normal, this multiplier might be different*. For example, this multiplier is *larger* when the distribution has heavy tails, as with the t-distribution.
+
+###10.5 CI via Bootstrap
+When you are not sure what the appropriate sampling distribution is, or when you are worried that your assumptions might be wrong, confidence intervals can be created using a bootstrapping process.
+
+{current 9.3, 9.3.1 sections}
+
+###10.6 Interpreting a Confidence Interval
+Like many statistics, while a confidence interval is fairly straightforward to construct, it is very easy to interpret incorrectly. In fact, many researchers – statisticians included – get the interpretation of confidence intervals wrong. This goes back to the idea of **counterfactual thinking** that we introduced previously: A confidence interval is a property of a population and estimator, not a particular sample. It asks: if I constructed this interval in every possible sample, in what percentage of samples would I correctly include the true population parameter? 
+
+To see this, let’s return to the sampling distribution of the sample mean. 
+{hist of sampling dis here}
+Assume that we drew this observation (pick a point near to the mean) and constructed a 95% confidence interval. In this case, the population mean would be in this interval, right? (Yes).
+{now oen in the tail highlighted}
+Assume now that we were unlucky and got an observation far from the population mean and constructed a 95% confidence interval. In this case, is the population mean in this interval? (No). 
+Importantly, remember that in the data we have in front of us *we don’t know what the population mean is* and we don’t know if our estimate is the value near to the mean (case 1) or far from the mean (case 2). 
+
+Another way to visualize this is via the intervals themselves:
+{Plot from current 9.5}
+
+
+###10.7 Examples (from end of current chapter 9)
+
+
