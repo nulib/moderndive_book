@@ -1,0 +1,370 @@
+# P-values {#pvalues}
+
+```{r setup-pvalues, include=FALSE, purl=FALSE}
+chap <- 11
+lc <- 0
+rq <- 0
+# **`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`**
+# **`r paste0("(RQ", chap, ".", (rq <- rq + 1), ")")`**
+knitr::opts_chunk$set(
+  tidy = FALSE, 
+  out.width = '\\textwidth', 
+  fig.height = 4,
+  fig.align='center',
+  warning = FALSE
+  )
+options(scipen = 99, digits = 3)
+# Set random number generator see value for replicable pseudorandomness. 
+set.seed(2018)
+```
+
+In Chapter \@ref(CIs), we covered how to use the theory of repeated samples to make inferences from a sample (your data) to a population. To do so, we introduced the counterfactual thinking that underpins statistical reasoning, wherein making inferences requires you to imagine alternative versions of your data that you might have under other possible samples selected in the same way. In this chapter, we extend this counterfactual reasoning to imagine other possible samples you might have seen if you knew the trend in the population. This way of thinking will lead us to define p-values.
+
+###Needed Packages {-}
+
+Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). If needed, read Section \@ref(packages) for information on how to install and load R packages.
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(moderndive)
+library(infer)
+library(ggplot2movies)
+```
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+# Packages needed internally, but not in text.
+library(readr)
+library(knitr)
+library(kableExtra)
+library(patchwork)
+library(scales)
+```
+
+##Stochastic Proof by Contradiction {#proof-by-contradiction}
+In many scientific pursuits, the goal is not simply to estimate a population parameter. Instead, the goal is often to understand if there is a difference between two groups in the population or if there is a relationship between two (or more) variables in the population. For example, we might want to know if average SAT scores differ between men and women, or if there is a relationship between education and income in the population in the United States. 
+
+Let’s take the difference in means between two groups as a motivating example. In order to prove that there is a difference between average SAT scores for men and women, we might proceed with what is in math called a proof by contradiction. Here, however, this proof is probabilistic (aka stochastic).
+
+**Stochastic Proof by Contraction**:
+
+There are three steps in a Proof by Contradiction. In order to illustrate these, assume we wish to prove that there is a relationship between X and Y.
+
+1.	Negate the conclusion: Begin by assuming the opposite – that there is no relationship between X and Y.
+2.	Analyze the consequences of this premise:  If there is no relationship between X and Y in the population, what would the sampling distribution of the estimate of the relationship between X and Y look like?
+3.	Look for a contradiction: Compare the relationship between X and Y observed in your sample to this sampling distribution. How (un)likely is this observed relationship? 
+
+If likelihood of the observed relationship is small, then this is evidence that there is a relationship between X and Y in the population.
+
+##Repeated samples, the null hypothesis, and p-values
+
+###Null hypothesis
+
+In the example of asking if there is a difference in SAT scores between men and women, you will note that in order to prove that there is a difference, we begin by assuming that there is not a difference (Step 1). We call this the null hypothesis – it is the hypothesis we are attempting to disprove. The most common null hypotheses are:
+
+* A parameter is 0 in the population.
+* There is no difference between two or more groups in the population.
+* There is no relationship between two variables in the population.
+
+Importantly, this hypothesis is about the value or relationship in the population, not the sample. (This is a very easy mistake to make). Remember, you have data in your sample, so you know without a doubt if there is a difference or relationship in your data (that is your estimate). What you do not know is if there is a difference or relationship in the population. 
+Once a null hypothesis is determined, the next step is to determine what the sampling distribution of the estimator would be if this null hypothesis were true (Step 2). We can determine what this null distribution would look like in two ways, just as with sampling distributions more generally: using mathematical theory or using computational approximation (bootstrapping). 
+
+###P-values
+Once the distribution of the sample statistic is determined under the null hypothesis, to complete the stochastic proof by contradiction, you simply need to ask: Given this distribution, how likely is it that I would have drawn a random sample in which the estimated value is this extreme or more extreme? 
+
+This is the **p-value**: The probability of your observing an estimate as extreme as the one you observed if the null hypothesis is true. If this p-value is small, it means that this data is unlikely to occur under the null hypothesis, and thus the null hypothesis is unlikely to be true. (See, proof by contradiction!)
+
+```{r p-value-diagram, echo=FALSE, out.width='100%', fig.cap="P-value diagram"}
+knitr::include_graphics('images/p-value-figure.png')
+```
+
+<!-- retrieved diagram from https://scientistseessquirrel.wordpress.com/2015/02/09/in-defence-of-the-p-value/  need to cite?-->
+
+In general, in order to estimate a p-value, you first need to standardize your sample statistic. This standardization makes it easier to determine the sampling distribution under the null hypothesis. 
+
+This standardization is easiest when the sampling distribution of the estimator itself is normally distributed, as is the case for the sample mean, the difference in sample means, the relationship between two continuous covariates, and many others. 
+
+In these cases, this standardization is conducted using the following formula:
+
+$$t\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)}$$
+
+This **t-statistic** is then used to determine the sampling distribution under the null hypothesis and the p-value based upon the observed value. There are two approaches one can use here: based on mathematical theory or based upon simulation (bootstrap).
+
+##P-value and Null Distribution Example
+
+###IMDB data {#imdb}
+The `movies` dataset in the `ggplot2movies` package contains information on `r nrow(movies) %>% comma()` movies that have been rated by users of IMDB.com. 
+
+```{r}
+movies
+```
+
+We'll focus on a random sample of 68 movies that are classified as either "action" or "romance" movies but not both. We disregard movies that are classified as both so that we can assign all 68 movies into either category. Furthermore, since the original `movies` dataset was a little messy, we provided a pre-wrangled version of our data in the `movies_sample` data frame included in the `moderndive` package (you can look at the code to do this data wrangling [here](https://github.com/moderndive/moderndive/blob/master/data-raw/process_data_sets.R#L14)):
+
+```{r}
+movies_sample
+```
+
+The variables include the `title` and `year` the movie was filmed. Furthermore, we have a numerical variable `rating`, which is the IMDB rating out of 10 stars, and a binary categorical variable `genre` indicating if the movie was an `Action` or `Romance` movie. We are interested in whether there is a difference in average ratings between the `Action` and `Romance` genres.
+
+Let's calculate the number of movies, the mean rating, and the standard deviation split by the binary variable `genre`.  We'll do this using `dplyr` data wrangling verbs, in particular the count of each type of movies using the `n()` summary statistic function. 
+
+```{r}
+movies_sample %>% 
+  group_by(genre) %>% 
+  summarize(n = n(), mean_rating = mean(rating), std_dev = sd(rating))
+```
+
+We start by assuming there is no difference, therefore our null value is $\mu_1 - \mu_2 = 0$. We want to calculate the t-statistic for this scenario:
+
+$$t\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)} = \frac{(\bar{x}_1 - \bar{x}_2) - 0}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$ 
+Let's compute all the necessary values from our sample data. 
+```{r, echo=FALSE}
+movies_genre_summaries <- movies_sample %>% 
+  group_by(genre) %>% 
+  summarize(n = n(), mean_rating = mean(rating), std_dev = sd(rating))
+x_bar_action <- movies_genre_summaries %>% 
+  filter(genre == "Action") %>% 
+  pull(mean_rating)
+x_bar_romance <- movies_genre_summaries %>% 
+  filter(genre == "Romance") %>% 
+  pull(mean_rating)
+sd_action <- movies_genre_summaries %>% 
+  filter(genre == "Action") %>% 
+  pull(std_dev)
+sd_romance <- movies_genre_summaries %>% 
+  filter(genre == "Romance") %>% 
+  pull(std_dev)
+n_action <- movies_genre_summaries %>% 
+  filter(genre == "Action") %>% 
+  pull(n)
+n_romance <- movies_genre_summaries %>% 
+  filter(genre == "Romance") %>% 
+  pull(n)
+t_stat <- ((x_bar_romance - x_bar_action) - 0)/sqrt(sd_romance^2 / n_romance + sd_action^2 / n_action)
+```
+
+So we have `r n_romance` movies with an average rating of `r x_bar_romance %>% round(2)` stars out of 10 and `n_action` movies with a sample mean rating of `r x_bar_action %>% round(2)` stars out of 10. The difference in these average ratings is thus `r x_bar_romance %>% round(2)` - `r x_bar_action %>% round(2)` = `r (x_bar_romance - x_bar_action) %>% round(2)`. Our resulting `t_stat` is `r t_stat`.
+
+There appears to be an edge of `r (x_bar_romance - x_bar_action) %>% round(2)` stars in romance movie ratings. The question is however, are these results indicative of a true difference for all romance and action movies? Or could this difference be attributable to chance and sampling variation? Computing a p-value for this t-statistic can help us to answer this. 
+
+###Theory based p-values
+While we have shown that the sampling distribution of the sample mean and of the regression coefficient estimates are normally distributed, this is not always the case for the t-statistic computed above. This is because the standard errors of many estimators, which appear on the denominator of the t-statistic, are a function of an additional estimated quantity – the sample variance $s^2$.  When this is the case, the sampling distribution for the **t-statistic is a t-distribution with a specified degrees of freedom (df)**. Degrees of freedom for this distribution are provided in the table below. 
+
+
+Statistics |Population parameter |		Estimator	|	t-distribution df
+-----------|---------------------|--------------|------------------
+Mean       |$\mu$                |	$\bar{x}$		|	$n – 1$
+Diff in means | $\mu_1 -\mu_2$	|	$\bar{x}_1 - \bar{x}_2$ | $n_1 + n_2 – 2$
+
+The t-distribution is very similar to the standard normal distribution:
+
+* It has a mean of 0 under the null hypothesis.
+* It is symmetric
+
+But there is one important difference:
+
+* The t-distribution has **heavier tails** than the normal distribution. This means that large values are more likely under the t-distribution than the normal distribution. 
+
+```{r t-vs-z, fig.cap = "Standard normal vs. t-distribution"}
+ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
+    stat_function(fun = dnorm,
+                    aes(colour = "Standard Normal"), size = 1) +
+    stat_function(fun = dt, args = list(df = 2),
+                    aes(colour = "t-distribution, df = 2"), size = 1) 
+  
+```
+
+```{r t-vs-z-2, fig.cap = "t-distribution approximately normal in large samples"}
+ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
+    stat_function(fun = dnorm,
+                    aes(colour = "Standard Normal"), size = 1) +
+    stat_function(fun = dt, args = list(df = 2),
+                    aes(colour = "t-distribution, df = 2"), size = 1) +
+    stat_function(fun = dt, args = list(df = 30),
+                    aes(colour = "t-distribution, df = 30"), size = 1)
+  
+```
+
+
+
+We can calculate a p-value by asking: Assuming the null distribution, what is the probability that we will see a t-statistic as extreme as the one from our data? To answer this, we can calculate this using `pt(t_stat, df)`, where `t_stat` is the t-statistic we calculated from our sample data, and `df` is the appropriate degrees of freedom for our estimator and sample size. There is a default argument `lower.tail = TRUE` in the `pt()` function, which means it returns the probability *to the left* of the `t_stat` value you enter. For example, Figure \@ref(fig:t-lower-tail) shows the shaded probabilty that is implied by the code `pt(1.5, df = 30, lower.tail = TRUE)` and Figure \@ref(fig:t-upper-tail) shows the shaded probabilty that is implied by the code `pt(1.5, df = 30, lower.tail = FALSE)`. 
+
+```{r t-lower-tail, fig.cap = "pt(1.5, df = 30, lower.tail = TRUE)", message = FALSE, echo = FALSE, warning = FALSE}
+shade_curve <- function(MyDF, tstart, tend, fill = "red", alpha = .5){
+  geom_area(data = subset(MyDF, x >= 0 + tstart
+                          & x < 0 + tend),
+            aes(y=y), fill = fill, color = NA, alpha = alpha)
+}
+data <- data.frame(x = seq(from = -5, to = 5, by = 0.01)) %>% 
+  mutate(y = dnorm(x))
+ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
+    stat_function(fun = dt, args = list(df = 66),
+                    aes(colour = "t-distribution"), size = 1) +
+  geom_vline(xintercept = 1.5, linetype = 2) +
+  shade_curve(data, tstart = -5, tend = 1.5)
+  
+```
+
+```{r t-upper-tail, fig.cap = "pt(1.5, df = 30, lower.tail = TRUE)", message = FALSE, echo = FALSE, warning = FALSE}
+ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
+    stat_function(fun = dt, args = list(df = 66),
+                    aes(colour = "t-distribution"), size = 1) +
+  geom_vline(xintercept = 1.5, linetype = 2) +
+  shade_curve(data, tstart = 1.5, tend = 5)
+  
+```
+**Caveat**:
+It is important to note that the t-distribution is often referred to as a “small sample” distribution. That is because once the degrees of freedom are large enough (when the sample size is large), the t-distribution is actually quite similar to the normal distribution (See Figure \@ref(t-vs-z-2) ). For analysis purposes, however, you don’t need to determine when to use one or the other as your sampling distribution: just always use the t-distribution. 
+
+
+In our IMDB movies example, we observe a `t_stat = 2.91`, and we want to know what the probability of observing a t-statistic *as large* as this would be under the null distribution. Therefore we want to include the argument `lower.tail = FALSE` when computing our p-value. Note our $df = n_1 + n_2 - 2 = 36 + 32 - 2 = 66$, so our p-value is given by `pt(2.91, 66, lower.tail = FALSE)` = `r round(pt(2.91, 66, lower.tail = FALSE), 4)`. This tells us that if the null distribution is true (i.e. there is no true difference between average ratings of romance and action movies on IMDB), we would only observe a difference as large as we did `r round(pt(2.91, 66, lower.tail = FALSE)*100, 2)`% of the time. This provides evidence - via proof by contradiction - that the null distribution is likely false; that is, there is likely a true difference in average ratings of romance and action moview on IMDB.
+
+###Bootstrap p-values
+
+In Section \@ref(bootstrap-process), we introduced you to the `infer` package to use the bootstrap procedure to approximate a sampling distribution, compute approximate standard errors, and construct confidence intervals. 
+
+Recall that the`infer` package workflow emphasizes each of the steps in the overall process in Figure \@ref(fig:infer-ci) using function names that are intuitively named:
+
+1. `specify()` the variables of interest in your data frame
+1. `generate()` replicates of bootstrap resamples with replacement
+1. `calculate()` the summary statistic of interest
+1. `visualize()` the resulting bootstrap distribution and the confidence interval.
+
+```{r infer-ci, echo=FALSE, fig.cap="Confidence intervals via the infer package.", purl=FALSE, out.width="80%"}
+knitr::include_graphics("images/flowcharts/infer/visualize.png")
+```
+
+In this section, we now show you how to extend and modify the previously seen `infer` pipeline to compute p-values. You'll notice that the basic outline of the workflow is almost identical, except for an additional `hypothesize()` step between `specify()` and `generate()`, as can be seen in Figure \@ref(fig:inferht).
+
+```{r inferht, echo=FALSE, fig.cap="Hypothesis testing via the infer package.", purl=FALSE, out.width="80%"}
+knitr::include_graphics("images/flowcharts/infer/ht.png")
+```
+
+```{r, echo=FALSE}
+alpha <- 0.05
+```
+
+Furthermore, we'll use a pre-specified significance level $\alpha$ = `r alpha` for this hypothesis test. Let's leave the justification of this choice of $\alpha$ until later on in Section \@ref(ht-interpretation). 
+
+### infer package workflow {-}
+
+#### 1. `specify` variables {-}
+
+Recall that we use the `specify()` \index{infer!specify()} verb to denote the response and, if needed, explanatory variables for our study. In this case, since we are interested in any potential effects of `genre` on IMDB `rating`, we set `rating` as the response variable and `genre` as the explanatory variable using the `formula` argument using the notation `<response> ~ <explanatory>` where `<response>` is the name of the response variable in the data frame and `<explanatory>` is the name of the explanatory variable. So in our case it is `rating ~ genre`.
+
+```{r}
+movies_sample %>% 
+  specify(formula = rating ~ genre)
+```
+
+Again, notice how the `movies_sample` data itself doesn't change, but the `Response: rating (factor)` and `Explanatory: genre (factor)` *meta-data* do. This is similar to how the `group_by()` verb from `dplyr` doesn't change the data, but only adds "grouping" meta-data as we saw in Section \@ref(groupby).
+
+
+#### 2. `hypothesize` the null {-}
+
+In order to compute p-values using the `infer` workflow, we need a new step: \index{infer!hypothesize()} `hypothesize()`. Recall that we are starting out with the hypothesis that there is no difference in average ratings between genres. We specify this in our `infer` workflow by setting the `null` argument of the `hypothesize()` function to either:
+
+- `"point"` for hypotheses involving a single group/sample or
+- `"independence"` for hypotheses involving two groups/samples
+
+In our case, since we have two groups (the "Romance" and "Action" genres), we set `null = "independence"`. 
+
+```{r}
+movies_sample %>% 
+  specify(formula = rating ~ genre) %>% 
+  hypothesize(null = "independence")
+```
+
+Again, the data has not changed yet. This will occur at the upcoming `generate()` step; we're merely setting meta-data for now.
+
+#### 3. `generate` replicates {-}
+
+After we have set the null hypothesis, we simulate observations assuming the null hypothesis is true by randomly shuffling (i.e. permuting) the `genre` variable. First, imagine a hypothetical universe with no difference in average ratings across genres. In such a hypothetical universe, the genre of movie would have no bearing on its IMDB rating. In our `movies_sample` dataframe then, the `genre` variable would thus be an irrelevant label. If the `genre` label is irrelevant, then we can randomly "shuffle" this label to no consequence! Randomly shuffling the 68 `genre` labels in our dataframe is equivalent to generating one bootstrap sample. We can create 1000 such bootstrap samples in which there is no relationship between genre and rating by setting `reps = 1000` in the `generate()` \index{infer!generate()} function. However, unlike with confidence intervals where we generated replicates using `type = "bootstrap"` resampling with replacement, we'll now perform shuffles/permutations by setting `type = "permute"`. Note that shuffles/permutations are a form of resampling without replacement. 
+
+<!-- should we include their full walk-through of the shuffling exercise? Leaving it out for now so as not to distract from the fact we're in the middle of a p-value explanation-->
+
+```{r eval=FALSE}
+movies_sample %>% 
+  specify(formula = rating ~ genre) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute")
+```
+
+
+Note that the resulting data frame has 68,000 rows. This is because we performed shuffles/permutations of the 68 values of `genre` 1000 times and thus 68,000 = 1000 $\times$ 68. Accordingly the variable `replicate`, indicating which resample each row belongs to, has the value `1` 68 times, the value `2` 68 times, all the way through to the value `1000` 68 times. 
+
+
+#### 4. `calculate` summary statistics {-}
+
+Now that we have 1000 replicated "shuffles" assuming the null hypothesis that both "Romance" and "Action" movies have the same ratings on average, let's `calculate()` \index{infer!calculate()} the appropriate summary statistic for each of our 1000 shuffles.   
+
+For each of our 1000 shuffles, we can calculate the difference in means by setting `stat = "diff in means"`. Let's save the result in a data frame called `null_distribution`:
+
+```{r}
+set.seed(2018)
+null_distribution <- movies_sample %>% 
+  specify(formula = rating ~ genre) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("Romance", "Action"))
+null_distribution
+```
+
+Observe that we have 1000 values of `stat`, each representing one "shuffled" instance of $\bar{x}_{Romance} - \bar{x}_{Action}$ in a hypothesized world of no rating difference across genres.  
+
+But wait! What happened in real-life? What was the observed difference in average ratings? In other words, what was the *observed estimate* $\bar{x}_{Romance} - \bar{x}_{Action}$? Recall from Section \@ref(imdb) that we computed this observed difference `r x_bar_romance %>% round(2)` - `r x_bar_action %>% round(2)` = `r (x_bar_romance - x_bar_action) %>% round(2)`. We can also achieve this using the code above but with the `hypothesize()` and `generate()` steps removed. Let's save this in `obs_diff_means`
+
+```{r}
+obs_diff_means <- movies_sample %>% 
+  specify(formula = rating ~ genre) %>% 
+  calculate(stat = "diff in means", order = c("Romance", "Action"))
+obs_diff_means
+```
+
+
+#### 5. `visualize` the p-value {-}
+
+The final step is to measure how surprised we would be by a difference in average ratings of 1.05 in a hypothesized universe of no difference across genres. If very surprised, then we would be inclined to reject the validity of our hypothesized universe. 
+
+We start by visualizing the *null distribution* of our 1000 values of $\bar{x}_{Romance} - \bar{x}_{Action}$ using `visualize()` \index{infer!visualize()} in Figure \@ref(fig:null-distribution-infer). Recall that these are values of the difference in average ratings assuming the null hypothesis is true.
+
+```{r null-distribution-infer, fig.show='hold', fig.cap="Bootstrap distribution", purl=FALSE}
+visualize(null_distribution, binwidth = 0.1)
+```
+
+Let's now add what happened in real-life to Figure \@ref(fig:null-distribution-infer), the observed difference in promotions rates of `r x_bar_romance %>% round(2)` - `r x_bar_action %>% round(2)` = `r (x_bar_romance - x_bar_action) %>% round(2)`. However, instead of merely adding a vertical line using `geom_vline()`, let's use the \index{infer!shade\_p\_value()} `shade_p_value()` function with `obs_stat` set to the observed test statistic value we saved in `obs_diff_means` and `direction = "right"`:
+
+```{r null-distribution-infer-2, fig.cap="Shaded histogram to show p-value."}
+visualize(null_distribution, binwidth = 0.1) + 
+  shade_p_value(obs_stat = obs_diff_means, direction = "right")
+```
+
+In the resulting Figure \@ref(fig:null-distribution-infer-2), the solid red line marks our observed difference in means. However, what does the shaded-region correspond to? This is the p-value. Judging by the shaded region in Figure \@ref(fig:null-distribution-infer-2), it seems we would somewhat rarely observe differences in ratings of `r round(obs_diff_means,2)` or more in a hypothesized universe of no differences across genres. In other words, the p-value is somewhat small. Hence, we would be inclined to reject this hypothesized universe. 
+
+What fraction of the null distribution is shaded? In other words, what is the exact p-value? We can compute its numerical value using the `get_p_value()` \index{infer!get\_p\_value()} function using the exact same arguments as with the `visualize()` code above:
+
+```{r}
+null_distribution %>% 
+  get_p_value(obs_stat = obs_diff_means, direction = "right")
+```
+```{r, echo=FALSE}
+p_value <- null_distribution %>% 
+  get_p_value(obs_stat = obs_diff_means, direction = "right") %>% 
+  mutate(p_value = round(p_value, 3))
+```
+
+In other words, the probability of observing a difference in ratings as large as `r round(obs_diff_means,2)` due to sampling variation alone is only `r pull(p_value)` = `r pull(p_value) * 100`%. 
+
+##Interpretation of P-values
+Like many statistical concepts, p-values are often misunderstood and misinterpreted. Remember, a p-value is the probability that you would observe data as extreme as the data you do if, in fact, the null hypothesis is true. As Wikipedia notes:
+
+* The p-value is not the probability that the null hypothesis is true, or the probability that the alternative hypothesis is false.
+* The p-value is not the probability that the observed effects were produced by random chance alone.
+* The p-value does not indicate the size or importance of the observed effect.
+
+Finally, remember that the p-value is a probabilistic attempt at making a proof by contradiction. Unlike in math, this is not a definitive proof. For example, if the p-value is 0.10, this means that if the null hypothesis is true, there is a 10% chance that you would observe an effect as large as the one in your sample. Depending upon if you are a glass-half-empty or glass-half-full kind of person, this could be seen as large or small:
+
+* “Only 10% chance is small, which is unlikely. This must mean that the null hypothesis is not true,” or 
+* “But we don’t know that for sure: in 10% of possible samples, this does occur just by chance. The null hypothesis could be true.”
+
+This will be important to keep in mind as we move towards using p-values for decision making in Chapter 12.
