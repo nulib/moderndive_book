@@ -24,36 +24,36 @@ options(scipen = 99, digits = 3)
 set.seed(76)
 ```
 
-In this chapter we kick off the third segment of this book, statistical inference, by learning about **samples** and **populations**. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand trends in the sample but instead to make inferences from trends observed in this sample to trends in a larger population. This chapter provides a broad overview of these concepts of sample and population and the links between them. In Chapters 9 and 10 we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions, respectively. As mentioned before, the concepts throughout this text all build into a culmination allowing you to “think with data.”
+In this chapter we kick off the third segment of this book, statistical inference, by learning about **samples** and **populations**. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand insights and trends in the sample but instead to make inferences from such insights and trends observed to trends in a larger population. This chapter provides a broad overview of the concepts of samples and populations and the links between them. In Chapters 9 and 10 we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions, respectively. As mentioned before, the concepts throughout this text all build into a culmination allowing you to "think with data."
 
 ---
 
 
 ## Terminology & Notation {#terminology}
 
-In the first two sections of this book, you were provided with sample data, methods for exploring this data visually, and methods for summarizing trends in this data. These methods are what we call **descriptive statistics**, as they are focused on describing the observed sample.
+In Parts I and II of this book, you were provided with sample data, methods for exploring this data visually, and methods for summarizing trends in this data. These methods are what we call **descriptive statistics**, as they are focused on describing the observed sample.
 
 In science and policy, the goal of analysis is typically not just to understand trends in a sample but instead to make inferences from this sample to trends in a population. For example, in order to understand the relationship between party affiliation and voting, you might conduct a poll in a sample of 100 (or 1,000) voters by mail, phone-call, or by stopping them on the street. Or, in order to determine if a new drug effectively reduces high blood pressure, you might conduct a randomized experiment in a sample of 200 patients experiencing high blood pressure. 
 
-Why not use population data instead? While a **census** of every person (or unit) in a population would be ideal, it’s not hard to see that doing so is costly in many regards – financially and in terms of time and personnel. 
+Why not use population data instead? While a **census** of every person (or unit) in a population would be ideal, it's not hard to see that doing so is costly in many regards --- financially and in terms of time and personnel. 
 
 In order to understand the relationship between samples and populations, we begin by providing some vocabulary and notation that we will use throughout the remainder of the book. 
 
-1. **Population**: A population is a collection of individuals or observations about which we are interested. We mathematically denote the population’s size using upper case $N$. 
+1. **Population**: A population is a collection of individuals or units about which we are interested. We mathematically denote the population's size using upper-case $N$. 
 
-2. **Sample**: A sample is a collection of individuals or observations about which we have data. We mathematically denote the sample’s size using lower-case $n$. 
+2. **Sample**: A sample is a collection of individuals or units from a population. These are the individuals or units about which we have data. We mathematically denote the sample's size, the number of people or units we have data on, using lower-case $n$. 
 
-3. **Population parameter**: A population parameter is a numerical summary quantity about the population that is unknown, but you wish you knew. These are typically denoted mathematically using Greek letters. For example, you may want to know the population mean, which is typically written as $\mu$ (pronounced “mu”).  Or, you might want to know the population proportion, which is typically written as $\pi$ (pronounced “pi”). 
+3. **Population parameter**: A population parameter is a numerical value that summarizes the population. In almost all cases the population parameter is unknown, but we wish to know it. Population parameters are typically denoted mathematically using Greek letters. For example, you may want to know the population mean, which is typically written as $\mu$ (pronounced "mu"). Or, you might want to know the population proportion, which is typically written as $\pi$ (pronounced "pi"). Population size, $N$, is a case where we do not follow the Greek letter convention to denote a population parameter.
 
-4. **Sample statistic / estimate **: A summary statistic computed from the sample that estimates an unknown population parameter. These are sometimes denoted mathematically using Roman letters (that correspond to Greek letters) or via inclusion of a “hat” above the population parameter.  For example, the population mean can be estimated using the sample mean denoted $\hat{\mu}$ or $m$ and the population proportion can be estimated from the sample proportion denoted $\hat{\pi}$ or $p$.
+4. **Sample statistic / estimate **: A sample statistic is a numerical value that summarizes the sample and can be used to estimate an unknown population parameter. It is common for a sample statistic to sometimes be called an estimate or point estimate. These are sometimes denoted mathematically using Roman letters (that correspond to Greek letters) or via inclusion of a "hat" above the population parameter (called hat-notation). For example, the population population proportion $\pi$ can be estimated using a sample proportion which is denoted with $\hat{\pi}$ or $p$. The population mean $\mu$ can be estimated using the sample mean which is denoted $\hat{\mu}$ or $\overline{x}$. Obviously $\overline{x}$ doesn't follow either the Greek letter or hat-notation conventions, but it is the standard notation for the sample mean. 
 
-5. **Census**: An exhaustive enumeration or counting of all $N$ individuals or observations in the population in order to compute the population parameter’s value exactly.
+5. **Census**: A census is an exhaustive collection of a measurement on all $N$ individuals or units in the population in order to compute the exact value of a population parameter for the given measure.
 
-6. **Random sampling**: Random sampling is the act of collecting a random sample from the population when we don’t have the means to perform a census. Here “random” means that every individual or observation in the population has a chance of being selected and that the process of selection is uncorrelated with the data itself. For example, a random procedure might involve rolling dice, selecting slips of paper out of a hat, or using a random number generator. Importantly, procedures that involve selecting the sample based upon observed characteristics (e.g., age, gender) are not random. 
+6. **Random sampling**: Random sampling is the act of using a random procedure to select individuals or units from a population that we will collect measurements on. Random sampling is extremely useful when we don't have the means to perform a census. Here "random" means that every individual or unit in the population has a chance of being selected and that the process of selection is uncorrelated with the data itself. For example, a random procedure might involve rolling dice, selecting slips of paper out of a hat, or using a random number generator. Importantly, procedures that involve selecting the sample based upon observed characteristics (e.g., age, gender) are not random. 
 
-The first two of these definitions makes clear that the data you have in hand (sample) is being used to make inferences to a larger set of data you don’t have (population). Definitions 3 and 4 refine these further, focusing on the specific numbers you wish you knew (population parameter) and the ones you are able to calculate using your data (estimate / sample statistic). Definitions 5 and 6 refer to how a sample is related to a population- either they are the same (census) or the mechanism through which they are related needs to be clear (random sampling). 
+The first two of these definitions makes clear that the data you have in hand (sample) is being used to make inferences to a larger set of data you don't have (population). Definitions 3 and 4 refine these further, focusing on the specific numbers you wish you knew (population parameter) and the ones you are able to calculate using your data (estimate / sample statistic). Definitions 5 and 6 refer to how a sample is related to a population --- either they are the same (census) or the mechanism through which they are related needs to be clear (random sampling). 
 
-The goal is to use data in the sample to make **inferences** to a value in the population. The act of “inferring” is to deduce or conclude (information) from evidence and reasoning. **Statistical inference** is the theory, methods, and practice of forming judgments about the parameters of a population and the reliability of statistical relationships, typically on the basis of random sampling (Wikipedia). In other words, statistical inference is the act of inference via sampling. 
+The goal is to use data in the sample to make **inferences** to a value in the population. The act of "inferring" is to deduce or conclude (information) from evidence and reasoning. **Statistical inference** is the theory, methods, and practice of forming judgments about the parameters of a population and the reliability of statistical relationships, typically on the basis of random sampling (Wikipedia). In other words, statistical inference is the act of inference via sampling. 
 
 
 ---
@@ -69,14 +69,14 @@ Recall that a population is a collection of individuals or observations that you
 
 In each case, the definition of the population includes clear inclusion / exclusion criteria. These help to clarify where inferences are appropriate to be made and where they are not.
 
-In order to select a sample from a population, a **population frame** must be created. This frame includes a list of all possible individuals or observations within the population. Sometimes this frame is difficult to make – and the result is that the population frame may not be exactly the same as the population. For example, for the above populations, population frames might be:
+In order to select a sample from a population, a **population frame** must be created. This frame includes a list of all possible individuals or observations within the population. Sometimes this frame is difficult to make - and the result is that the population frame may not be exactly the same as the population. For example, for the above populations, population frames might be:
 
 * A list of phone numbers registered to individuals in the United States. (Once contacted, only those that are citizens 18 and older would be able to be included.)
 * A list of public elementary *schools* (not students), available for the prior year in the Texas public education state longitudinal data system. 
 * A list of private hospitals made available from the state of California government in a database collected every five years. (Once contacted, only those receiving > $0 Medicaid would be included). 
 * Areas of Lake Michigan where it is possible to fish (e.g, excluding coves).
 
-When this population frame differs from the population, **undercoverage** can occur – i.e., there are parts of the population that may not be able to be studied. For example, citizens over 18 without phone numbers would have a 0% chance of being included in the sample even though they are part of the population of interest. It is important in research to make this clear and to understand how these differences might impact results. 
+When this population frame differs from the population, **undercoverage** can occur - i.e., there are parts of the population that may not be able to be studied. For example, citizens over 18 without phone numbers would have a 0% chance of being included in the sample even though they are part of the population of interest. It is important in research to make this clear and to understand how these differences might impact results. 
 
 Once a population frame is defined, a **sampling** process is developed that, based upon a random procedure, allows for making clear inferences from the sample to the population. There are many possible sampling procedures, some of which include:
 
@@ -103,9 +103,9 @@ Finally, note that in the examples and data we use in this book and course, we f
 
 As an analyst, you will often encounter samples of data that come from unspecified or unclear populations. For example, you:
 
-* developed a survey regarding relationship preferences on SurveyMonkey and then promoted completing this survey on Facebook. Now you have a sample of $n = 200$ completed surveys – but what population do they come from?
-* conducted an experiment in a psychology lab. The experiment is advertised to students in Introductory Psychology courses and in fliers around campus. You now have a sample of $n = 50$ participants in the experiment – but what population do they come from? 
-* scraped some data off the web regarding movie reviews on Rotten Tomatoes. You now have a huge sample of $n = 10,000$ reviews by people – but what population do these reviews come from?    
+* developed a survey regarding relationship preferences on SurveyMonkey and then promoted completing this survey on Facebook. Now you have a sample of $n = 200$ completed surveys - but what population do they come from?
+* conducted an experiment in a psychology lab. The experiment is advertised to students in Introductory Psychology courses and in fliers around campus. You now have a sample of $n = 50$ participants in the experiment - but what population do they come from? 
+* scraped some data off the web regarding movie reviews on Rotten Tomatoes. You now have a huge sample of $n = 10,000$ reviews by people - but what population do these reviews come from?    
 
 In these situations, statistically you do two things:
 
@@ -118,6 +118,5 @@ Finally, keep in mind that **no study generalizes everywhere**. It is your job a
 * Ask: Do the results apply to all individuals or observations? If not, think through how the results might be dependent upon the types of individuals or observations in your sample.
 * Report clearly the characteristics that might affect interpretation and inferences (e.g., race, ethnicity, gender, age, education). 
 * Report clearly how the data was generated. Was it from on online survey? Report this. Was it from a lab study advertised in a college? Report this. 
-
 
 ---
