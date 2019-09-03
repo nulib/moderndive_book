@@ -55,7 +55,7 @@ knitr::opts_chunk$set(
 # CRAN packages needed
 needed_CRAN_pkgs <- c(
   # Data packages:
-  "nycflights13", "ggplot2movies", "fivethirtyeight", "gapminder", "ISLR",
+  "nycflights13", "ggplot2movies", "fivethirtyeight", "gapminder", "ISLR", "dslabs",
   
   # Explicitly used packages:
   "tidyverse", "rmarkdown", "knitr", "plotly", "janitor", "skimr",
