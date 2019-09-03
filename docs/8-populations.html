@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 8 Populations | Statistical Inference via Data Science</title>
   <meta name="description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
-  <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 8 Populations | Statistical Inference via Data Science" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Chester Ismay, Albert Y. Kim, Arend M. Kuyper, Elizabeth Tipton, and Kaitlyn Fitzgerald" />
 
 
-<meta name="date" content="2019-08-10" />
+<meta name="date" content="2019-09-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -69,41 +69,66 @@
 
 
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -268,7 +293,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="6.4" data-path="6-regression.html"><a href="6-regression.html#conclusion-4"><i class="fa fa-check"></i><b>6.4</b> Conclusion</a><ul>
 <li class="chapter" data-level="6.4.1" data-path="6-regression.html"><a href="6-regression.html#additional-resources-4"><i class="fa fa-check"></i><b>6.4.1</b> Additional resources</a></li>
-<li class="chapter" data-level="6.4.2" data-path="3-viz.html"><a href="3-viz.html#whats-to-come-3"><i class="fa fa-check"></i><b>6.4.2</b> What’s to come?</a></li>
+<li class="chapter" data-level="6.4.2" data-path="6-regression.html"><a href="6-regression.html#whats-to-come-4"><i class="fa fa-check"></i><b>6.4.2</b> What’s to come?</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html"><i class="fa fa-check"></i><b>7</b> Multiple Regression</a><ul>
@@ -290,7 +315,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 <li class="chapter" data-level="7.4" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#conclusion-5"><i class="fa fa-check"></i><b>7.4</b> Conclusion</a><ul>
 <li class="chapter" data-level="7.4.1" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#additional-resources-5"><i class="fa fa-check"></i><b>7.4.1</b> Additional resources</a></li>
-<li class="chapter" data-level="7.4.2" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#whats-to-come-4"><i class="fa fa-check"></i><b>7.4.2</b> What’s to come?</a></li>
+<li class="chapter" data-level="7.4.2" data-path="7-multiple-regression.html"><a href="7-multiple-regression.html#whats-to-come-5"><i class="fa fa-check"></i><b>7.4.2</b> What’s to come?</a></li>
 </ul></li>
 </ul></li>
 <li class="part"><span><b>III Inference via infer</b></span></li>
@@ -328,7 +353,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="9.7.2" data-path="9-confidence-intervals.html"><a href="9-confidence-intervals.html#bootstrap-distribution-2"><i class="fa fa-check"></i><b>9.7.2</b> Bootstrap distribution</a></li>
 </ul></li>
 <li class="chapter" data-level="9.8" data-path="9-confidence-intervals.html"><a href="9-confidence-intervals.html#conclusion-6"><i class="fa fa-check"></i><b>9.8</b> Conclusion</a><ul>
-<li class="chapter" data-level="9.8.1" data-path="9-confidence-intervals.html"><a href="9-confidence-intervals.html#whats-to-come-5"><i class="fa fa-check"></i><b>9.8.1</b> What’s to come?</a></li>
+<li class="chapter" data-level="9.8.1" data-path="9-confidence-intervals.html"><a href="9-confidence-intervals.html#whats-to-come-6"><i class="fa fa-check"></i><b>9.8.1</b> What’s to come?</a></li>
 <li class="chapter" data-level="9.8.2" data-path="9-confidence-intervals.html"><a href="9-confidence-intervals.html#script-of-r-code"><i class="fa fa-check"></i><b>9.8.2</b> Script of R code</a></li>
 </ul></li>
 </ul></li>
@@ -508,23 +533,23 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </html>
 <div id="populations" class="section level1">
 <h1><span class="header-section-number">Chapter 8</span> Populations</h1>
-<p>In this chapter we kick off the third segment of this book, statistical inference, by learning about <strong>samples</strong> and <strong>populations</strong>. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand trends in the sample but instead to make inferences from trends observed in this sample to trends in a larger population. This chapter provides a broad overview of these concepts of sample and population and the links between them. In Chapters 9 and 10 we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions, respectively. As mentioned before, the concepts throughout this text all build into a culmination allowing you to “think with data.”</p>
+<p>In this chapter we kick off the third segment of this book, statistical inference, by learning about <strong>samples</strong> and <strong>populations</strong>. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand insights and trends in the sample but instead to make inferences from such insights and trends observed to trends in a larger population. This chapter provides a broad overview of the concepts of samples and populations and the links between them. In Chapters 9 and 10 we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions, respectively. As mentioned before, the concepts throughout this text all build into a culmination allowing you to “think with data.”</p>
 <hr />
 <div id="terminology" class="section level2">
 <h2><span class="header-section-number">8.1</span> Terminology &amp; Notation</h2>
-<p>In the first two sections of this book, you were provided with sample data, methods for exploring this data visually, and methods for summarizing trends in this data. These methods are what we call <strong>descriptive statistics</strong>, as they are focused on describing the observed sample.</p>
+<p>In Parts I and II of this book, you were provided with sample data, methods for exploring this data visually, and methods for summarizing trends in this data. These methods are what we call <strong>descriptive statistics</strong>, as they are focused on describing the observed sample.</p>
 <p>In science and policy, the goal of analysis is typically not just to understand trends in a sample but instead to make inferences from this sample to trends in a population. For example, in order to understand the relationship between party affiliation and voting, you might conduct a poll in a sample of 100 (or 1,000) voters by mail, phone-call, or by stopping them on the street. Or, in order to determine if a new drug effectively reduces high blood pressure, you might conduct a randomized experiment in a sample of 200 patients experiencing high blood pressure.</p>
-<p>Why not use population data instead? While a <strong>census</strong> of every person (or unit) in a population would be ideal, it’s not hard to see that doing so is costly in many regards – financially and in terms of time and personnel.</p>
+<p>Why not use population data instead? While a <strong>census</strong> of every person (or unit) in a population would be ideal, it’s not hard to see that doing so is costly in many regards — financially and in terms of time and personnel.</p>
 <p>In order to understand the relationship between samples and populations, we begin by providing some vocabulary and notation that we will use throughout the remainder of the book.</p>
 <ol style="list-style-type: decimal">
-<li><p><strong>Population</strong>: A population is a collection of individuals or observations about which we are interested. We mathematically denote the population’s size using upper case <span class="math inline">\(N\)</span>.</p></li>
-<li><p><strong>Sample</strong>: A sample is a collection of individuals or observations about which we have data. We mathematically denote the sample’s size using lower-case <span class="math inline">\(n\)</span>.</p></li>
-<li><p><strong>Population parameter</strong>: A population parameter is a numerical summary quantity about the population that is unknown, but you wish you knew. These are typically denoted mathematically using Greek letters. For example, you may want to know the population mean, which is typically written as <span class="math inline">\(\mu\)</span> (pronounced “mu”). Or, you might want to know the population proportion, which is typically written as <span class="math inline">\(\pi\)</span> (pronounced “pi”).</p></li>
-<li><p><strong>Sample statistic / estimate </strong>: A summary statistic computed from the sample that estimates an unknown population parameter. These are sometimes denoted mathematically using Roman letters (that correspond to Greek letters) or via inclusion of a “hat” above the population parameter. For example, the population mean can be estimated using the sample mean denoted <span class="math inline">\(\hat{\mu}\)</span> or <span class="math inline">\(m\)</span> and the population proportion can be estimated from the sample proportion denoted <span class="math inline">\(\hat{\pi}\)</span> or <span class="math inline">\(p\)</span>.</p></li>
-<li><p><strong>Census</strong>: An exhaustive enumeration or counting of all <span class="math inline">\(N\)</span> individuals or observations in the population in order to compute the population parameter’s value exactly.</p></li>
-<li><p><strong>Random sampling</strong>: Random sampling is the act of collecting a random sample from the population when we don’t have the means to perform a census. Here “random” means that every individual or observation in the population has a chance of being selected and that the process of selection is uncorrelated with the data itself. For example, a random procedure might involve rolling dice, selecting slips of paper out of a hat, or using a random number generator. Importantly, procedures that involve selecting the sample based upon observed characteristics (e.g., age, gender) are not random.</p></li>
+<li><p><strong>Population</strong>: A population is a collection of individuals or units about which we are interested. We mathematically denote the population’s size using upper-case <span class="math inline">\(N\)</span>.</p></li>
+<li><p><strong>Sample</strong>: A sample is a collection of individuals or units from a population. These are the individuals or units about which we have data. We mathematically denote the sample’s size, the number of people or units we have data on, using lower-case <span class="math inline">\(n\)</span>.</p></li>
+<li><p><strong>Population parameter</strong>: A population parameter is a numerical value that summarizes the population. <em>In almost all cases the population parameter is unknown, but we wish to know it.</em> Population parameters are typically denoted mathematically using Greek letters. For example, you may want to know the population mean, which is typically written as <span class="math inline">\(\mu\)</span> (pronounced “mu”). Or, you might want to know the population proportion, which is typically written as <span class="math inline">\(\pi\)</span> (pronounced “pi”). Population size, <span class="math inline">\(N\)</span>, is a case where we do not follow the Greek letter convention to denote a population parameter.</p></li>
+<li><p><strong>Sample statistic / estimate </strong>: A sample statistic is a numerical value that summarizes the sample and can be used to estimate an unknown population parameter. It is common for a sample statistic to sometimes be called an estimate or point estimate. These are sometimes denoted mathematically using Roman letters (that correspond to Greek letters) or via inclusion of a “hat” above the population parameter (called hat-notation). For example, the population proportion <span class="math inline">\(\pi\)</span> can be estimated using a sample proportion which is denoted with <span class="math inline">\(\hat{\pi}\)</span> or <span class="math inline">\(p\)</span>. The population mean <span class="math inline">\(\mu\)</span> can be estimated using the sample mean which is denoted <span class="math inline">\(\hat{\mu}\)</span> or <span class="math inline">\(\overline{x}\)</span>. Obviously <span class="math inline">\(\overline{x}\)</span> doesn’t follow either the Greek letter or hat-notation conventions, but it is the standard notation for the sample mean.</p></li>
+<li><p><strong>Census</strong>: A census is an exhaustive collection of a measurement on all <span class="math inline">\(N\)</span> individuals or units in the population in order to compute the exact value of a population parameter for the given measure.</p></li>
+<li><p><strong>Random sampling</strong>: Random sampling is the act of using a random procedure to select individuals or units from a population that we will collect measurements on. Random sampling is extremely useful when we don’t have the means to perform a census. Here “random” means that every individual or unit in the population has a chance of being selected and that the process of selection is uncorrelated with the data itself. For example, a random procedure might involve rolling dice, selecting slips of paper out of a hat, or using a random number generator. Importantly, procedures that involve selecting the sample based upon observed characteristics (e.g., age, gender) are not random.</p></li>
 </ol>
-<p>The first two of these definitions makes clear that the data you have in hand (sample) is being used to make inferences to a larger set of data you don’t have (population). Definitions 3 and 4 refine these further, focusing on the specific numbers you wish you knew (population parameter) and the ones you are able to calculate using your data (estimate / sample statistic). Definitions 5 and 6 refer to how a sample is related to a population- either they are the same (census) or the mechanism through which they are related needs to be clear (random sampling).</p>
+<p>The first two of these definitions makes clear that the data you have in hand (sample) is being used to make inferences to a larger set of data you don’t have (population). Definitions 3 and 4 refine these further, focusing on the specific numbers you wish you knew (population parameter) and the ones you are able to calculate using your data (estimate / sample statistic). Definitions 5 and 6 refer to how a sample is related to a population — either they are the same (census) or the mechanism through which they are related needs to be clear (random sampling).</p>
 <p>The goal is to use data in the sample to make <strong>inferences</strong> to a value in the population. The act of “inferring” is to deduce or conclude (information) from evidence and reasoning. <strong>Statistical inference</strong> is the theory, methods, and practice of forming judgments about the parameters of a population and the reliability of statistical relationships, typically on the basis of random sampling (Wikipedia). In other words, statistical inference is the act of inference via sampling.</p>
 <hr />
 </div>
@@ -538,14 +563,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Fish in Lake Michigan.</li>
 </ul>
 <p>In each case, the definition of the population includes clear inclusion / exclusion criteria. These help to clarify where inferences are appropriate to be made and where they are not.</p>
-<p>In order to select a sample from a population, a <strong>population frame</strong> must be created. This frame includes a list of all possible individuals or observations within the population. Sometimes this frame is difficult to make – and the result is that the population frame may not be exactly the same as the population. For example, for the above populations, population frames might be:</p>
+<p>In order to select a sample from a population, a <strong>population frame</strong> must be created. This frame includes a list of all possible individuals or observations within the population. Sometimes this frame is difficult to make - and the result is that the population frame may not be exactly the same as the population. For example, for the above populations, population frames might be:</p>
 <ul>
 <li>A list of phone numbers registered to individuals in the United States. (Once contacted, only those that are citizens 18 and older would be able to be included.)</li>
 <li>A list of public elementary <em>schools</em> (not students), available for the prior year in the Texas public education state longitudinal data system.</li>
 <li>A list of private hospitals made available from the state of California government in a database collected every five years. (Once contacted, only those receiving &gt; $0 Medicaid would be included).</li>
 <li>Areas of Lake Michigan where it is possible to fish (e.g, excluding coves).</li>
 </ul>
-<p>When this population frame differs from the population, <strong>undercoverage</strong> can occur – i.e., there are parts of the population that may not be able to be studied. For example, citizens over 18 without phone numbers would have a 0% chance of being included in the sample even though they are part of the population of interest. It is important in research to make this clear and to understand how these differences might impact results.</p>
+<p>When this population frame differs from the population, <strong>undercoverage</strong> can occur - i.e., there are parts of the population that may not be able to be studied. For example, citizens over 18 without phone numbers would have a 0% chance of being included in the sample even though they are part of the population of interest. It is important in research to make this clear and to understand how these differences might impact results.</p>
 <p>Once a population frame is defined, a <strong>sampling</strong> process is developed that, based upon a random procedure, allows for making clear inferences from the sample to the population. There are many possible sampling procedures, some of which include:</p>
 <ul>
 <li><strong>Simple random sampling</strong>: Individuals or observations are selected randomly from the population, each having an equal chance of being selected.</li>
@@ -553,7 +578,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><strong>Cluster sampling</strong>: In order to reach individuals or observations, first clusters are selected (e.g. schools, neighborhoods, hospitals, etc.), and then within these clusters, individuals or observations are randomly selected.</li>
 <li><strong>Stratified sampling</strong>: In order to represent the population well, first the population is divided into sub-groups (strata) that are similar to one another, and then within these sub-groups (strata), individuals or observations are randomly selected.</li>
 </ul>
-<p>Observations or clusters can be selected with <strong>equal probability</strong> or <strong>unequal probability</strong> - the most important feature is that the probability of being selected is <em>known</em> and defined in <em>advance</em> of selection. In the above examples, these procedures might be used:</p>
+<p>Observations or clusters can be selected with <strong>equal probability</strong> or <strong>unequal probability</strong> — the most important feature is that the probability of being selected is <em>known</em> and defined in <em>advance</em> of selection. In the above examples, these procedures might be used:</p>
 <ul>
 <li><strong>Simple random sampling</strong>: Phone numbers are randomly selected with equal probability.</li>
 <li><strong>Cluster sampling</strong>: First schools (clusters) are randomly selected with unequal probability (e.g., larger schools have a bigger chance of being selected), and then within those schools selected, students are randomly selected with equal probability.</li>
@@ -568,9 +593,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2><span class="header-section-number">8.3</span> Samples &amp; Populations</h2>
 <p>As an analyst, you will often encounter samples of data that come from unspecified or unclear populations. For example, you:</p>
 <ul>
-<li>developed a survey regarding relationship preferences on SurveyMonkey and then promoted completing this survey on Facebook. Now you have a sample of <span class="math inline">\(n = 200\)</span> completed surveys – but what population do they come from?</li>
-<li>conducted an experiment in a psychology lab. The experiment is advertised to students in Introductory Psychology courses and in fliers around campus. You now have a sample of <span class="math inline">\(n = 50\)</span> participants in the experiment – but what population do they come from?</li>
-<li>scraped some data off the web regarding movie reviews on Rotten Tomatoes. You now have a huge sample of <span class="math inline">\(n = 10,000\)</span> reviews by people – but what population do these reviews come from?</li>
+<li>developed a survey regarding relationship preferences on SurveyMonkey and then promoted completing this survey on Facebook. Now you have a sample of <span class="math inline">\(n = 200\)</span> completed surveys - but what population do they come from?</li>
+<li>conducted an experiment in a psychology lab. The experiment is advertised to students in Introductory Psychology courses and in fliers around campus. You now have a sample of <span class="math inline">\(n = 50\)</span> participants in the experiment - but what population do they come from?</li>
+<li>scraped some data off the web regarding movie reviews on Rotten Tomatoes. You now have a huge sample of <span class="math inline">\(n = 10,000\)</span> reviews by people - but what population do these reviews come from?</li>
 </ul>
 <p>In these situations, statistically you do two things:</p>
 <ol style="list-style-type: decimal">
@@ -644,7 +669,7 @@ gitbook.start({
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    var src = "";
+    var src = "true";
     if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:" && /^https?:/.test(src))
       src = src.replace(/^https?:/, '');
