@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Getting Started with Data in R | Statistical Inference via Data Science</title>
+  <title>Chapter 12 Hypothesis tests | Statistical Inference via Data Science</title>
   <meta name="description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
   <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Getting Started with Data in R | Statistical Inference via Data Science" />
+  <meta property="og:title" content="Chapter 12 Hypothesis tests | Statistical Inference via Data Science" />
   <meta property="og:type" content="book" />
   <meta property="og:url" content="https://nulib.github.io/moderndive_book/" />
   <meta property="og:image" content="https://nulib.github.io/moderndive_book/images/logos/book_cover.png" />
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="nulib/moderndive_book" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Getting Started with Data in R | Statistical Inference via Data Science" />
+  <meta name="twitter:title" content="Chapter 12 Hypothesis tests | Statistical Inference via Data Science" />
   
   <meta name="twitter:description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
   <meta name="twitter:image" content="https://nulib.github.io/moderndive_book/images/logos/book_cover.png" />
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <link rel="apple-touch-icon-precomposed" sizes="152x152" href="images/logos/favicons/apple-touch-icon.png" />
   <link rel="shortcut icon" href="images/logos/favicons/favicon.ico" type="image/x-icon" />
-<link rel="prev" href="index.html">
-<link rel="next" href="3-viz.html">
+<link rel="prev" href="11-pvalues.html">
+<link rel="next" href="A-appendixA.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -497,424 +497,208 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <html>
 <img src='https://moderndive.com/wide_format.png' alt="ModernDive">
 </html>
-<div id="getting-started" class="section level1">
-<h1><span class="header-section-number">Chapter 2</span> Getting Started with Data in R</h1>
-<p>Before we can start exploring data in R, there are some key concepts to understand first:</p>
-<ol style="list-style-type: decimal">
-<li>What are R and RStudio?</li>
-<li>How do I code in R?</li>
-<li>What are R packages?</li>
-</ol>
-<p>We’ll introduce these concepts in upcoming Sections <a href="2-getting-started.html#r-rstudio">2.1</a>-<a href="2-getting-started.html#packages">2.3</a>. If you are already somewhat familiar with these concepts, feel free to skip to Section <a href="2-getting-started.html#nycflights13">2.4</a> where we’ll introduce our first data set: all domestic flights departing a New York City airport in 2013. This is a dataset we will explore in depth in this book.</p>
-<hr />
-<div id="r-rstudio" class="section level2">
-<h2><span class="header-section-number">2.1</span> What are R and RStudio?</h2>
-<p>For much of this book, we will assume that you are using R via RStudio. First time users often confuse the two. At its simplest:</p>
-<ul>
-<li>R is like a car’s engine.</li>
-<li>RStudio is like a car’s dashboard.</li>
-</ul>
-<table>
+<div id="hypothesis-tests" class="section level1">
+<h1><span class="header-section-number">Chapter 12</span> Hypothesis tests</h1>
+<p>In Chapter <a href="11-pvalues.html#pvalues">11</a>, we introduced the p-value, which provides analysts with a probability (between 0 and 1) that the observed data would be found if the null hypothesis were true. Readers familiar with the use of statistics may have noticed, however, that Chapter <a href="11-pvalues.html#pvalues">11</a> did not refer to any criteria (e.g., p &lt; .05) or use the phrase “statistically significant”. This is because the concept of a p-value is distinct from the use of a p-value to make a decision. In this chapter, we introduce hypothesis testing, which can be used for just this purpose.</p>
+<div id="needed-packages-8" class="section level3 unnumbered">
+<h3>Needed Packages</h3>
+<p>Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). If needed, read Section <a href="2-getting-started.html#packages">2.3</a> for information on how to install and load R packages.</p>
+<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb357-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb357-2" data-line-number="2"><span class="kw">library</span>(moderndive)</a>
+<a class="sourceLine" id="cb357-3" data-line-number="3"><span class="kw">library</span>(infer)</a>
+<a class="sourceLine" id="cb357-4" data-line-number="4"><span class="kw">library</span>(ggplot2movies)</a></code></pre></div>
+</div>
+<div id="decision-making" class="section level2">
+<h2><span class="header-section-number">12.1</span> Decision making</h2>
+<p>Remember that a p-value is a probabilistic proof by contradiction. It might show that the chance that the observed data would occur under the null hypothesis is 2%, 20%, or 50%. But at what level is the evidence enough that we would decide that the null hypothesis must not be true?</p>
+<p>Conventional wisdom is to use <span class="math inline">\(p &lt; 0.05\)</span> as this threshold, where <span class="math inline">\(p\)</span> denotes the p-value. But as many have pointed out – particularly in the current ‘replication crisis’ era – this threshold is arbitrary. Why is 5% considered small enough? Why not 0.5%? Why not 0.05%? Decisions regarding these thresholds require substantive knowledge of a field, the role of statistics in science, and some important trade-offs, which we will introduce next.</p>
+<!-- link to a replication crisis article? -->
+</div>
+<div id="trade-offs" class="section level2">
+<h2><span class="header-section-number">12.2</span> Decision making trade-offs</h2>
+<p>Imagine that you’ve been invited to a party, and you are trying to decide if you should go. On the one hand, the party might be a good time, and you’d be happy that you went. On the other hand, it might not be that much fun and you’d be unhappy that you went. In advance, you don’t know which kind of party it will be. How do you decide?
+We can formalize this decision making in terms of a 2x2 table crossing your decision (left) with information about the party (top):</p>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:party-table">TABLE 12.1: </span>Party decision making
+</caption>
 <thead>
-<tr class="header">
-<th align="center">R: Engine</th>
-<th align="center">RStudio: Dashboard</th>
+<tr>
+<th style="text-align:left;">
+<ul>
+<li></th>
+<th style="text-align:left;">
+Party is fun
+</th>
+<th style="text-align:left;">
+Party is not fun
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="center"><img src="images/engine.jpg" style="height:1.7in" /></td>
-<td align="center"><img src="images/dashboard.jpg" style="height:1.7in" /></td>
+<tr>
+<td style="text-align:left;">
+<strong>Go to party</strong>
+</td>
+<td style="text-align:left;">
+Great decision!
+</td>
+<td style="text-align:left;">
+Type I error (wasted time)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<strong>Stay home</strong>
+</td>
+<td style="text-align:left;">
+Type II error (missed out)
+</td>
+<td style="text-align:left;">
+Great decision!
+</td>
 </tr>
 </tbody>
-</table>
-<p>More precisely, R is a programming language that runs computations while RStudio is an <em>integrated development environment (IDE)</em> that provides an interface by adding many convenient features and tools. So the way of having access to a speedometer, rearview mirrors, and a navigation system makes driving much easier, using RStudio’s interface makes using R much easier as well.</p>
-<p>If you are still not sure about the difference between R and RStudio IDE, we suggest you watch this <a href="https://campus.datacamp.com/courses/working-with-the-rstudio-ide-part-1/orientation?ex=1">DataCamp video</a>.</p>
-<div id="installing-r-and-rstudio" class="section level3">
-<h3><span class="header-section-number">2.1.1</span> Installing R and RStudio</h3>
-<blockquote>
-<p><strong>Note about RStudio Server</strong>: If your instructor has provided you with a link and access to RStudio Server, then you can skip this section. We do recommend though after a few months of working on the RStudio Server that you return to these instructions.</p>
-</blockquote>
-<p>You will first need to download and install both R and RStudio (Desktop version) on your computer.</p>
-<ol style="list-style-type: decimal">
-<li><strong>You must do this first:</strong> <a href="https://cran.r-project.org/">Download and install R</a>.
+</table></li>
+</ul>
+<p>As you can see from this table, there are 4 possible combinations. If you decide to go to the party and it is in fact fun, you’re happy. If you decide to stay home and you hear from your friends that it was terrible, you’re happy. But in the other two cases you are <em>not happy</em>:</p>
 <ul>
-<li>Click on the download link corresponding to your computer’s operating system.</li>
-</ul></li>
-<li><strong>You must do this second:</strong> <a href="https://www.rstudio.com/products/rstudio/download3/">Download and install RStudio</a>.
-<ul>
-<li>Scroll down to “Installers for Supported Platforms”</li>
-<li>Click on the download link corresponding to your computer’s operating system.</li>
-</ul></li>
-</ol>
-<p>If you had trouble with these two steps, we suggest you watch this <a href="https://campus.datacamp.com/courses/working-with-the-rstudio-ide-part-1/orientation?ex=3">DataCamp video</a>.</p>
-</div>
-<div id="using-r-via-rstudio" class="section level3">
-<h3><span class="header-section-number">2.1.2</span> Using R via RStudio</h3>
-<p>Recall our car analogy from above. Much as we don’t drive a car by interacting directly with the engine but rather by interacting with elements on the car’s dashboard, we won’t be using R directly but rather we will use RStudio’s interface. After you install R and RStudio on your computer, you’ll have two new programs AKA applications you can open. We will always work in RStudio and not R. In other words:</p>
-<table>
+<li>Type I error: You decide to go to the party and the party is lame. You’ve now wasted your time and are unhappy.</li>
+<li>Type II error: You decide to forgo the party and stay home, but you later hear that the party was awesome. You’ve now missed out and are unhappy.</li>
+</ul>
+<p>In life, we often have to make decisions like this. In making these decisions, there are trade-offs. Perhaps you are the type of person that has FOMO – in that case, you may really want to minimize your Type II error, but at the expense of attending some boring parties and wasting your time (a higher Type I error). Or perhaps you are risk averse and hate wasting time – in which case you want to minimize your Type I error, at the expense of missing out on some really great parties (a higher Type II error).</p>
+<p>There are a few important points here:
+* When making a decision, you cannot know in advance what the actual outcome will be.
+* Sometimes your decision will be the right one. Ideally, you’d like this to be most of the time.
+* But, sometimes your decision will be the wrong one. Importantly, you cannot minimize both Type I and II errors at the same time. One will be minimized at the expense of the other.
+* Depending upon the context, you may decide that minimizing Type I or II errors is more important to you.</p>
+<p>These features of decision-making play out again and again in life. In the next sections, we provide two common examples, one in medicine, the other in law.</p>
+<div id="medicine" class="section level3">
+<h3><span class="header-section-number">12.2.1</span> Medicine</h3>
+<p>Imagine that you might be pregnant and take a pregnancy test. This test is based upon levels of HcG in your urine, and when these levels are “high enough” (determined by the pregnancy test maker), the test will tell you that you are pregnant (+). If the levels are not “high enough”, the test will tell you that you are not pregnant (-). Depending upon how the test determines “high enough” levels of HcG, however, the test might be wrong. To see how, examine the following table.</p>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:medicine-table">TABLE 12.2: </span>Pregnancy test decision making
+</caption>
 <thead>
-<tr class="header">
-<th align="center">R: Do not open this</th>
-<th align="center">RStudio: Open this</th>
+<tr>
+<th style="text-align:left;">
+<ul>
+<li></th>
+<th style="text-align:left;">
+Pregnant
+</th>
+<th style="text-align:left;">
+Not pregnant
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="center"><img src="images/Rlogo.png" style="width:25.0%" /></td>
-<td align="center"><img src="images/RStudio-Ball.png" style="width:20.0%" /></td>
+<tr>
+<td style="text-align:left;">
+<strong>Test +</strong>
+</td>
+<td style="text-align:left;">
+Correct
+</td>
+<td style="text-align:left;">
+Type I error: False Positive
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<strong>Test -</strong>
+</td>
+<td style="text-align:left;">
+Type II error: False Negative
+</td>
+<td style="text-align:left;">
+Correct
+</td>
 </tr>
 </tbody>
-</table>
-<p>After you open RStudio, you should see the following:</p>
-<p><img src="images/rstudio.png" /></p>
-<p>Note the three panes, which are three panels dividing the screen: The <em>Console pane</em>, the <em>Files pane</em>, and the <em>Environment pane</em>. Over the course of this chapter, you’ll come to learn what purpose each of these panes serve.</p>
-<p>If however you would like an in depth explanation right now however, we suggest you watch following <a href="https://campus.datacamp.com/courses/working-with-the-rstudio-ide-part-1/orientation?ex=5">DataCamp video</a>.</p>
-<hr />
-</div>
-</div>
-<div id="code" class="section level2">
-<h2><span class="header-section-number">2.2</span> How do I code in R?</h2>
-<p>Now that you’re set up with R and RStudio, you are probably asking yourself “OK. Now how do I use R?” The first thing to note as that unlike other statistical software programs like Excel, STATA, or SAS that provide <a href="https://en.wikipedia.org/wiki/Point_and_click">point and click</a> interfaces, R is an <a href="https://en.wikipedia.org/wiki/Interpreted_language">interpreted language</a>, meaning you have to enter in R commands written in R code. In other words, you have to code/program in R. Note that we’ll use the terms “coding” and “programming” interchangeably in this book.</p>
-<p>While it is not required to be a seasoned coder/computer programmer to use R, there is still a set of basic programming concepts that R users need to understand. Consequently, while this book is not a book on programming, you will still learn just enough of these basic programming concepts needed to explore and analyze data effectively.</p>
-<div id="programming-concepts" class="section level3">
-<h3><span class="header-section-number">2.2.1</span> Basic programming concepts and terminology</h3>
-<p>To introduce you to many of these basic programming concepts and terminology, we direct you to the following DataCamp online interactive tutorials. For each of the tutorials, we give a list of the basic programming concepts covered. Note that in this book, we will use a different font to distinguish regular font from <code>computer_code</code>.</p>
-<p>It is important to note that while these tutorials serve as excellent introductions, a single pass through them is insufficient for long-term learning and retention. The ultimate tools for long-term learning and retention are “learning by doing” and repetition, something we will have you do over the course of the entire book and we encourage this process as much as possible as you learn any new skill.</p>
-<ul>
-<li>From the <a href="https://www.datacamp.com/courses/free-introduction-to-r">Introduction to R</a> course complete the following chapters. As you work through the chapters, carefully note the important terms and what they are used for. We recommend you do so in a notebook that you can easily refer back to.
-<ul>
-<li><a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-1-intro-to-basics-1?ex=1">Chapter 1 Intro to basics</a>:
-<ul>
-<li>Console pane: where you enter in commands</li>
-<li>Objects: where values are saved, how to assign values to objects.</li>
-<li>Data types: integers, doubles/numerics, logicals, characters.<br />
-</li>
-</ul></li>
-<li><a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-2-vectors-2?ex=1">Chapter 2 Vectors</a>:
-<ul>
-<li>Vectors: a series of values.</li>
-</ul></li>
-<li><a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-4-factors-4?ex=1">Chapter 4 Factors</a>:
-<ul>
-<li><em>Categorical data</em> (as opposed to <em>numerical data</em>) are represented in R as <code>factor</code>s.</li>
-</ul></li>
-<li><a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-5-data-frames?ex=1">Chapter 5 Data frames</a>:
-<ul>
-<li>Data frames are analogous to rectangular spreadsheets: they are representations of datasets in R where the rows correspond <em>observations</em> and the columns correspond to <em>variables</em> that describe the observations. We will revisit this later in Section <a href="2-getting-started.html#nycflights13">2.4</a>.</li>
-</ul></li>
-</ul></li>
-<li>From the <a href="https://www.datacamp.com/courses/intermediate-r">Intermediate R</a> course complete the following chapters:
-<ul>
-<li><a href="https://campus.datacamp.com/courses/intermediate-r/chapter-1-conditionals-and-control-flow?ex=1">Chapter 1 Conditionals and Control Flow</a>:
-<ul>
-<li>Testing for equality in R using <code>==</code> (and not <code>=</code> which is typically used for assignment). Ex: <code>2 + 1 == 3</code> compares <code>2 + 1</code> to <code>3</code> and is correct R syntax, while <code>2 + 1 = 3</code> is not and is incorrect R syntax.</li>
-<li>Boolean algebra: <code>TRUE/FALSE</code> statements and mathematical operators such as <code>&lt;</code> (less than), <code>&lt;=</code> (less than or equal), and <code>!=</code> (not equal to).</li>
-<li>Logical operators: <code>&amp;</code> representing “and”, <code>|</code> representing “or”. Ex: <code>(2 + 1 == 3) &amp; (2 + 1 == 4)</code> returns <code>FALSE</code> while <code>(2 + 1 == 3) | (2 + 1 == 4)</code> returns <code>TRUE</code>.</li>
-</ul></li>
-<li><a href="https://campus.datacamp.com/courses/intermediate-r/chapter-3-functions?ex=1">Chapter 3 Functions</a>:
-<ul>
-<li>Concept of functions: they take in inputs (called <em>arguments</em>) and return outputs.</li>
-<li>You either manually specify a function’s arguments or use the function’s <em>defaults</em>.</li>
-</ul></li>
-</ul></li>
+</table></li>
 </ul>
-<p>This list is by no means an exhaustive list of all the programming concepts and terminology needed to become a savvy R user; such a list would be so large it wouldn’t be very useful, especially for novices. Rather, we feel this is the bare minimum you need to know before you get started; the rest we feel you can learn as you go. Remember that your knowledge of all of these concepts will build as you get better and better at “speaking R” and getting used to its syntax.</p>
+<p>As the table notes, in two of the cases, the test correctly determines that you are either pregnant or not pregnant. But there are also two cases in which the test (a decision) is incorrect:
+* Type I error: False Positive. In this case, the test tells you that you are pregnant when in fact you are not. This would occur if the level of HcG required to indicate positive was too low.
+* Type II error: False Negative. In this case, the test tells you that you are not pregnant but you actually are. This would occur if the level of HcG required to indicate positive is too high.</p>
+<p>When a pregnancy test manufacturer develops the test, they have to pay attention to these two possible error types and think through the trade-offs of each. For example, if they wanted to minimize the Type II error (False Negative), they could just create a test that always tells people they are pregnant (i.e., HcG &gt;= 0). Conversely, if they wanted to minimize the Type I error (False Positive), they could set the HcG level to be very high, so that it only detects pregnancy for those that are 6 months pregnant. Of course, the trade-off here is that certainly many who took the test would actually be pregnant, and yet the test would tell them otherwise.</p>
+<p>In developing these tests, which do you think test manufacturers focus on minimizing: Type I or II errors?</p>
 </div>
-<div id="errors-warnings-and-messages" class="section level3">
-<h3><span class="header-section-number">2.2.2</span> Errors, warnings, and messages</h3>
-<p>One slightly confusing part of R is how it reports errors, warnings, and messages. The default theme in RStudio colors errors, warnings, and messages in red, which makes them seem like you did something wrong. However, seeing red text in the console <em>is not always bad.</em></p>
-<p>R will show red text in the console in three different situations:</p>
-<ul>
-<li><strong>Errors</strong>: When the red text is a legitimate error, it will be prefaced with “Error in…” and try to explain what went wrong. Generally when there’s an error, the code will not run. For example, as shown in Subsection <a href="2-getting-started.html#package-use">2.3.3</a> below if you see <code>Error in ggplot(...) : could not find function &quot;ggplot&quot;</code>, it means that the <code>ggplot()</code> function is not accessible because the package was not loaded with <code>library(ggplot2)</code>, and thus you cannot use it.</li>
-<li><strong>Warnings</strong>: When the red text is a warning, it will be prefaced with “Warning:” and try to explain why there’s a warning. Generally your code will still work, but with some caveats. For example, you see in Chapter <a href="3-viz.html#viz">3</a> if you plot a scatterplot and one of the rows in your data frame is missing a value, you will see this warning: <code>Warning: Removed 1 rows containing missing values (geom_point)</code>. R will still make the scatterplot with all the remaining values, but it’s warning you that one of the points isn’t there.</li>
-<li><strong>Messages</strong>: When the red text doesn’t start with either “Error” or “Warning”, it’s <em>just a friendly message</em>. You’ll see these messages when you load some packages like the <code>dplyr</code> package in Subsection <a href="2-getting-started.html#package-loading">2.3.2</a> below, or when you read data saved in spreadsheet files with <code>read_csv()</code> as you’ll see in Chapter <a href="5-tidy.html#tidy">5</a>. These are helpful diagnostic messages and they don’t stop your code from working.</li>
-</ul>
-<p>Remember, when you see red text in the console, <em>don’t panic</em>. It doesn’t necessarily mean anything is wrong.</p>
-<ul>
-<li>If the text starts with “Error”, figure out what’s causing it. <span style="color:red">Think of errors as a red traffic light: something is wrong!</span></li>
-<li>If the text starts with “Warning”, figure out if it’s something to worry about. For instance, if you get a warning about missing values in a scatterplot and you know there are missing values, you’re fine. If that’s surprising, look at your data and see what’s missing. <span style="color:gold">Think of warnings as a yellow traffic light: everything is working fine, but watch out/pay attention.</span></li>
-<li>Otherwise the text is just a message. Read it, wave back at R, and thank it for talking to you. <span style="color:green">Think of messages as a green traffic light: everything is working fine.</span></li>
-</ul>
-</div>
-<div id="tips-on-learning-to-code" class="section level3">
-<h3><span class="header-section-number">2.2.3</span> Tips on learning to code</h3>
-<p>Learning to code/program is very much like learning a foreign language, it can be very daunting and frustrating at first. Such frustrations are very common and it is very normal to feel discouraged as you learn. However just as with learning a foreign language, if you put in the effort and are not afraid to make mistakes, anybody can learn.</p>
-<p>Here are a few useful tips to keep in mind as you learn to program:</p>
-<ul>
-<li><strong>Remember that computers are not actually that smart</strong>: You may think your computer or smartphone are “smart,” but really people spent a lot of time and energy designing them to appear “smart.” Rather you have to tell a computer everything it needs to do. Furthermore the instructions you give your computer can’t have any mistakes in them, nor can they be ambiguous in any way.</li>
-<li><strong>Take the “copy, paste, and tweak” approach</strong>: Especially when learning your first programming language, it is often much easier to taking existing code that you know works and modify it to suit your ends, rather than trying to write new code from scratch. We call this the <em>copy, paste, and tweak</em> approach. So early on, we suggest not trying to write code from memory, but rather take existing examples we have provided you, then copy, paste, and tweak them to suit your goals. Don’t be afraid to play around!</li>
-<li><strong>The best way to learn to code is by doing</strong>: Rather than learning to code for its own sake, we feel that learning to code goes much smoother when you have a goal in mind or when you are working on a particular project, like analyzing data that you are interested in.</li>
-<li><strong>Practice is key</strong>: Just as the only method to improving your foreign language skills is through practice, practice, and practice; so also the only method to improving your coding is through practice, practice, and practice. Don’t worry however; we’ll give you plenty of opportunities to do so!</li>
-</ul>
-<hr />
-</div>
-</div>
-<div id="packages" class="section level2">
-<h2><span class="header-section-number">2.3</span> What are R packages?</h2>
-<p>Another point of confusion with many new R users is the idea of an R package. R packages extend the functionality of R by providing additional functions, data, and documentation. They are written by a world-wide community of R users and can be downloaded for free from the internet. For example, among the many packages we will use in this book are:</p>
-<ul>
-<li>The <code>ggplot2</code> package for data visualization in Chapter <a href="3-viz.html#viz">3</a>.</li>
-<li>The <code>dplyr</code> package for data wrangling in Chapter <a href="4-wrangling.html#wrangling">4</a>.</li>
-<li>The <code>moderndive</code> package that accompanies this book.</li>
-<li>The <code>infer</code> package for “tidy” and transparent statistical inference in Chapters <a href="#confidence-intervals"><strong>??</strong></a>, <a href="#hypothesis-testing"><strong>??</strong></a>, and <a href="#inference-for-regression"><strong>??</strong></a>.</li>
-</ul>
-<p>A good analogy for R packages is they are like apps you can download onto a mobile phone:</p>
-<table>
+<div id="law" class="section level3">
+<h3><span class="header-section-number">12.2.2</span> Law</h3>
+<p>Imagine that you are on the jury of a criminal trial. You are presented with evidence that a crime has been committed and must make a decision regarding the guilt of the defendant. But you were not there when the crime was committed, so it is impossible to know with 100% accuracy that your decision is correct. Instead, you again encounter this 2x2 table:</p>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:law-table">TABLE 12.3: </span>Criminal trial decision making
+</caption>
 <thead>
-<tr class="header">
-<th align="center">R: A new phone</th>
-<th align="center">R Packages: Apps you can download</th>
+<tr>
+<th style="text-align:left;">
+<ul>
+<li></th>
+<th style="text-align:left;">
+Guilty
+</th>
+<th style="text-align:left;">
+Innocent
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="center"><img src="images/iphone.jpg" style="height:1.5in" /></td>
-<td align="center"><img src="images/apps.jpg" style="height:1.5in" /></td>
+<tr>
+<td style="text-align:left;">
+<strong>“Guilty” verdict</strong>
+</td>
+<td style="text-align:left;">
+Correct
+</td>
+<td style="text-align:left;">
+Type I error: Wrongly Convicted
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<strong>“Not Guilty” verdict</strong>
+</td>
+<td style="text-align:left;">
+Type II error: Insufficient Evidence
+</td>
+<td style="text-align:left;">
+Correct
+</td>
 </tr>
 </tbody>
-</table>
-<p>So R is like a new mobile phone: while it has a certain amount of features when you use it for the first time, it doesn’t have everything. R packages are like the apps you can download onto your phone from Apple’s App Store or Android’s Google Play.</p>
-<p>Let’s continue this analogy by considering the Instagram app for editing and sharing pictures. Say you have purchased a new phone and you would like to share a recent photo you have taken on Instagram. You need to:</p>
-<ol style="list-style-type: decimal">
-<li><em>Install the app</em>: Since your phone is new and does not include the Instagram app, you need to download the app from either the App Store or Google Play. You do this once and you’re set. You might do this again in the future any time there is an update to the app.</li>
-<li><em>Open the app</em>: After you’ve installed Instagram, you need to open the app.</li>
-</ol>
-<p>Once Instagram is open on your phone, you can then proceed to share your photo with your friends and family. The process is very similar for using an R package. You need to:</p>
-<ol style="list-style-type: decimal">
-<li><em>Install the package</em>: This is like installing an app on your phone. Most packages are not installed by default when you install R and RStudio. Thus if you want to use a package for the first time, you need to install it first. Once you’ve installed a package, you likely won’t install it again unless you want to update it to a newer version.</li>
-<li><em>“Load” the package</em>: “Loading” a package is like opening an app on your phone. Packages are not “loaded” by default when you start RStudio on your computer; you need to “load” each package you want to use every time you start RStudio.</li>
-</ol>
-<p>Let’s now show you how to perform these two steps for the <code>ggplot2</code> package for data visualization.</p>
-<div id="package-installation" class="section level3">
-<h3><span class="header-section-number">2.3.1</span> Package installation</h3>
-<blockquote>
-<p><strong>Note about RStudio Server</strong>: If your instructor has provided you with a link and access to RStudio Server, you probably will not need to install packages, as they have likely been pre-installed for you by your instructor. That being said, it is still a good idea to know this process for later on when you are not using RStudio Server, but rather RStudio Desktop on your own computer.</p>
-</blockquote>
-<p>There are two ways to install an R package. For example, to install the <code>ggplot2</code> package:</p>
-<ol style="list-style-type: decimal">
-<li><strong>Easy way</strong>: In the Files pane of RStudio:
-<ol style="list-style-type: lower-alpha">
-<li>Click on the “Packages” tab</li>
-<li>Click on “Install”</li>
-<li>Type the name of the package under “Packages (separate multiple with space or comma):” In this case, type <code>ggplot2</code></li>
-<li>Click “Install”<br />
-<img src="images/install_packages_easy_way.png" style="height:4in" /></li>
-</ol></li>
-<li><strong>Slightly harder way</strong>: An alternative but slightly less convenient way to install a package is by typing <code>install.packages(&quot;ggplot2&quot;)</code> in the Console pane of RStudio and hitting enter. Note you must include the quotation marks.</li>
-</ol>
-<p>Much like an app on your phone, you only have to install a package once. However, if you want to update an already installed package to a newer verions, you need to re-install it by repeating the above steps.</p>
-<div class="learncheck">
-<p>
-<strong><em>Learning check</em></strong>
-</p>
-</div>
-<strong>(LC2.1)</strong> Repeat the above installing steps, but for the <code>dplyr</code>, <code>nycflights13</code>, and <code>knitr</code> packages. This will install the earlier mentioned <code>dplyr</code> package, the <code>nycflights13</code> package containing data on all domestic flights leaving a NYC airport in 2013, and the <code>knitr</code> package for writing reports in R.
-<div class="learncheck">
-
-</div>
-</div>
-<div id="package-loading" class="section level3">
-<h3><span class="header-section-number">2.3.2</span> Package loading</h3>
-<p>Recall that after you’ve installed a package, you need to “load” it, in other words open it. We do this by using the <code>library()</code> command. For example, to load the <code>ggplot2</code> package, run the following code in the Console pane. What do we mean by “run the following code”? Either type or copy &amp; paste the following code into the Console pane and then hit the enter key.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(ggplot2)</a></code></pre></div>
-<p>If after running the above code, a blinking cursor returns next to the <code>&gt;</code> “prompt” sign, it means you were successful and the <code>ggplot2</code> package is now loaded and ready to use. If however, you get a red “error message” that reads…</p>
-<pre><code>Error in library(ggplot2) : there is no package called ‘ggplot2’</code></pre>
-<p>… it means that you didn’t successfully install it. In that case, go back to the previous subsection “Package installation” and install it.</p>
-<div class="learncheck">
-<p>
-<strong><em>Learning check</em></strong>
-</p>
-</div>
-<strong>(LC2.2)</strong> “Load” the <code>dplyr</code>, <code>nycflights13</code>, and <code>knitr</code> packages as well by repeating the above steps.
-<div class="learncheck">
-
-</div>
-</div>
-<div id="package-use" class="section level3">
-<h3><span class="header-section-number">2.3.3</span> Package use</h3>
-<p>One extremely common mistake new R users make when wanting to use particular packages is they forget to “load” them first by using the <code>library()</code> command we just saw. Remember: <em>you have to load each package you want to use every time you start RStudio.</em> If you don’t first “load” a package, but attempt to use one of its features, you’ll see an error message similar to:</p>
-<pre><code>Error: could not find function</code></pre>
-<p>R is telling you that you are trying to use a function in a package that has not yet been “loaded.” Almost all new users forget do this when starting out, and it is a little annoying to get used. However, you’ll remember with pratice.</p>
-<hr />
-</div>
-</div>
-<div id="nycflights13" class="section level2">
-<h2><span class="header-section-number">2.4</span> Explore your first dataset</h2>
-<p>Let’s put everything we’ve learned so far into practice and start exploring some real data! Data comes to us in a variety of formats, from pictures to text to numbers. Throughout this book, we’ll focus on datasets that are saved in “spreadsheet”-type format; this is probably the most common way data are collected and saved in many fields. Remember from Subsection <a href="2-getting-started.html#programming-concepts">2.2.1</a> that these “spreadsheet”-type datasets are called <em>data frames</em> in R; we will focus on working with data saved as data frames throughout this book.</p>
-<p>Let’s first load all the packages needed for this chapter, assuming you’ve already installed them. Read Section <a href="2-getting-started.html#packages">2.3</a> for information on how to install and load R packages if you haven’t already.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(nycflights13)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">library</span>(knitr)</a></code></pre></div>
-<p>At the beginning of all subsequent chapters in this text, we’ll always have a list of packages that you should have installed and loaded to work with that chapter’s R code.</p>
-<div id="nycflights13-package" class="section level3">
-<h3><span class="header-section-number">2.4.1</span> <code>nycflights13</code> package</h3>
-<p>Many of us have flown on airplanes or know someone who has. Air travel has become an ever-present aspect in many people’s lives. If you live in or are visiting a relatively large city and you walk around that city’s airport, you see gates showing flight information from many different airlines. And you will frequently see that some flights are delayed because of a variety of conditions. Are there ways that we can avoid having to deal with these flight delays?</p>
-<p>We’d all like to arrive at our destinations on time whenever possible. (Unless you secretly love hanging out at airports. If you are one of these people, pretend for the moment that you are very much anticipating being at your final destination.) Throughout this book, we’re going to analyze data related to flights contained in the <code>nycflights13</code> package <span class="citation">(Wickham <a href="#ref-R-nycflights13">2018</a>)</span>. Specifically, this package contains five data sets saved in five separate data frames with information about all domestic flights departing from New York City in 2013. These include Newark Liberty International (EWR), John F. Kennedy International (JFK), and LaGuardia (LGA) airports:</p>
-<ul>
-<li><code>flights</code>: Information on all 336,776 flights</li>
-<li><code>airlines</code>: A table matching airline names and their two letter IATA airline codes (also known as carrier codes) for 16 airline companies</li>
-<li><code>planes</code>: Information about each of 3,322 physical aircraft used.</li>
-<li><code>weather</code>: Hourly meteorological data for each of the three NYC airports. This data frame has 26,115 rows, roughtly corresponding to the 365 <span class="math inline">\(\times\)</span> 24 <span class="math inline">\(\times\)</span> 3 = 26,280 possible hourly measurements one can observe at three locations over the course of a year.</li>
-<li><code>airports</code>: Airport names, codes, and locations for 1,458 destination airports.</li>
+</table></li>
 </ul>
+<p>As the table notes, in two of the cases, the jury correctly determines that the defendant is either guilty or not. But there are also two cases in which the jury’s decision is incorrect:
+* Type I error: Wrongly Convicted. In this case, the jury decides that the defendant is guilty when in fact they are not. This might be because evidence that was presented was falsified or because prejudices and discrimination affect how the jury perceives the defendant.
+* Type II error: Insufficient Evidence. In this case, the jury decides that the defendant is “not guilty” when in fact they are. This is typically because there is insufficient evidence.</p>
+<p>In the US court system, the assumption is supposed to be that a defendant is innocent until proven guilty, meaning that a high burden of proof is required to find a defendant guilty. This means that the system is designed to have a low Type I error. The trade-off implicit in this is that the Type II error may be higher – that is, that because the burden of proof is high, some perpetrators will “get off”. (Note, of course, that we’re describing the ideal; as the <a href="https://www.innocenceproject.org">Innocence Project’s work</a> shows, Type I errors are more common than we’d like, particularly among racial minorities).</p>
 </div>
-<div id="flights-data-frame" class="section level3">
-<h3><span class="header-section-number">2.4.2</span> <code>flights</code> data frame</h3>
-<p>We will begin by exploring the <code>flights</code> data frame that is included in the <code>nycflights13</code> package and getting an idea of its structure. Run the following code in your console (either by typing it or cutting &amp; pasting it): it loads in the <code>flights</code> dataset into your Console. Note depending on the size of your monitor, the output may vary slightly.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">flights</a></code></pre></div>
-<pre><code># A tibble: 336,776 x 19
-    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
-   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
- 1  2013     1     1      517            515         2      830            819
- 2  2013     1     1      533            529         4      850            830
- 3  2013     1     1      542            540         2      923            850
- 4  2013     1     1      544            545        -1     1004           1022
- 5  2013     1     1      554            600        -6      812            837
- 6  2013     1     1      554            558        -4      740            728
- 7  2013     1     1      555            600        -5      913            854
- 8  2013     1     1      557            600        -3      709            723
- 9  2013     1     1      557            600        -3      838            846
-10  2013     1     1      558            600        -2      753            745
-# … with 336,766 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
-#   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
-#   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
-<p>Let’s unpack this output:</p>
-<ul>
-<li><code>A tibble: 336,776 x 19</code>: A <code>tibble</code> is a kind of data frame used in R. This particular data frame has
-<ul>
-<li><code>336,776</code> rows</li>
-<li><code>19</code> columns corresponding to 19 variables describing each observation</li>
-</ul></li>
-<li><code>year month day dep_time sched_dep_time dep_delay arr_time</code> are different columns, in other words variables, of this data frame.</li>
-<li>We then have the first 10 rows of observations corresponding to 10 flights.</li>
-<li><code>... with 336,766 more rows, and 11 more variables:</code> indicating to us that 336,766 more rows of data and 11 more variables could not fit in this screen.</li>
-</ul>
-<p>Unfortunately, this output does not allow us to explore the data very well. Let’s look at different tools to explore data frames.</p>
+<div id="commonalities" class="section level3">
+<h3><span class="header-section-number">12.2.3</span> Commonalities</h3>
+<p>Before connecting these to statistical decision making, it’s interesting to note that in all three of the cases we’ve introduced here – party attendance, medicine, and law – the minimization of Type I error is often primary. That is, we’d prefer a decision rule that doesn’t send us to parties we don’t like, doesn’t tell us we are pregnant when we aren’t, and doesn’t wrongfully convict people of crimes. This is not to say Type II error doesn’t matter, but that it is often seen as secondary to Type I.</p>
 </div>
-<div id="exploredataframes" class="section level3">
-<h3><span class="header-section-number">2.4.3</span> Exploring data frames</h3>
-<p>Among the many ways of getting a feel for the data contained in a data frame such as <code>flights</code>, we present three functions that take as their “argument”, in other words their input, the data frame in question. We also include a fourth method for exploring one particular column of a data frame:</p>
-<ol style="list-style-type: decimal">
-<li>Using the <code>View()</code> function built for use in RStudio. We will use this the most.</li>
-<li>Using the <code>glimpse()</code> function, which is included in the <code>dplyr</code> package.</li>
-<li>Using the <code>kable()</code> function, which is included in the <code>knitr</code> package.</li>
-<li>Using the <code>$</code> operator to view a single variable in a data frame.</li>
-</ol>
-<p><strong>1. <code>View()</code></strong>:</p>
-<p>Run <code>View(flights)</code> in your Console in RStudio, either by typing it or cutting &amp; pasting it into the Console pane, and explore this data frame in the resulting pop-up viewer. You should get into the habit of always <code>View</code>ing any data frames that come your way. Note the capital “V” in <code>View</code>. R is case-sensitive so you’ll receive an error is you run <code>view(flights)</code> instead of <code>View(flights)</code>.</p>
-<div class="learncheck">
-<p>
-<strong><em>Learning check</em></strong>
-</p>
 </div>
-<p><strong>(LC2.3)</strong> What does any <em>ONE</em> row in this <code>flights</code> dataset refer to?</p>
-<ul>
-<li>A. Data on an airline</li>
-<li>B. Data on a flight</li>
-<li>C. Data on an airport</li>
-<li>D. Data on multiple flights</li>
-</ul>
-<div class="learncheck">
+<div id="ht" class="section level2">
+<h2><span class="header-section-number">12.3</span> Hypothesis test: Decision making in statistics</h2>
+<p>The same sort of decision making problems face statistics as well: based on some p-value criterion, we could either reject the null hypothesis or not. And either the null hypothesis is true, or it is not – in which case some <em>alternative</em> hypothesis must be true.</p>
+<p>This is the first time we have mentioned an <strong>alternative hypothesis</strong>. This hypothesis is what we are seeking evidence to prove when we are conducting what is called a <strong>hypothesis test</strong>:</p>
 
-</div>
-<p>By running <code>View(flights)</code>, we see the different <em>variables</em> listed in the columns and we see that there are different types of variables. Some of the variables like <code>distance</code>, <code>day</code>, and <code>arr_delay</code> are what we will call <em>quantitative</em> variables. These variables are numerical in nature. Other variables here are <em>categorical</em>.</p>
-<p>Note that if you look in the leftmost column of the <code>View(flights)</code> output, you will see a column of numbers. These are the row numbers of the dataset. If you glance across a row with the same number, say row 5, you can get an idea of what each row corresponds to. In other words, this will allow you to identify what object is being referred to in a given row. This is often called the <em>observational unit</em>. The <em>observational unit</em> in this example is an individual flight departing New York City in 2013. You can identify the observational unit by determining what “thing” is being measured or described by each of the variables.</p>
-<p><strong>2. <code>glimpse()</code></strong>:</p>
-<p>The second way to explore a data frame is using the <code>glimpse()</code> function included in the <code>dplyr</code> package. Thus, you can only use the <code>glimpse()</code> function after you’ve loaded the <code>dplyr</code> package. This function provides us with an alternative method for exploring a data frame than the <code>View()</code> function:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">glimpse</span>(flights)</a></code></pre></div>
-<pre><code>Observations: 336,776
-Variables: 19
-$ year           &lt;int&gt; 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, …
-$ month          &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
-$ day            &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
-$ dep_time       &lt;int&gt; 517, 533, 542, 544, 554, 554, 555, 557, 557, 558, 558,…
-$ sched_dep_time &lt;int&gt; 515, 529, 540, 545, 600, 558, 600, 600, 600, 600, 600,…
-$ dep_delay      &lt;dbl&gt; 2, 4, 2, -1, -6, -4, -5, -3, -3, -2, -2, -2, -2, -2, -…
-$ arr_time       &lt;int&gt; 830, 850, 923, 1004, 812, 740, 913, 709, 838, 753, 849…
-$ sched_arr_time &lt;int&gt; 819, 830, 850, 1022, 837, 728, 854, 723, 846, 745, 851…
-$ arr_delay      &lt;dbl&gt; 11, 20, 33, -18, -25, 12, 19, -14, -8, 8, -2, -3, 7, -…
-$ carrier        &lt;chr&gt; &quot;UA&quot;, &quot;UA&quot;, &quot;AA&quot;, &quot;B6&quot;, &quot;DL&quot;, &quot;UA&quot;, &quot;B6&quot;, &quot;EV&quot;, &quot;B6&quot;, …
-$ flight         &lt;int&gt; 1545, 1714, 1141, 725, 461, 1696, 507, 5708, 79, 301, …
-$ tailnum        &lt;chr&gt; &quot;N14228&quot;, &quot;N24211&quot;, &quot;N619AA&quot;, &quot;N804JB&quot;, &quot;N668DN&quot;, &quot;N39…
-$ origin         &lt;chr&gt; &quot;EWR&quot;, &quot;LGA&quot;, &quot;JFK&quot;, &quot;JFK&quot;, &quot;LGA&quot;, &quot;EWR&quot;, &quot;EWR&quot;, &quot;LGA&quot;…
-$ dest           &lt;chr&gt; &quot;IAH&quot;, &quot;IAH&quot;, &quot;MIA&quot;, &quot;BQN&quot;, &quot;ATL&quot;, &quot;ORD&quot;, &quot;FLL&quot;, &quot;IAD&quot;…
-$ air_time       &lt;dbl&gt; 227, 227, 160, 183, 116, 150, 158, 53, 140, 138, 149, …
-$ distance       &lt;dbl&gt; 1400, 1416, 1089, 1576, 762, 719, 1065, 229, 944, 733,…
-$ hour           &lt;dbl&gt; 5, 5, 5, 5, 6, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 6, 6, …
-$ minute         &lt;dbl&gt; 15, 29, 40, 45, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 59, …
-$ time_hour      &lt;dttm&gt; 2013-01-01 05:00:00, 2013-01-01 05:00:00, 2013-01-01 …</code></pre>
-<p>We see that <code>glimpse()</code> will give you the first few entries of each variable in a row after the variable. In addition, the <em>data type</em> (see Subsection <a href="2-getting-started.html#programming-concepts">2.2.1</a>) of the variable is given immediately after each variable’s name inside <code>&lt; &gt;</code>. Here, <code>int</code> and <code>dbl</code> refer to “integer” and “double”, which are computer coding terminology for quantitative/numerical variables. In contrast, <code>chr</code> refers to “character”, which is computer terminology for text data. Text data, such as the <code>carrier</code> or <code>origin</code> of a flight, are categorical variables. The <code>time_hour</code> variable is an example of one more type of data type: <code>dttm</code>. As you may suspect, this variable corresponds to a specific date and time of day. However, we won’t work with dates in this class and leave it to a more advanced book on data science.</p>
-<div class="learncheck">
-<p>
-<strong><em>Learning check</em></strong>
-</p>
-</div>
-<p><strong>(LC2.4)</strong> What are some examples in this dataset of <strong>categorical</strong> variables? What makes them different than <strong>quantitative</strong> variables?</p>
-<div class="learncheck">
 
-</div>
-<p><strong>3. <code>kable()</code></strong>:</p>
-<p>The final way to explore the entirety of a data frame is using the <code>kable()</code> function from the <code>knitr</code> package. Let’s explore the different carrier codes for all the airlines in our dataset two ways. Run both of these lines of code in your Console:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">airlines</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw">kable</span>(airlines)</a></code></pre></div>
-<p>At first glance, it may not appear that there is much difference in the outputs. However when using tools for document production such as <a href="http://rmarkdown.rstudio.com/lesson-1.html">R Markdown</a>, the latter code produces output that is much more legible and reader-friendly.</p>
-<p><strong>4. <code>$</code> operator</strong></p>
-<p>Lastly, the <code>$</code> operator allows us to explore a single variable within a data frame. For example, run the following in your console</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">airlines</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">airlines<span class="op">$</span>name</a></code></pre></div>
-<p>We used the <code>$</code> operator to extract only the <code>name</code> variable and return it as a vector of length 16. We will only be occasionally exploring data frames using this operator, instead favoring the <code>View()</code> and <code>glimpse()</code> functions.</p>
-</div>
-<div id="help-files" class="section level3">
-<h3><span class="header-section-number">2.4.4</span> Help files</h3>
-<p>Another nice feature of R is the help system. You can get help in R by entering a <code>?</code> before the name of a function or data frame in question and you will be presented with a page showing the documentation. For example, let’s look at the help file for the <code>flights</code> data frame:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">?flights</a></code></pre></div>
-<p>A help file should pop-up in the Help pane of RStudio. If you have questions about a function or data frame included in an R package, you should get in the habit of consulting the help file right away.</p>
-<hr />
-</div>
-</div>
-<div id="conclusion" class="section level2">
-<h2><span class="header-section-number">2.5</span> Conclusion</h2>
-<p>We’ve given you what we feel are the most essential concepts to know before you can start exploring data in R. Is this chapter exhaustive? Absolutely not. To try to include everything in this chapter would make the chapter so large it wouldn’t be useful!</p>
-<div id="additional-resources" class="section level3">
-<h3><span class="header-section-number">2.5.1</span> Additional resources</h3>
-<p>If you are completely new to the world of coding, R, and RStudio and feel you could benefit from a more detailed introduction, we suggest you check out ModernDive co-author Chester Ismay’s <a href="https://rbasics.netlify.com/">Getting used to R, RStudio, and R Markdown</a> short book <span class="citation">(Ismay <a href="#ref-usedtor2016">2016</a>)</span>, which includes screencast recordings that you can follow along and pause as you learn. Furthermore, there is an introduction to R Markdown, a tool used for reproducible research in R.</p>
-<center>
-<img src="images/gettting-used-to-R.png" style="height:3.5in" />
-</center>
-</div>
-<div id="whats-to-come" class="section level3">
-<h3><span class="header-section-number">2.5.2</span> What’s to come?</h3>
-<p>As we stated earlier however, the best way to learn R is to learn by doing. We now start the “data science” portion of the book in Chapter <a href="3-viz.html#viz">3</a> with what we feel is the most important tool in a data scientist’s toolbox: data visualization. We will continue to explore the data included in the <code>nycflights13</code> package through data visualization. We’ll see that data visualization is a powerful tool to add to our toolbox for data exploring that provides additional insight to what the <code>View()</code> and <code>glimpse()</code> functions can provide.</p>
-<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-14"></span>
-<img src="images/flowcharts/flowchart/flowchart.004.png" alt="ModernDive flowchart" width="110%" />
-<p class="caption">
-FIGURE 2.1: ModernDive flowchart
-</p>
-</div>
-
-</div>
 </div>
 </div>
 
 
 
-<h3>References</h3>
-<div id="refs" class="references">
-<div id="ref-usedtor2016">
-<p>Ismay, Chester. 2016. <em>Getting Used to R, RStudio, and R Markdown</em>. <a href="http://ismayc.github.io/rbasics-book">http://ismayc.github.io/rbasics-book</a>.</p>
-</div>
-<div id="ref-R-nycflights13">
-<p>Wickham, Hadley. 2018. <em>Nycflights13: Flights That Departed Nyc in 2013</em>. <a href="https://CRAN.R-project.org/package=nycflights13">https://CRAN.R-project.org/package=nycflights13</a>.</p>
-</div>
-</div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="3-viz.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="11-pvalues.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="A-appendixA.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -944,7 +728,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/nulib/moderndive_book/edit/master/02-getting-started.Rmd",
+"link": "https://github.com/nulib/moderndive_book/edit/master/12-hypothesis-tests.Rmd",
 "text": "Edit"
 },
 "history": {

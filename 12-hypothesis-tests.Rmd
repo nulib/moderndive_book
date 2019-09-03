@@ -1,0 +1,155 @@
+# Hypothesis tests {#hypothesis-tests}
+
+```{r setup-hypothesis-tests, include=FALSE, purl=FALSE}
+chap <- 12
+lc <- 0
+rq <- 0
+# **`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`**
+# **`r paste0("(RQ", chap, ".", (rq <- rq + 1), ")")`**
+knitr::opts_chunk$set(
+  tidy = FALSE, 
+  out.width = '\\textwidth', 
+  fig.height = 4,
+  fig.align='center',
+  warning = FALSE
+  )
+options(scipen = 99, digits = 3)
+# Set random number generator see value for replicable pseudorandomness. 
+set.seed(2018)
+```
+
+In Chapter \@ref(pvalues), we introduced the p-value, which provides analysts with a probability (between 0 and 1) that the observed data would be found if the null hypothesis were true. Readers familiar with the use of statistics may have noticed, however, that Chapter \@ref(pvalues) did not refer to any criteria (e.g., p < .05) or use the phrase “statistically significant”. This is because the concept of a p-value is distinct from the use of a p-value to make a decision. In this chapter, we introduce hypothesis testing, which can be used for just this purpose. 
+
+### Needed Packages {-}
+
+Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). If needed, read Section \@ref(packages) for information on how to install and load R packages.
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(moderndive)
+library(infer)
+library(ggplot2movies)
+```
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+# Packages needed internally, but not in text.
+library(readr)
+library(knitr)
+library(kableExtra)
+library(patchwork)
+library(scales)
+```
+
+## Decision making {#decision-making}
+
+Remember that a p-value is a probabilistic proof by contradiction. It might show that the chance that the observed data would occur under the null hypothesis is 2%, 20%, or 50%. But at what level is the evidence enough that we would decide that the null hypothesis must not be true? 
+
+Conventional wisdom is to use $p < 0.05$ as this threshold, where $p$ denotes the p-value. But as many have pointed out – particularly in the current ‘replication crisis’ era – this threshold is arbitrary. Why is 5% considered small enough? Why not 0.5%? Why not 0.05%? Decisions regarding these thresholds require substantive knowledge of a field, the role of statistics in science, and some important trade-offs, which we will introduce next.
+
+<!-- link to a replication crisis article? -->
+
+## Decision making trade-offs {#trade-offs}
+
+Imagine that you’ve been invited to a party, and you are trying to decide if you should go. On the one hand, the party might be a good time, and you’d be happy that you went. On the other hand, it might not be that much fun and you’d be unhappy that you went. In advance, you don’t know which kind of party it will be. How do you decide?
+We can formalize this decision making in terms of a 2x2 table crossing your decision (left) with information about the party (top):
+
+```{r party-table, echo=FALSE, message=FALSE}
+if(!file.exists("rds/party_table.rds")){
+  party_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTFrvHwKsz8Jp2z3W48yxYO3PnbUUCy8CwBzn9WjiFhrB0OQQaLx8gte64gz0L1O2BlGq6hARAHb3NG/pub?output=csv" %>% 
+    read_csv(na = "")
+    write_rds(party_table, "rds/party_table.rds")
+} else {
+  party_table <- read_rds("rds/party_table.rds")
+}
+party_table %>% 
+  kable(
+    caption = "Party decision making", 
+    booktabs = TRUE,
+    escape = FALSE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("HOLD_position")) 
+```
+
+As you can see from this table, there are 4 possible combinations. If you decide to go to the party and it is in fact fun, you’re happy. If you decide to stay home and you hear from your friends that it was terrible, you’re happy. But in the other two cases you are *not happy*:
+
+* Type I error: You decide to go to the party and the party is lame. You’ve now wasted your time and are unhappy. 
+* Type II error: You decide to forgo the party and stay home, but you later hear that the party was awesome. You’ve now missed out and are unhappy.
+
+In life, we often have to make decisions like this. In making these decisions, there are trade-offs. Perhaps you are the type of person that has FOMO – in that case, you may really want to minimize your Type II error, but at the expense of attending some boring parties and wasting your time (a higher Type I error). Or perhaps you are risk averse and hate wasting time – in which case you want to minimize your Type I error, at the expense of missing out on some really great parties (a higher Type II error). 
+
+There are a few important points here:
+* When making a decision, you cannot know in advance what the actual outcome will be. 
+* Sometimes your decision will be the right one. Ideally, you’d like this to be most of the time.
+* But, sometimes your decision will be the wrong one. Importantly, you cannot minimize both Type I and II errors at the same time. One will be minimized at the expense of the other. 
+* Depending upon the context, you may decide that minimizing Type I or II errors is more important to you.
+
+These features of decision-making play out again and again in life. In the next sections, we provide two common examples, one in medicine, the other in law. 
+
+### Medicine {#medicine}
+Imagine that you might be pregnant and take a pregnancy test. This test is based upon levels of HcG in your urine, and when these levels are “high enough” (determined by the pregnancy test maker), the test will tell you that you are pregnant (+). If the levels are not “high enough”, the test will tell you that you are not pregnant (-). Depending upon how the test determines “high enough” levels of HcG, however, the test might be wrong. To see how, examine the following table.
+
+```{r medicine-table, echo=FALSE, message=FALSE}
+if(!file.exists("rds/medicine_table.rds")){
+  medicine_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTmSF5bh4fg-QeydYItlgDUYUXCyM-axGzqMqRdwKfR7somtZ12L4kWgEXSbc5CEC4rS7aiffGb_N8D/pub?output=csv" %>% 
+    read_csv(na = "")
+    write_rds(medicine_table, "rds/medicine_table.rds")
+} else {
+  medicine_table <- read_rds("rds/medicine_table.rds")
+}
+medicine_table %>% 
+  kable(
+    caption = "Pregnancy test decision making", 
+    booktabs = TRUE,
+    escape = FALSE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("HOLD_position")) 
+```
+
+As the table notes, in two of the cases, the test correctly determines that you are either pregnant or not pregnant. But there are also two cases in which the test (a decision) is incorrect:
+* Type I error: False Positive. In this case, the test tells you that you are pregnant when in fact you are not. This would occur if the level of HcG required to indicate positive was too low.
+* Type II error: False Negative. In this case, the test tells you that you are not pregnant but you actually are. This would occur if the level of HcG required to indicate positive is too high.
+
+When a pregnancy test manufacturer develops the test, they have to pay attention to these two possible error types and think through the trade-offs of each. For example, if they wanted to minimize the Type II error (False Negative), they could just create a test that always tells people they are pregnant (i.e., HcG >= 0). Conversely, if they wanted to minimize the Type I error (False Positive), they could set the HcG level to be very high, so that it only detects pregnancy for those that are 6 months pregnant. Of course, the trade-off here is that certainly many who took the test would actually be pregnant, and yet the test would tell them otherwise.
+
+In developing these tests, which do you think test manufacturers focus on minimizing: Type I or II errors? 
+
+### Law {#law}
+Imagine that you are on the jury of a criminal trial. You are presented with evidence that a crime has been committed and must make a decision regarding the guilt of the defendant. But you were not there when the crime was committed, so it is impossible to know with 100% accuracy that your decision is correct. Instead, you again encounter this 2x2 table:
+
+```{r law-table, echo=FALSE, message=FALSE}
+if(!file.exists("rds/law_table.rds")){
+  law_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vThQr10AKx5Asna-4yB-0kDKoQrycroVKL-Dvfm7F5HsLkTZyic_fDav18AUN4hnTIeEaZW1zXY0Amt/pub?output=csv" %>% 
+    read_csv(na = "")
+    write_rds(law_table, "rds/law_table.rds")
+} else {
+  law_table <- read_rds("rds/law_table.rds")
+}
+law_table %>% 
+  kable(
+    caption = "Criminal trial decision making", 
+    booktabs = TRUE,
+    escape = FALSE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("HOLD_position")) 
+```
+
+As the table notes, in two of the cases, the jury correctly determines that the defendant is either guilty or not. But there are also two cases in which the jury’s decision is incorrect:
+* Type I error: Wrongly Convicted. In this case, the jury decides that the defendant is guilty when in fact they are not. This might be because evidence that was presented was falsified or because prejudices and discrimination affect how the jury perceives the defendant.
+* Type II error: Insufficient Evidence. In this case, the jury decides that the defendant is “not guilty” when in fact they are. This is typically because there is insufficient evidence.
+
+In the US court system, the assumption is supposed to be that a defendant is innocent until proven guilty, meaning that a high burden of proof is required to find a defendant guilty. This means that the system is designed to have a low Type I error. The trade-off implicit in this is that the Type II error may be higher – that is, that because the burden of proof is high, some perpetrators will “get off”. (Note, of course, that we’re describing the ideal; as the [Innocence Project’s work](https://www.innocenceproject.org) shows, Type I errors are more common than we’d like, particularly among racial minorities). 
+
+### Commonalities
+Before connecting these to statistical decision making, it’s interesting to note that in all three of the cases we’ve introduced here – party attendance, medicine, and law – the minimization of Type I error is often primary. That is, we’d prefer a decision rule that doesn’t send us to parties we don’t like, doesn’t tell us we are pregnant when we aren’t, and doesn’t wrongfully convict people of crimes. This is not to say Type II error doesn’t matter, but that it is often seen as secondary to Type I. 
+
+## Hypothesis test: Decision making in statistics {#ht}
+The same sort of decision making problems face statistics as well: based on some p-value criterion, we could either reject the null hypothesis or not. And either the null hypothesis is true, or it is not – in which case some *alternative* hypothesis must be true. 
+
+This is the first time we have mentioned an **alternative hypothesis**. This hypothesis is what we are seeking evidence to prove when we are conducting what is called a **hypothesis test**:
+
+
+
+

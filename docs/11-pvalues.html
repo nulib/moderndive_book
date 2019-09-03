@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Getting Started with Data in R | Statistical Inference via Data Science</title>
+  <title>Chapter 11 P-values | Statistical Inference via Data Science</title>
   <meta name="description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
   <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Getting Started with Data in R | Statistical Inference via Data Science" />
+  <meta property="og:title" content="Chapter 11 P-values | Statistical Inference via Data Science" />
   <meta property="og:type" content="book" />
   <meta property="og:url" content="https://nulib.github.io/moderndive_book/" />
   <meta property="og:image" content="https://nulib.github.io/moderndive_book/images/logos/book_cover.png" />
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="nulib/moderndive_book" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Getting Started with Data in R | Statistical Inference via Data Science" />
+  <meta name="twitter:title" content="Chapter 11 P-values | Statistical Inference via Data Science" />
   
   <meta name="twitter:description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
   <meta name="twitter:image" content="https://nulib.github.io/moderndive_book/images/logos/book_cover.png" />
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <link rel="apple-touch-icon-precomposed" sizes="152x152" href="images/logos/favicons/apple-touch-icon.png" />
   <link rel="shortcut icon" href="images/logos/favicons/favicon.ico" type="image/x-icon" />
-<link rel="prev" href="index.html">
-<link rel="next" href="3-viz.html">
+<link rel="prev" href="10-CIs.html">
+<link rel="next" href="12-hypothesis-tests.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -497,415 +497,362 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <html>
 <img src='https://moderndive.com/wide_format.png' alt="ModernDive">
 </html>
-<div id="getting-started" class="section level1">
-<h1><span class="header-section-number">Chapter 2</span> Getting Started with Data in R</h1>
-<p>Before we can start exploring data in R, there are some key concepts to understand first:</p>
+<div id="pvalues" class="section level1">
+<h1><span class="header-section-number">Chapter 11</span> P-values</h1>
+<p>In Chapter <a href="10-CIs.html#CIs">10</a>, we covered how to use the theory of repeated samples to make inferences from a sample (your data) to a population. To do so, we introduced the counterfactual thinking that underpins statistical reasoning, wherein making inferences requires you to imagine alternative versions of your data that you might have under other possible samples selected in the same way. In this chapter, we extend this counterfactual reasoning to imagine other possible samples you might have seen if you knew the trend in the population. This way of thinking will lead us to define p-values.</p>
+<div id="needed-packages-7" class="section level3 unnumbered">
+<h3>Needed Packages</h3>
+<p>Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). If needed, read Section <a href="2-getting-started.html#packages">2.3</a> for information on how to install and load R packages.</p>
+<div class="sourceCode" id="cb335"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb335-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb335-2" data-line-number="2"><span class="kw">library</span>(moderndive)</a>
+<a class="sourceLine" id="cb335-3" data-line-number="3"><span class="kw">library</span>(infer)</a>
+<a class="sourceLine" id="cb335-4" data-line-number="4"><span class="kw">library</span>(ggplot2movies)</a></code></pre></div>
+</div>
+<div id="proof-by-contradiction" class="section level2">
+<h2><span class="header-section-number">11.1</span> Stochastic Proof by Contradiction</h2>
+<p>In many scientific pursuits, the goal is not simply to estimate a population parameter. Instead, the goal is often to understand if there is a difference between two groups in the population or if there is a relationship between two (or more) variables in the population. For example, we might want to know if average SAT scores differ between men and women, or if there is a relationship between education and income in the population in the United States.</p>
+<p>Let’s take the difference in means between two groups as a motivating example. In order to prove that there is a difference between average SAT scores for men and women, we might proceed with what is in math called a proof by contradiction. Here, however, this proof is probabilistic (aka stochastic).</p>
+<p><strong>Stochastic Proof by Contraction</strong>:</p>
+<p>There are three steps in a Proof by Contradiction. In order to illustrate these, assume we wish to prove that there is a relationship between X and Y.</p>
 <ol style="list-style-type: decimal">
-<li>What are R and RStudio?</li>
-<li>How do I code in R?</li>
-<li>What are R packages?</li>
+<li>Negate the conclusion: Begin by assuming the opposite – that there is no relationship between X and Y.</li>
+<li>Analyze the consequences of this premise: If there is no relationship between X and Y in the population, what would the sampling distribution of the estimate of the relationship between X and Y look like?</li>
+<li>Look for a contradiction: Compare the relationship between X and Y observed in your sample to this sampling distribution. How (un)likely is this observed relationship?</li>
 </ol>
-<p>We’ll introduce these concepts in upcoming Sections <a href="2-getting-started.html#r-rstudio">2.1</a>-<a href="2-getting-started.html#packages">2.3</a>. If you are already somewhat familiar with these concepts, feel free to skip to Section <a href="2-getting-started.html#nycflights13">2.4</a> where we’ll introduce our first data set: all domestic flights departing a New York City airport in 2013. This is a dataset we will explore in depth in this book.</p>
-<hr />
-<div id="r-rstudio" class="section level2">
-<h2><span class="header-section-number">2.1</span> What are R and RStudio?</h2>
-<p>For much of this book, we will assume that you are using R via RStudio. First time users often confuse the two. At its simplest:</p>
+<p>If likelihood of the observed relationship is small, then this is evidence that there is a relationship between X and Y in the population.</p>
+</div>
+<div id="repeated-samples-the-null-hypothesis-and-p-values" class="section level2">
+<h2><span class="header-section-number">11.2</span> Repeated samples, the null hypothesis, and p-values</h2>
+<div id="null-hypothesis" class="section level3">
+<h3><span class="header-section-number">11.2.1</span> Null hypothesis</h3>
+<p>In the example of asking if there is a difference in SAT scores between men and women, you will note that in order to prove that there is a difference, we begin by assuming that there is not a difference (Step 1). We call this the null hypothesis – it is the hypothesis we are attempting to disprove. The most common null hypotheses are:</p>
 <ul>
-<li>R is like a car’s engine.</li>
-<li>RStudio is like a car’s dashboard.</li>
+<li>A parameter is 0 in the population.</li>
+<li>There is no difference between two or more groups in the population.</li>
+<li>There is no relationship between two variables in the population.</li>
 </ul>
-<table>
-<thead>
-<tr class="header">
-<th align="center">R: Engine</th>
-<th align="center">RStudio: Dashboard</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center"><img src="images/engine.jpg" style="height:1.7in" /></td>
-<td align="center"><img src="images/dashboard.jpg" style="height:1.7in" /></td>
-</tr>
-</tbody>
-</table>
-<p>More precisely, R is a programming language that runs computations while RStudio is an <em>integrated development environment (IDE)</em> that provides an interface by adding many convenient features and tools. So the way of having access to a speedometer, rearview mirrors, and a navigation system makes driving much easier, using RStudio’s interface makes using R much easier as well.</p>
-<p>If you are still not sure about the difference between R and RStudio IDE, we suggest you watch this <a href="https://campus.datacamp.com/courses/working-with-the-rstudio-ide-part-1/orientation?ex=1">DataCamp video</a>.</p>
-<div id="installing-r-and-rstudio" class="section level3">
-<h3><span class="header-section-number">2.1.1</span> Installing R and RStudio</h3>
-<blockquote>
-<p><strong>Note about RStudio Server</strong>: If your instructor has provided you with a link and access to RStudio Server, then you can skip this section. We do recommend though after a few months of working on the RStudio Server that you return to these instructions.</p>
-</blockquote>
-<p>You will first need to download and install both R and RStudio (Desktop version) on your computer.</p>
-<ol style="list-style-type: decimal">
-<li><strong>You must do this first:</strong> <a href="https://cran.r-project.org/">Download and install R</a>.
-<ul>
-<li>Click on the download link corresponding to your computer’s operating system.</li>
-</ul></li>
-<li><strong>You must do this second:</strong> <a href="https://www.rstudio.com/products/rstudio/download3/">Download and install RStudio</a>.
-<ul>
-<li>Scroll down to “Installers for Supported Platforms”</li>
-<li>Click on the download link corresponding to your computer’s operating system.</li>
-</ul></li>
-</ol>
-<p>If you had trouble with these two steps, we suggest you watch this <a href="https://campus.datacamp.com/courses/working-with-the-rstudio-ide-part-1/orientation?ex=3">DataCamp video</a>.</p>
+<p>Importantly, this hypothesis is about the value or relationship in the population, not the sample. (This is a very easy mistake to make). Remember, you have data in your sample, so you know without a doubt if there is a difference or relationship in your data (that is your estimate). What you do not know is if there is a difference or relationship in the population.
+Once a null hypothesis is determined, the next step is to determine what the sampling distribution of the estimator would be if this null hypothesis were true (Step 2). We can determine what this null distribution would look like in two ways, just as with sampling distributions more generally: using mathematical theory or using computational approximation (bootstrapping).</p>
 </div>
-<div id="using-r-via-rstudio" class="section level3">
-<h3><span class="header-section-number">2.1.2</span> Using R via RStudio</h3>
-<p>Recall our car analogy from above. Much as we don’t drive a car by interacting directly with the engine but rather by interacting with elements on the car’s dashboard, we won’t be using R directly but rather we will use RStudio’s interface. After you install R and RStudio on your computer, you’ll have two new programs AKA applications you can open. We will always work in RStudio and not R. In other words:</p>
-<table>
-<thead>
-<tr class="header">
-<th align="center">R: Do not open this</th>
-<th align="center">RStudio: Open this</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center"><img src="images/Rlogo.png" style="width:25.0%" /></td>
-<td align="center"><img src="images/RStudio-Ball.png" style="width:20.0%" /></td>
-</tr>
-</tbody>
-</table>
-<p>After you open RStudio, you should see the following:</p>
-<p><img src="images/rstudio.png" /></p>
-<p>Note the three panes, which are three panels dividing the screen: The <em>Console pane</em>, the <em>Files pane</em>, and the <em>Environment pane</em>. Over the course of this chapter, you’ll come to learn what purpose each of these panes serve.</p>
-<p>If however you would like an in depth explanation right now however, we suggest you watch following <a href="https://campus.datacamp.com/courses/working-with-the-rstudio-ide-part-1/orientation?ex=5">DataCamp video</a>.</p>
-<hr />
-</div>
-</div>
-<div id="code" class="section level2">
-<h2><span class="header-section-number">2.2</span> How do I code in R?</h2>
-<p>Now that you’re set up with R and RStudio, you are probably asking yourself “OK. Now how do I use R?” The first thing to note as that unlike other statistical software programs like Excel, STATA, or SAS that provide <a href="https://en.wikipedia.org/wiki/Point_and_click">point and click</a> interfaces, R is an <a href="https://en.wikipedia.org/wiki/Interpreted_language">interpreted language</a>, meaning you have to enter in R commands written in R code. In other words, you have to code/program in R. Note that we’ll use the terms “coding” and “programming” interchangeably in this book.</p>
-<p>While it is not required to be a seasoned coder/computer programmer to use R, there is still a set of basic programming concepts that R users need to understand. Consequently, while this book is not a book on programming, you will still learn just enough of these basic programming concepts needed to explore and analyze data effectively.</p>
-<div id="programming-concepts" class="section level3">
-<h3><span class="header-section-number">2.2.1</span> Basic programming concepts and terminology</h3>
-<p>To introduce you to many of these basic programming concepts and terminology, we direct you to the following DataCamp online interactive tutorials. For each of the tutorials, we give a list of the basic programming concepts covered. Note that in this book, we will use a different font to distinguish regular font from <code>computer_code</code>.</p>
-<p>It is important to note that while these tutorials serve as excellent introductions, a single pass through them is insufficient for long-term learning and retention. The ultimate tools for long-term learning and retention are “learning by doing” and repetition, something we will have you do over the course of the entire book and we encourage this process as much as possible as you learn any new skill.</p>
-<ul>
-<li>From the <a href="https://www.datacamp.com/courses/free-introduction-to-r">Introduction to R</a> course complete the following chapters. As you work through the chapters, carefully note the important terms and what they are used for. We recommend you do so in a notebook that you can easily refer back to.
-<ul>
-<li><a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-1-intro-to-basics-1?ex=1">Chapter 1 Intro to basics</a>:
-<ul>
-<li>Console pane: where you enter in commands</li>
-<li>Objects: where values are saved, how to assign values to objects.</li>
-<li>Data types: integers, doubles/numerics, logicals, characters.<br />
-</li>
-</ul></li>
-<li><a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-2-vectors-2?ex=1">Chapter 2 Vectors</a>:
-<ul>
-<li>Vectors: a series of values.</li>
-</ul></li>
-<li><a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-4-factors-4?ex=1">Chapter 4 Factors</a>:
-<ul>
-<li><em>Categorical data</em> (as opposed to <em>numerical data</em>) are represented in R as <code>factor</code>s.</li>
-</ul></li>
-<li><a href="https://campus.datacamp.com/courses/free-introduction-to-r/chapter-5-data-frames?ex=1">Chapter 5 Data frames</a>:
-<ul>
-<li>Data frames are analogous to rectangular spreadsheets: they are representations of datasets in R where the rows correspond <em>observations</em> and the columns correspond to <em>variables</em> that describe the observations. We will revisit this later in Section <a href="2-getting-started.html#nycflights13">2.4</a>.</li>
-</ul></li>
-</ul></li>
-<li>From the <a href="https://www.datacamp.com/courses/intermediate-r">Intermediate R</a> course complete the following chapters:
-<ul>
-<li><a href="https://campus.datacamp.com/courses/intermediate-r/chapter-1-conditionals-and-control-flow?ex=1">Chapter 1 Conditionals and Control Flow</a>:
-<ul>
-<li>Testing for equality in R using <code>==</code> (and not <code>=</code> which is typically used for assignment). Ex: <code>2 + 1 == 3</code> compares <code>2 + 1</code> to <code>3</code> and is correct R syntax, while <code>2 + 1 = 3</code> is not and is incorrect R syntax.</li>
-<li>Boolean algebra: <code>TRUE/FALSE</code> statements and mathematical operators such as <code>&lt;</code> (less than), <code>&lt;=</code> (less than or equal), and <code>!=</code> (not equal to).</li>
-<li>Logical operators: <code>&amp;</code> representing “and”, <code>|</code> representing “or”. Ex: <code>(2 + 1 == 3) &amp; (2 + 1 == 4)</code> returns <code>FALSE</code> while <code>(2 + 1 == 3) | (2 + 1 == 4)</code> returns <code>TRUE</code>.</li>
-</ul></li>
-<li><a href="https://campus.datacamp.com/courses/intermediate-r/chapter-3-functions?ex=1">Chapter 3 Functions</a>:
-<ul>
-<li>Concept of functions: they take in inputs (called <em>arguments</em>) and return outputs.</li>
-<li>You either manually specify a function’s arguments or use the function’s <em>defaults</em>.</li>
-</ul></li>
-</ul></li>
-</ul>
-<p>This list is by no means an exhaustive list of all the programming concepts and terminology needed to become a savvy R user; such a list would be so large it wouldn’t be very useful, especially for novices. Rather, we feel this is the bare minimum you need to know before you get started; the rest we feel you can learn as you go. Remember that your knowledge of all of these concepts will build as you get better and better at “speaking R” and getting used to its syntax.</p>
-</div>
-<div id="errors-warnings-and-messages" class="section level3">
-<h3><span class="header-section-number">2.2.2</span> Errors, warnings, and messages</h3>
-<p>One slightly confusing part of R is how it reports errors, warnings, and messages. The default theme in RStudio colors errors, warnings, and messages in red, which makes them seem like you did something wrong. However, seeing red text in the console <em>is not always bad.</em></p>
-<p>R will show red text in the console in three different situations:</p>
-<ul>
-<li><strong>Errors</strong>: When the red text is a legitimate error, it will be prefaced with “Error in…” and try to explain what went wrong. Generally when there’s an error, the code will not run. For example, as shown in Subsection <a href="2-getting-started.html#package-use">2.3.3</a> below if you see <code>Error in ggplot(...) : could not find function &quot;ggplot&quot;</code>, it means that the <code>ggplot()</code> function is not accessible because the package was not loaded with <code>library(ggplot2)</code>, and thus you cannot use it.</li>
-<li><strong>Warnings</strong>: When the red text is a warning, it will be prefaced with “Warning:” and try to explain why there’s a warning. Generally your code will still work, but with some caveats. For example, you see in Chapter <a href="3-viz.html#viz">3</a> if you plot a scatterplot and one of the rows in your data frame is missing a value, you will see this warning: <code>Warning: Removed 1 rows containing missing values (geom_point)</code>. R will still make the scatterplot with all the remaining values, but it’s warning you that one of the points isn’t there.</li>
-<li><strong>Messages</strong>: When the red text doesn’t start with either “Error” or “Warning”, it’s <em>just a friendly message</em>. You’ll see these messages when you load some packages like the <code>dplyr</code> package in Subsection <a href="2-getting-started.html#package-loading">2.3.2</a> below, or when you read data saved in spreadsheet files with <code>read_csv()</code> as you’ll see in Chapter <a href="5-tidy.html#tidy">5</a>. These are helpful diagnostic messages and they don’t stop your code from working.</li>
-</ul>
-<p>Remember, when you see red text in the console, <em>don’t panic</em>. It doesn’t necessarily mean anything is wrong.</p>
-<ul>
-<li>If the text starts with “Error”, figure out what’s causing it. <span style="color:red">Think of errors as a red traffic light: something is wrong!</span></li>
-<li>If the text starts with “Warning”, figure out if it’s something to worry about. For instance, if you get a warning about missing values in a scatterplot and you know there are missing values, you’re fine. If that’s surprising, look at your data and see what’s missing. <span style="color:gold">Think of warnings as a yellow traffic light: everything is working fine, but watch out/pay attention.</span></li>
-<li>Otherwise the text is just a message. Read it, wave back at R, and thank it for talking to you. <span style="color:green">Think of messages as a green traffic light: everything is working fine.</span></li>
-</ul>
-</div>
-<div id="tips-on-learning-to-code" class="section level3">
-<h3><span class="header-section-number">2.2.3</span> Tips on learning to code</h3>
-<p>Learning to code/program is very much like learning a foreign language, it can be very daunting and frustrating at first. Such frustrations are very common and it is very normal to feel discouraged as you learn. However just as with learning a foreign language, if you put in the effort and are not afraid to make mistakes, anybody can learn.</p>
-<p>Here are a few useful tips to keep in mind as you learn to program:</p>
-<ul>
-<li><strong>Remember that computers are not actually that smart</strong>: You may think your computer or smartphone are “smart,” but really people spent a lot of time and energy designing them to appear “smart.” Rather you have to tell a computer everything it needs to do. Furthermore the instructions you give your computer can’t have any mistakes in them, nor can they be ambiguous in any way.</li>
-<li><strong>Take the “copy, paste, and tweak” approach</strong>: Especially when learning your first programming language, it is often much easier to taking existing code that you know works and modify it to suit your ends, rather than trying to write new code from scratch. We call this the <em>copy, paste, and tweak</em> approach. So early on, we suggest not trying to write code from memory, but rather take existing examples we have provided you, then copy, paste, and tweak them to suit your goals. Don’t be afraid to play around!</li>
-<li><strong>The best way to learn to code is by doing</strong>: Rather than learning to code for its own sake, we feel that learning to code goes much smoother when you have a goal in mind or when you are working on a particular project, like analyzing data that you are interested in.</li>
-<li><strong>Practice is key</strong>: Just as the only method to improving your foreign language skills is through practice, practice, and practice; so also the only method to improving your coding is through practice, practice, and practice. Don’t worry however; we’ll give you plenty of opportunities to do so!</li>
-</ul>
-<hr />
-</div>
-</div>
-<div id="packages" class="section level2">
-<h2><span class="header-section-number">2.3</span> What are R packages?</h2>
-<p>Another point of confusion with many new R users is the idea of an R package. R packages extend the functionality of R by providing additional functions, data, and documentation. They are written by a world-wide community of R users and can be downloaded for free from the internet. For example, among the many packages we will use in this book are:</p>
-<ul>
-<li>The <code>ggplot2</code> package for data visualization in Chapter <a href="3-viz.html#viz">3</a>.</li>
-<li>The <code>dplyr</code> package for data wrangling in Chapter <a href="4-wrangling.html#wrangling">4</a>.</li>
-<li>The <code>moderndive</code> package that accompanies this book.</li>
-<li>The <code>infer</code> package for “tidy” and transparent statistical inference in Chapters <a href="#confidence-intervals"><strong>??</strong></a>, <a href="#hypothesis-testing"><strong>??</strong></a>, and <a href="#inference-for-regression"><strong>??</strong></a>.</li>
-</ul>
-<p>A good analogy for R packages is they are like apps you can download onto a mobile phone:</p>
-<table>
-<thead>
-<tr class="header">
-<th align="center">R: A new phone</th>
-<th align="center">R Packages: Apps you can download</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center"><img src="images/iphone.jpg" style="height:1.5in" /></td>
-<td align="center"><img src="images/apps.jpg" style="height:1.5in" /></td>
-</tr>
-</tbody>
-</table>
-<p>So R is like a new mobile phone: while it has a certain amount of features when you use it for the first time, it doesn’t have everything. R packages are like the apps you can download onto your phone from Apple’s App Store or Android’s Google Play.</p>
-<p>Let’s continue this analogy by considering the Instagram app for editing and sharing pictures. Say you have purchased a new phone and you would like to share a recent photo you have taken on Instagram. You need to:</p>
-<ol style="list-style-type: decimal">
-<li><em>Install the app</em>: Since your phone is new and does not include the Instagram app, you need to download the app from either the App Store or Google Play. You do this once and you’re set. You might do this again in the future any time there is an update to the app.</li>
-<li><em>Open the app</em>: After you’ve installed Instagram, you need to open the app.</li>
-</ol>
-<p>Once Instagram is open on your phone, you can then proceed to share your photo with your friends and family. The process is very similar for using an R package. You need to:</p>
-<ol style="list-style-type: decimal">
-<li><em>Install the package</em>: This is like installing an app on your phone. Most packages are not installed by default when you install R and RStudio. Thus if you want to use a package for the first time, you need to install it first. Once you’ve installed a package, you likely won’t install it again unless you want to update it to a newer version.</li>
-<li><em>“Load” the package</em>: “Loading” a package is like opening an app on your phone. Packages are not “loaded” by default when you start RStudio on your computer; you need to “load” each package you want to use every time you start RStudio.</li>
-</ol>
-<p>Let’s now show you how to perform these two steps for the <code>ggplot2</code> package for data visualization.</p>
-<div id="package-installation" class="section level3">
-<h3><span class="header-section-number">2.3.1</span> Package installation</h3>
-<blockquote>
-<p><strong>Note about RStudio Server</strong>: If your instructor has provided you with a link and access to RStudio Server, you probably will not need to install packages, as they have likely been pre-installed for you by your instructor. That being said, it is still a good idea to know this process for later on when you are not using RStudio Server, but rather RStudio Desktop on your own computer.</p>
-</blockquote>
-<p>There are two ways to install an R package. For example, to install the <code>ggplot2</code> package:</p>
-<ol style="list-style-type: decimal">
-<li><strong>Easy way</strong>: In the Files pane of RStudio:
-<ol style="list-style-type: lower-alpha">
-<li>Click on the “Packages” tab</li>
-<li>Click on “Install”</li>
-<li>Type the name of the package under “Packages (separate multiple with space or comma):” In this case, type <code>ggplot2</code></li>
-<li>Click “Install”<br />
-<img src="images/install_packages_easy_way.png" style="height:4in" /></li>
-</ol></li>
-<li><strong>Slightly harder way</strong>: An alternative but slightly less convenient way to install a package is by typing <code>install.packages(&quot;ggplot2&quot;)</code> in the Console pane of RStudio and hitting enter. Note you must include the quotation marks.</li>
-</ol>
-<p>Much like an app on your phone, you only have to install a package once. However, if you want to update an already installed package to a newer verions, you need to re-install it by repeating the above steps.</p>
-<div class="learncheck">
-<p>
-<strong><em>Learning check</em></strong>
-</p>
-</div>
-<strong>(LC2.1)</strong> Repeat the above installing steps, but for the <code>dplyr</code>, <code>nycflights13</code>, and <code>knitr</code> packages. This will install the earlier mentioned <code>dplyr</code> package, the <code>nycflights13</code> package containing data on all domestic flights leaving a NYC airport in 2013, and the <code>knitr</code> package for writing reports in R.
-<div class="learncheck">
-
-</div>
-</div>
-<div id="package-loading" class="section level3">
-<h3><span class="header-section-number">2.3.2</span> Package loading</h3>
-<p>Recall that after you’ve installed a package, you need to “load” it, in other words open it. We do this by using the <code>library()</code> command. For example, to load the <code>ggplot2</code> package, run the following code in the Console pane. What do we mean by “run the following code”? Either type or copy &amp; paste the following code into the Console pane and then hit the enter key.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(ggplot2)</a></code></pre></div>
-<p>If after running the above code, a blinking cursor returns next to the <code>&gt;</code> “prompt” sign, it means you were successful and the <code>ggplot2</code> package is now loaded and ready to use. If however, you get a red “error message” that reads…</p>
-<pre><code>Error in library(ggplot2) : there is no package called ‘ggplot2’</code></pre>
-<p>… it means that you didn’t successfully install it. In that case, go back to the previous subsection “Package installation” and install it.</p>
-<div class="learncheck">
-<p>
-<strong><em>Learning check</em></strong>
-</p>
-</div>
-<strong>(LC2.2)</strong> “Load” the <code>dplyr</code>, <code>nycflights13</code>, and <code>knitr</code> packages as well by repeating the above steps.
-<div class="learncheck">
-
-</div>
-</div>
-<div id="package-use" class="section level3">
-<h3><span class="header-section-number">2.3.3</span> Package use</h3>
-<p>One extremely common mistake new R users make when wanting to use particular packages is they forget to “load” them first by using the <code>library()</code> command we just saw. Remember: <em>you have to load each package you want to use every time you start RStudio.</em> If you don’t first “load” a package, but attempt to use one of its features, you’ll see an error message similar to:</p>
-<pre><code>Error: could not find function</code></pre>
-<p>R is telling you that you are trying to use a function in a package that has not yet been “loaded.” Almost all new users forget do this when starting out, and it is a little annoying to get used. However, you’ll remember with pratice.</p>
-<hr />
-</div>
-</div>
-<div id="nycflights13" class="section level2">
-<h2><span class="header-section-number">2.4</span> Explore your first dataset</h2>
-<p>Let’s put everything we’ve learned so far into practice and start exploring some real data! Data comes to us in a variety of formats, from pictures to text to numbers. Throughout this book, we’ll focus on datasets that are saved in “spreadsheet”-type format; this is probably the most common way data are collected and saved in many fields. Remember from Subsection <a href="2-getting-started.html#programming-concepts">2.2.1</a> that these “spreadsheet”-type datasets are called <em>data frames</em> in R; we will focus on working with data saved as data frames throughout this book.</p>
-<p>Let’s first load all the packages needed for this chapter, assuming you’ve already installed them. Read Section <a href="2-getting-started.html#packages">2.3</a> for information on how to install and load R packages if you haven’t already.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(nycflights13)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">library</span>(knitr)</a></code></pre></div>
-<p>At the beginning of all subsequent chapters in this text, we’ll always have a list of packages that you should have installed and loaded to work with that chapter’s R code.</p>
-<div id="nycflights13-package" class="section level3">
-<h3><span class="header-section-number">2.4.1</span> <code>nycflights13</code> package</h3>
-<p>Many of us have flown on airplanes or know someone who has. Air travel has become an ever-present aspect in many people’s lives. If you live in or are visiting a relatively large city and you walk around that city’s airport, you see gates showing flight information from many different airlines. And you will frequently see that some flights are delayed because of a variety of conditions. Are there ways that we can avoid having to deal with these flight delays?</p>
-<p>We’d all like to arrive at our destinations on time whenever possible. (Unless you secretly love hanging out at airports. If you are one of these people, pretend for the moment that you are very much anticipating being at your final destination.) Throughout this book, we’re going to analyze data related to flights contained in the <code>nycflights13</code> package <span class="citation">(Wickham <a href="#ref-R-nycflights13">2018</a>)</span>. Specifically, this package contains five data sets saved in five separate data frames with information about all domestic flights departing from New York City in 2013. These include Newark Liberty International (EWR), John F. Kennedy International (JFK), and LaGuardia (LGA) airports:</p>
-<ul>
-<li><code>flights</code>: Information on all 336,776 flights</li>
-<li><code>airlines</code>: A table matching airline names and their two letter IATA airline codes (also known as carrier codes) for 16 airline companies</li>
-<li><code>planes</code>: Information about each of 3,322 physical aircraft used.</li>
-<li><code>weather</code>: Hourly meteorological data for each of the three NYC airports. This data frame has 26,115 rows, roughtly corresponding to the 365 <span class="math inline">\(\times\)</span> 24 <span class="math inline">\(\times\)</span> 3 = 26,280 possible hourly measurements one can observe at three locations over the course of a year.</li>
-<li><code>airports</code>: Airport names, codes, and locations for 1,458 destination airports.</li>
-</ul>
-</div>
-<div id="flights-data-frame" class="section level3">
-<h3><span class="header-section-number">2.4.2</span> <code>flights</code> data frame</h3>
-<p>We will begin by exploring the <code>flights</code> data frame that is included in the <code>nycflights13</code> package and getting an idea of its structure. Run the following code in your console (either by typing it or cutting &amp; pasting it): it loads in the <code>flights</code> dataset into your Console. Note depending on the size of your monitor, the output may vary slightly.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">flights</a></code></pre></div>
-<pre><code># A tibble: 336,776 x 19
-    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
-   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
- 1  2013     1     1      517            515         2      830            819
- 2  2013     1     1      533            529         4      850            830
- 3  2013     1     1      542            540         2      923            850
- 4  2013     1     1      544            545        -1     1004           1022
- 5  2013     1     1      554            600        -6      812            837
- 6  2013     1     1      554            558        -4      740            728
- 7  2013     1     1      555            600        -5      913            854
- 8  2013     1     1      557            600        -3      709            723
- 9  2013     1     1      557            600        -3      838            846
-10  2013     1     1      558            600        -2      753            745
-# … with 336,766 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
-#   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
-#   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
-<p>Let’s unpack this output:</p>
-<ul>
-<li><code>A tibble: 336,776 x 19</code>: A <code>tibble</code> is a kind of data frame used in R. This particular data frame has
-<ul>
-<li><code>336,776</code> rows</li>
-<li><code>19</code> columns corresponding to 19 variables describing each observation</li>
-</ul></li>
-<li><code>year month day dep_time sched_dep_time dep_delay arr_time</code> are different columns, in other words variables, of this data frame.</li>
-<li>We then have the first 10 rows of observations corresponding to 10 flights.</li>
-<li><code>... with 336,766 more rows, and 11 more variables:</code> indicating to us that 336,766 more rows of data and 11 more variables could not fit in this screen.</li>
-</ul>
-<p>Unfortunately, this output does not allow us to explore the data very well. Let’s look at different tools to explore data frames.</p>
-</div>
-<div id="exploredataframes" class="section level3">
-<h3><span class="header-section-number">2.4.3</span> Exploring data frames</h3>
-<p>Among the many ways of getting a feel for the data contained in a data frame such as <code>flights</code>, we present three functions that take as their “argument”, in other words their input, the data frame in question. We also include a fourth method for exploring one particular column of a data frame:</p>
-<ol style="list-style-type: decimal">
-<li>Using the <code>View()</code> function built for use in RStudio. We will use this the most.</li>
-<li>Using the <code>glimpse()</code> function, which is included in the <code>dplyr</code> package.</li>
-<li>Using the <code>kable()</code> function, which is included in the <code>knitr</code> package.</li>
-<li>Using the <code>$</code> operator to view a single variable in a data frame.</li>
-</ol>
-<p><strong>1. <code>View()</code></strong>:</p>
-<p>Run <code>View(flights)</code> in your Console in RStudio, either by typing it or cutting &amp; pasting it into the Console pane, and explore this data frame in the resulting pop-up viewer. You should get into the habit of always <code>View</code>ing any data frames that come your way. Note the capital “V” in <code>View</code>. R is case-sensitive so you’ll receive an error is you run <code>view(flights)</code> instead of <code>View(flights)</code>.</p>
-<div class="learncheck">
-<p>
-<strong><em>Learning check</em></strong>
-</p>
-</div>
-<p><strong>(LC2.3)</strong> What does any <em>ONE</em> row in this <code>flights</code> dataset refer to?</p>
-<ul>
-<li>A. Data on an airline</li>
-<li>B. Data on a flight</li>
-<li>C. Data on an airport</li>
-<li>D. Data on multiple flights</li>
-</ul>
-<div class="learncheck">
-
-</div>
-<p>By running <code>View(flights)</code>, we see the different <em>variables</em> listed in the columns and we see that there are different types of variables. Some of the variables like <code>distance</code>, <code>day</code>, and <code>arr_delay</code> are what we will call <em>quantitative</em> variables. These variables are numerical in nature. Other variables here are <em>categorical</em>.</p>
-<p>Note that if you look in the leftmost column of the <code>View(flights)</code> output, you will see a column of numbers. These are the row numbers of the dataset. If you glance across a row with the same number, say row 5, you can get an idea of what each row corresponds to. In other words, this will allow you to identify what object is being referred to in a given row. This is often called the <em>observational unit</em>. The <em>observational unit</em> in this example is an individual flight departing New York City in 2013. You can identify the observational unit by determining what “thing” is being measured or described by each of the variables.</p>
-<p><strong>2. <code>glimpse()</code></strong>:</p>
-<p>The second way to explore a data frame is using the <code>glimpse()</code> function included in the <code>dplyr</code> package. Thus, you can only use the <code>glimpse()</code> function after you’ve loaded the <code>dplyr</code> package. This function provides us with an alternative method for exploring a data frame than the <code>View()</code> function:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">glimpse</span>(flights)</a></code></pre></div>
-<pre><code>Observations: 336,776
-Variables: 19
-$ year           &lt;int&gt; 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, …
-$ month          &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
-$ day            &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
-$ dep_time       &lt;int&gt; 517, 533, 542, 544, 554, 554, 555, 557, 557, 558, 558,…
-$ sched_dep_time &lt;int&gt; 515, 529, 540, 545, 600, 558, 600, 600, 600, 600, 600,…
-$ dep_delay      &lt;dbl&gt; 2, 4, 2, -1, -6, -4, -5, -3, -3, -2, -2, -2, -2, -2, -…
-$ arr_time       &lt;int&gt; 830, 850, 923, 1004, 812, 740, 913, 709, 838, 753, 849…
-$ sched_arr_time &lt;int&gt; 819, 830, 850, 1022, 837, 728, 854, 723, 846, 745, 851…
-$ arr_delay      &lt;dbl&gt; 11, 20, 33, -18, -25, 12, 19, -14, -8, 8, -2, -3, 7, -…
-$ carrier        &lt;chr&gt; &quot;UA&quot;, &quot;UA&quot;, &quot;AA&quot;, &quot;B6&quot;, &quot;DL&quot;, &quot;UA&quot;, &quot;B6&quot;, &quot;EV&quot;, &quot;B6&quot;, …
-$ flight         &lt;int&gt; 1545, 1714, 1141, 725, 461, 1696, 507, 5708, 79, 301, …
-$ tailnum        &lt;chr&gt; &quot;N14228&quot;, &quot;N24211&quot;, &quot;N619AA&quot;, &quot;N804JB&quot;, &quot;N668DN&quot;, &quot;N39…
-$ origin         &lt;chr&gt; &quot;EWR&quot;, &quot;LGA&quot;, &quot;JFK&quot;, &quot;JFK&quot;, &quot;LGA&quot;, &quot;EWR&quot;, &quot;EWR&quot;, &quot;LGA&quot;…
-$ dest           &lt;chr&gt; &quot;IAH&quot;, &quot;IAH&quot;, &quot;MIA&quot;, &quot;BQN&quot;, &quot;ATL&quot;, &quot;ORD&quot;, &quot;FLL&quot;, &quot;IAD&quot;…
-$ air_time       &lt;dbl&gt; 227, 227, 160, 183, 116, 150, 158, 53, 140, 138, 149, …
-$ distance       &lt;dbl&gt; 1400, 1416, 1089, 1576, 762, 719, 1065, 229, 944, 733,…
-$ hour           &lt;dbl&gt; 5, 5, 5, 5, 6, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 6, 6, …
-$ minute         &lt;dbl&gt; 15, 29, 40, 45, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 59, …
-$ time_hour      &lt;dttm&gt; 2013-01-01 05:00:00, 2013-01-01 05:00:00, 2013-01-01 …</code></pre>
-<p>We see that <code>glimpse()</code> will give you the first few entries of each variable in a row after the variable. In addition, the <em>data type</em> (see Subsection <a href="2-getting-started.html#programming-concepts">2.2.1</a>) of the variable is given immediately after each variable’s name inside <code>&lt; &gt;</code>. Here, <code>int</code> and <code>dbl</code> refer to “integer” and “double”, which are computer coding terminology for quantitative/numerical variables. In contrast, <code>chr</code> refers to “character”, which is computer terminology for text data. Text data, such as the <code>carrier</code> or <code>origin</code> of a flight, are categorical variables. The <code>time_hour</code> variable is an example of one more type of data type: <code>dttm</code>. As you may suspect, this variable corresponds to a specific date and time of day. However, we won’t work with dates in this class and leave it to a more advanced book on data science.</p>
-<div class="learncheck">
-<p>
-<strong><em>Learning check</em></strong>
-</p>
-</div>
-<p><strong>(LC2.4)</strong> What are some examples in this dataset of <strong>categorical</strong> variables? What makes them different than <strong>quantitative</strong> variables?</p>
-<div class="learncheck">
-
-</div>
-<p><strong>3. <code>kable()</code></strong>:</p>
-<p>The final way to explore the entirety of a data frame is using the <code>kable()</code> function from the <code>knitr</code> package. Let’s explore the different carrier codes for all the airlines in our dataset two ways. Run both of these lines of code in your Console:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">airlines</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw">kable</span>(airlines)</a></code></pre></div>
-<p>At first glance, it may not appear that there is much difference in the outputs. However when using tools for document production such as <a href="http://rmarkdown.rstudio.com/lesson-1.html">R Markdown</a>, the latter code produces output that is much more legible and reader-friendly.</p>
-<p><strong>4. <code>$</code> operator</strong></p>
-<p>Lastly, the <code>$</code> operator allows us to explore a single variable within a data frame. For example, run the following in your console</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">airlines</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">airlines<span class="op">$</span>name</a></code></pre></div>
-<p>We used the <code>$</code> operator to extract only the <code>name</code> variable and return it as a vector of length 16. We will only be occasionally exploring data frames using this operator, instead favoring the <code>View()</code> and <code>glimpse()</code> functions.</p>
-</div>
-<div id="help-files" class="section level3">
-<h3><span class="header-section-number">2.4.4</span> Help files</h3>
-<p>Another nice feature of R is the help system. You can get help in R by entering a <code>?</code> before the name of a function or data frame in question and you will be presented with a page showing the documentation. For example, let’s look at the help file for the <code>flights</code> data frame:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">?flights</a></code></pre></div>
-<p>A help file should pop-up in the Help pane of RStudio. If you have questions about a function or data frame included in an R package, you should get in the habit of consulting the help file right away.</p>
-<hr />
-</div>
-</div>
-<div id="conclusion" class="section level2">
-<h2><span class="header-section-number">2.5</span> Conclusion</h2>
-<p>We’ve given you what we feel are the most essential concepts to know before you can start exploring data in R. Is this chapter exhaustive? Absolutely not. To try to include everything in this chapter would make the chapter so large it wouldn’t be useful!</p>
-<div id="additional-resources" class="section level3">
-<h3><span class="header-section-number">2.5.1</span> Additional resources</h3>
-<p>If you are completely new to the world of coding, R, and RStudio and feel you could benefit from a more detailed introduction, we suggest you check out ModernDive co-author Chester Ismay’s <a href="https://rbasics.netlify.com/">Getting used to R, RStudio, and R Markdown</a> short book <span class="citation">(Ismay <a href="#ref-usedtor2016">2016</a>)</span>, which includes screencast recordings that you can follow along and pause as you learn. Furthermore, there is an introduction to R Markdown, a tool used for reproducible research in R.</p>
-<center>
-<img src="images/gettting-used-to-R.png" style="height:3.5in" />
-</center>
-</div>
-<div id="whats-to-come" class="section level3">
-<h3><span class="header-section-number">2.5.2</span> What’s to come?</h3>
-<p>As we stated earlier however, the best way to learn R is to learn by doing. We now start the “data science” portion of the book in Chapter <a href="3-viz.html#viz">3</a> with what we feel is the most important tool in a data scientist’s toolbox: data visualization. We will continue to explore the data included in the <code>nycflights13</code> package through data visualization. We’ll see that data visualization is a powerful tool to add to our toolbox for data exploring that provides additional insight to what the <code>View()</code> and <code>glimpse()</code> functions can provide.</p>
-<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-14"></span>
-<img src="images/flowcharts/flowchart/flowchart.004.png" alt="ModernDive flowchart" width="110%" />
+<div id="p-values" class="section level3">
+<h3><span class="header-section-number">11.2.2</span> P-values</h3>
+<p>Once the distribution of the sample statistic is determined under the null hypothesis, to complete the stochastic proof by contradiction, you simply need to ask: Given this distribution, how likely is it that I would have drawn a random sample in which the estimated value is this extreme or more extreme?</p>
+<p>This is the <strong>p-value</strong>: The probability of your observing an estimate as extreme as the one you observed if the null hypothesis is true. If this p-value is small, it means that this data is unlikely to occur under the null hypothesis, and thus the null hypothesis is unlikely to be true. (See, proof by contradiction!)</p>
+<div class="figure" style="text-align: center"><span id="fig:p-value-diagram"></span>
+<img src="images/p-value-figure.png" alt="P-value diagram" width="100%" />
 <p class="caption">
-FIGURE 2.1: ModernDive flowchart
+FIGURE 11.1: P-value diagram
 </p>
 </div>
-
+<!-- retrieved diagram from https://scientistseessquirrel.wordpress.com/2015/02/09/in-defence-of-the-p-value/  need to cite?-->
+<p>In general, in order to estimate a p-value, you first need to standardize your sample statistic. This standardization makes it easier to determine the sampling distribution under the null hypothesis.</p>
+<p>This standardization is easiest when the sampling distribution of the estimator itself is normally distributed, as is the case for the sample mean, the difference in sample means, the relationship between two continuous covariates, and many others.</p>
+<p>In these cases, this standardization is conducted using the following formula:</p>
+<p><span class="math display">\[t\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)}\]</span></p>
+<p>This <strong>t-statistic</strong> is then used to determine the sampling distribution under the null hypothesis and the p-value based upon the observed value. There are two approaches one can use here: based on mathematical theory or based upon simulation (bootstrap).</p>
+</div>
+</div>
+<div id="p-value-and-null-distribution-example" class="section level2">
+<h2><span class="header-section-number">11.3</span> P-value and Null Distribution Example</h2>
+<div id="imdb" class="section level3">
+<h3><span class="header-section-number">11.3.1</span> IMDB data</h3>
+<p>The <code>movies</code> dataset in the <code>ggplot2movies</code> package contains information on 58,788 movies that have been rated by users of IMDB.com.</p>
+<div class="sourceCode" id="cb336"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb336-1" data-line-number="1">movies</a></code></pre></div>
+<pre><code># A tibble: 58,788 x 24
+   title  year length budget rating votes    r1    r2    r3    r4    r5    r6
+   &lt;chr&gt; &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1 $      1971    121     NA    6.4   348   4.5   4.5   4.5   4.5  14.5  24.5
+ 2 $100…  1939     71     NA    6      20   0    14.5   4.5  24.5  14.5  14.5
+ 3 $21 …  1941      7     NA    8.2     5   0     0     0     0     0    24.5
+ 4 $40,…  1996     70     NA    8.2     6  14.5   0     0     0     0     0  
+ 5 $50,…  1975     71     NA    3.4    17  24.5   4.5   0    14.5  14.5   4.5
+ 6 $pent  2000     91     NA    4.3    45   4.5   4.5   4.5  14.5  14.5  14.5
+ 7 $win…  2002     93     NA    5.3   200   4.5   0     4.5   4.5  24.5  24.5
+ 8 &#39;15&#39;   2002     25     NA    6.7    24   4.5   4.5   4.5   4.5   4.5  14.5
+ 9 &#39;38    1987     97     NA    6.6    18   4.5   4.5   4.5   0     0     0  
+10 &#39;49-…  1917     61     NA    6      51   4.5   0     4.5   4.5   4.5  44.5
+# … with 58,778 more rows, and 12 more variables: r7 &lt;dbl&gt;, r8 &lt;dbl&gt;, r9 &lt;dbl&gt;,
+#   r10 &lt;dbl&gt;, mpaa &lt;chr&gt;, Action &lt;int&gt;, Animation &lt;int&gt;, Comedy &lt;int&gt;,
+#   Drama &lt;int&gt;, Documentary &lt;int&gt;, Romance &lt;int&gt;, Short &lt;int&gt;</code></pre>
+<p>We’ll focus on a random sample of 68 movies that are classified as either “action” or “romance” movies but not both. We disregard movies that are classified as both so that we can assign all 68 movies into either category. Furthermore, since the original <code>movies</code> dataset was a little messy, we provided a pre-wrangled version of our data in the <code>movies_sample</code> data frame included in the <code>moderndive</code> package (you can look at the code to do this data wrangling <a href="https://github.com/moderndive/moderndive/blob/master/data-raw/process_data_sets.R#L14">here</a>):</p>
+<div class="sourceCode" id="cb338"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb338-1" data-line-number="1">movies_sample</a></code></pre></div>
+<pre><code># A tibble: 68 x 4
+   title                     year rating genre  
+   &lt;chr&gt;                    &lt;int&gt;  &lt;dbl&gt; &lt;chr&gt;  
+ 1 Underworld                1985    3.1 Action 
+ 2 Love Affair               1932    6.3 Romance
+ 3 Junglee                   1961    6.8 Romance
+ 4 Eversmile, New Jersey     1989    5   Romance
+ 5 Search and Destroy        1979    4   Action 
+ 6 Secreto de Romelia, El    1988    4.9 Romance
+ 7 Amants du Pont-Neuf, Les  1991    7.4 Romance
+ 8 Illicit Dreams            1995    3.5 Action 
+ 9 Kabhi Kabhie              1976    7.7 Romance
+10 Electric Horseman, The    1979    5.8 Romance
+# … with 58 more rows</code></pre>
+<p>The variables include the <code>title</code> and <code>year</code> the movie was filmed. Furthermore, we have a numerical variable <code>rating</code>, which is the IMDB rating out of 10 stars, and a binary categorical variable <code>genre</code> indicating if the movie was an <code>Action</code> or <code>Romance</code> movie. We are interested in whether there is a difference in average ratings between the <code>Action</code> and <code>Romance</code> genres.</p>
+<p>Let’s calculate the number of movies, the mean rating, and the standard deviation split by the binary variable <code>genre</code>. We’ll do this using <code>dplyr</code> data wrangling verbs, in particular the count of each type of movies using the <code>n()</code> summary statistic function.</p>
+<div class="sourceCode" id="cb340"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb340-1" data-line-number="1">movies_sample <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb340-2" data-line-number="2"><span class="st">  </span><span class="kw">group_by</span>(genre) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb340-3" data-line-number="3"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">n =</span> <span class="kw">n</span>(), <span class="dt">mean_rating =</span> <span class="kw">mean</span>(rating), <span class="dt">std_dev =</span> <span class="kw">sd</span>(rating))</a></code></pre></div>
+<pre><code># A tibble: 2 x 4
+  genre       n mean_rating std_dev
+  &lt;chr&gt;   &lt;int&gt;       &lt;dbl&gt;   &lt;dbl&gt;
+1 Action     32        5.28    1.36
+2 Romance    36        6.32    1.61</code></pre>
+<p>We start by assuming there is no difference, therefore our null value is <span class="math inline">\(\mu_1 - \mu_2 = 0\)</span>. We want to calculate the t-statistic for this scenario:</p>
+<p><span class="math display">\[t\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)} = \frac{(\bar{x}_1 - \bar{x}_2) - 0}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}\]</span>
+Let’s compute all the necessary values from our sample data.</p>
+<p>So we have 36 movies with an average rating of 6.32 stars out of 10 and <code>n_action</code> movies with a sample mean rating of 5.28 stars out of 10. The difference in these average ratings is thus 6.32 - 5.28 = 1.05. Our resulting <code>t_stat</code> is 2.906.</p>
+<p>There appears to be an edge of 1.05 stars in romance movie ratings. The question is however, are these results indicative of a true difference for all romance and action movies? Or could this difference be attributable to chance and sampling variation? Computing a p-value for this t-statistic can help us to answer this.</p>
+</div>
+<div id="theory-based-p-values" class="section level3">
+<h3><span class="header-section-number">11.3.2</span> Theory based p-values</h3>
+<p>While we have shown that the sampling distribution of the sample mean and of the regression coefficient estimates are normally distributed, this is not always the case for the t-statistic computed above. This is because the standard errors of many estimators, which appear on the denominator of the t-statistic, are a function of an additional estimated quantity – the sample variance <span class="math inline">\(s^2\)</span>. When this is the case, the sampling distribution for the <strong>t-statistic is a t-distribution with a specified degrees of freedom (df)</strong>. Degrees of freedom for this distribution are provided in the table below.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Statistics</th>
+<th>Population parameter</th>
+<th>Estimator</th>
+<th>t-distribution df</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mean</td>
+<td><span class="math inline">\(\mu\)</span></td>
+<td><span class="math inline">\(\bar{x}\)</span></td>
+<td><span class="math inline">\(n – 1\)</span></td>
+</tr>
+<tr class="even">
+<td>Diff in means</td>
+<td><span class="math inline">\(\mu_1 -\mu_2\)</span></td>
+<td><span class="math inline">\(\bar{x}_1 - \bar{x}_2\)</span></td>
+<td><span class="math inline">\(n_1 + n_2 – 2\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The t-distribution is very similar to the standard normal distribution:</p>
+<ul>
+<li>It has a mean of 0 under the null hypothesis.</li>
+<li>It is symmetric</li>
+</ul>
+<p>But there is one important difference:</p>
+<ul>
+<li>The t-distribution has <strong>heavier tails</strong> than the normal distribution. This means that large values are more likely under the t-distribution than the normal distribution.</li>
+</ul>
+<div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb342-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">6</span>, <span class="dv">6</span>)), <span class="kw">aes</span>(<span class="dt">x =</span> x)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb342-2" data-line-number="2"><span class="st">    </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> dnorm,</a>
+<a class="sourceLine" id="cb342-3" data-line-number="3">                    <span class="kw">aes</span>(<span class="dt">colour =</span> <span class="st">&quot;Standard Normal&quot;</span>), <span class="dt">size =</span> <span class="dv">1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb342-4" data-line-number="4"><span class="st">    </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> dt, <span class="dt">args =</span> <span class="kw">list</span>(<span class="dt">df =</span> <span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb342-5" data-line-number="5">                    <span class="kw">aes</span>(<span class="dt">colour =</span> <span class="st">&quot;t-distribution, df = 2&quot;</span>), <span class="dt">size =</span> <span class="dv">1</span>) </a></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:t-vs-z"></span>
+<img src="ismaykimkuyper_files/figure-html/t-vs-z-1.png" alt="Standard normal vs. t-distribution" width="\textwidth" />
+<p class="caption">
+FIGURE 11.2: Standard normal vs. t-distribution
+</p>
+</div>
+<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb343-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">6</span>, <span class="dv">6</span>)), <span class="kw">aes</span>(<span class="dt">x =</span> x)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb343-2" data-line-number="2"><span class="st">    </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> dnorm,</a>
+<a class="sourceLine" id="cb343-3" data-line-number="3">                    <span class="kw">aes</span>(<span class="dt">colour =</span> <span class="st">&quot;Standard Normal&quot;</span>), <span class="dt">size =</span> <span class="dv">1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb343-4" data-line-number="4"><span class="st">    </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> dt, <span class="dt">args =</span> <span class="kw">list</span>(<span class="dt">df =</span> <span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb343-5" data-line-number="5">                    <span class="kw">aes</span>(<span class="dt">colour =</span> <span class="st">&quot;t-distribution, df = 2&quot;</span>), <span class="dt">size =</span> <span class="dv">1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb343-6" data-line-number="6"><span class="st">    </span><span class="kw">stat_function</span>(<span class="dt">fun =</span> dt, <span class="dt">args =</span> <span class="kw">list</span>(<span class="dt">df =</span> <span class="dv">30</span>),</a>
+<a class="sourceLine" id="cb343-7" data-line-number="7">                    <span class="kw">aes</span>(<span class="dt">colour =</span> <span class="st">&quot;t-distribution, df = 30&quot;</span>), <span class="dt">size =</span> <span class="dv">1</span>)</a></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:t-vs-z-2"></span>
+<img src="ismaykimkuyper_files/figure-html/t-vs-z-2-1.png" alt="t-distribution approximately normal in large samples" width="\textwidth" />
+<p class="caption">
+FIGURE 11.3: t-distribution approximately normal in large samples
+</p>
+</div>
+<p>We can calculate a p-value by asking: Assuming the null distribution, what is the probability that we will see a t-statistic as extreme as the one from our data? To answer this, we can calculate this using <code>pt(t_stat, df)</code>, where <code>t_stat</code> is the t-statistic we calculated from our sample data, and <code>df</code> is the appropriate degrees of freedom for our estimator and sample size. There is a default argument <code>lower.tail = TRUE</code> in the <code>pt()</code> function, which means it returns the probability <em>to the left</em> of the <code>t_stat</code> value you enter. For example, Figure <a href="11-pvalues.html#fig:t-lower-tail">11.4</a> shows the shaded probabilty that is implied by the code <code>pt(1.5, df = 30, lower.tail = TRUE)</code> and Figure <a href="11-pvalues.html#fig:t-upper-tail">11.5</a> shows the shaded probabilty that is implied by the code <code>pt(1.5, df = 30, lower.tail = FALSE)</code>.</p>
+<div class="figure" style="text-align: center"><span id="fig:t-lower-tail"></span>
+<img src="ismaykimkuyper_files/figure-html/t-lower-tail-1.png" alt="pt(1.5, df = 30, lower.tail = TRUE)" width="\textwidth" />
+<p class="caption">
+FIGURE 11.4: pt(1.5, df = 30, lower.tail = TRUE)
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:t-upper-tail"></span>
+<img src="ismaykimkuyper_files/figure-html/t-upper-tail-1.png" alt="pt(1.5, df = 30, lower.tail = TRUE)" width="\textwidth" />
+<p class="caption">
+FIGURE 11.5: pt(1.5, df = 30, lower.tail = TRUE)
+</p>
+</div>
+<p><strong>Caveat</strong>:
+It is important to note that the t-distribution is often referred to as a “small sample” distribution. That is because once the degrees of freedom are large enough (when the sample size is large), the t-distribution is actually quite similar to the normal distribution (See Figure <a href="#t-vs-z-2"><strong>??</strong></a> ). For analysis purposes, however, you don’t need to determine when to use one or the other as your sampling distribution: just always use the t-distribution.</p>
+<p>In our IMDB movies example, we observe a <code>t_stat = 2.91</code>, and we want to know what the probability of observing a t-statistic <em>as large</em> as this would be under the null distribution. Therefore we want to include the argument <code>lower.tail = FALSE</code> when computing our p-value. Note our <span class="math inline">\(df = n_1 + n_2 - 2 = 36 + 32 - 2 = 66\)</span>, so our p-value is given by <code>pt(2.91, 66, lower.tail = FALSE)</code> = 0.002. This tells us that if the null distribution is true (i.e. there is no true difference between average ratings of romance and action movies on IMDB), we would only observe a difference as large as we did 0.25% of the time. This provides evidence - via proof by contradiction - that the null distribution is likely false; that is, there is likely a true difference in average ratings of romance and action moview on IMDB.</p>
+</div>
+<div id="bootstrap-p-values" class="section level3">
+<h3><span class="header-section-number">11.3.3</span> Bootstrap p-values</h3>
+<p>In Section <a href="10-CIs.html#bootstrap-process">10.2.2</a>, we introduced you to the <code>infer</code> package to use the bootstrap procedure to approximate a sampling distribution, compute approximate standard errors, and construct confidence intervals.</p>
+<p>Recall that the<code>infer</code> package workflow emphasizes each of the steps in the overall process in Figure <a href="11-pvalues.html#fig:infer-ci">11.6</a> using function names that are intuitively named:</p>
+<ol style="list-style-type: decimal">
+<li><code>specify()</code> the variables of interest in your data frame</li>
+<li><code>generate()</code> replicates of bootstrap resamples with replacement</li>
+<li><code>calculate()</code> the summary statistic of interest</li>
+<li><code>visualize()</code> the resulting bootstrap distribution and the confidence interval.</li>
+</ol>
+<div class="figure" style="text-align: center"><span id="fig:infer-ci"></span>
+<img src="images/flowcharts/infer/visualize.png" alt="Confidence intervals via the infer package." width="80%" />
+<p class="caption">
+FIGURE 11.6: Confidence intervals via the infer package.
+</p>
+</div>
+<p>In this section, we now show you how to extend and modify the previously seen <code>infer</code> pipeline to compute p-values. You’ll notice that the basic outline of the workflow is almost identical, except for an additional <code>hypothesize()</code> step between <code>specify()</code> and <code>generate()</code>, as can be seen in Figure <a href="11-pvalues.html#fig:inferht">11.7</a>.</p>
+<div class="figure" style="text-align: center"><span id="fig:inferht"></span>
+<img src="images/flowcharts/infer/ht.png" alt="Hypothesis testing via the infer package." width="80%" />
+<p class="caption">
+FIGURE 11.7: Hypothesis testing via the infer package.
+</p>
+</div>
+<p>Furthermore, we’ll use a pre-specified significance level <span class="math inline">\(\alpha\)</span> = 0.05 for this hypothesis test. Let’s leave the justification of this choice of <span class="math inline">\(\alpha\)</span> until later on in Section <a href="#ht-interpretation"><strong>??</strong></a>.</p>
+</div>
+<div id="infer-package-workflow" class="section level3 unnumbered">
+<h3>infer package workflow</h3>
+<div id="specify-variables-1" class="section level4 unnumbered">
+<h4>1. <code>specify</code> variables</h4>
+<p>Recall that we use the <code>specify()</code>  verb to denote the response and, if needed, explanatory variables for our study. In this case, since we are interested in any potential effects of <code>genre</code> on IMDB <code>rating</code>, we set <code>rating</code> as the response variable and <code>genre</code> as the explanatory variable using the <code>formula</code> argument using the notation <code>&lt;response&gt; ~ &lt;explanatory&gt;</code> where <code>&lt;response&gt;</code> is the name of the response variable in the data frame and <code>&lt;explanatory&gt;</code> is the name of the explanatory variable. So in our case it is <code>rating ~ genre</code>.</p>
+<div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb344-1" data-line-number="1">movies_sample <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb344-2" data-line-number="2"><span class="st">  </span><span class="kw">specify</span>(<span class="dt">formula =</span> rating <span class="op">~</span><span class="st"> </span>genre)</a></code></pre></div>
+<pre><code>Response: rating (numeric)
+Explanatory: genre (factor)
+# A tibble: 68 x 2
+   rating genre  
+    &lt;dbl&gt; &lt;fct&gt;  
+ 1    3.1 Action 
+ 2    6.3 Romance
+ 3    6.8 Romance
+ 4    5   Romance
+ 5    4   Action 
+ 6    4.9 Romance
+ 7    7.4 Romance
+ 8    3.5 Action 
+ 9    7.7 Romance
+10    5.8 Romance
+# … with 58 more rows</code></pre>
+<p>Again, notice how the <code>movies_sample</code> data itself doesn’t change, but the <code>Response: rating (factor)</code> and <code>Explanatory: genre (factor)</code> <em>meta-data</em> do. This is similar to how the <code>group_by()</code> verb from <code>dplyr</code> doesn’t change the data, but only adds “grouping” meta-data as we saw in Section <a href="4-wrangling.html#groupby">4.4</a>.</p>
+</div>
+<div id="hypothesize-the-null" class="section level4 unnumbered">
+<h4>2. <code>hypothesize</code> the null</h4>
+<p>In order to compute p-values using the <code>infer</code> workflow, we need a new step:  <code>hypothesize()</code>. Recall that we are starting out with the hypothesis that there is no difference in average ratings between genres. We specify this in our <code>infer</code> workflow by setting the <code>null</code> argument of the <code>hypothesize()</code> function to either:</p>
+<ul>
+<li><code>&quot;point&quot;</code> for hypotheses involving a single group/sample or</li>
+<li><code>&quot;independence&quot;</code> for hypotheses involving two groups/samples</li>
+</ul>
+<p>In our case, since we have two groups (the “Romance” and “Action” genres), we set <code>null = &quot;independence&quot;</code>.</p>
+<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb346-1" data-line-number="1">movies_sample <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb346-2" data-line-number="2"><span class="st">  </span><span class="kw">specify</span>(<span class="dt">formula =</span> rating <span class="op">~</span><span class="st"> </span>genre) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb346-3" data-line-number="3"><span class="st">  </span><span class="kw">hypothesize</span>(<span class="dt">null =</span> <span class="st">&quot;independence&quot;</span>)</a></code></pre></div>
+<pre><code># A tibble: 68 x 2
+   rating genre  
+    &lt;dbl&gt; &lt;fct&gt;  
+ 1    3.1 Action 
+ 2    6.3 Romance
+ 3    6.8 Romance
+ 4    5   Romance
+ 5    4   Action 
+ 6    4.9 Romance
+ 7    7.4 Romance
+ 8    3.5 Action 
+ 9    7.7 Romance
+10    5.8 Romance
+# … with 58 more rows</code></pre>
+<p>Again, the data has not changed yet. This will occur at the upcoming <code>generate()</code> step; we’re merely setting meta-data for now.</p>
+</div>
+<div id="generate-replicates-1" class="section level4 unnumbered">
+<h4>3. <code>generate</code> replicates</h4>
+<p>After we have set the null hypothesis, we simulate observations assuming the null hypothesis is true by randomly shuffling (i.e. permuting) the <code>genre</code> variable. First, imagine a hypothetical universe with no difference in average ratings across genres. In such a hypothetical universe, the genre of movie would have no bearing on its IMDB rating. In our <code>movies_sample</code> dataframe then, the <code>genre</code> variable would thus be an irrelevant label. If the <code>genre</code> label is irrelevant, then we can randomly “shuffle” this label to no consequence! Randomly shuffling the 68 <code>genre</code> labels in our dataframe is equivalent to generating one bootstrap sample. We can create 1000 such bootstrap samples in which there is no relationship between genre and rating by setting <code>reps = 1000</code> in the <code>generate()</code>  function. However, unlike with confidence intervals where we generated replicates using <code>type = &quot;bootstrap&quot;</code> resampling with replacement, we’ll now perform shuffles/permutations by setting <code>type = &quot;permute&quot;</code>. Note that shuffles/permutations are a form of resampling without replacement.</p>
+<!-- should we include their full walk-through of the shuffling exercise? Leaving it out for now so as not to distract from the fact we're in the middle of a p-value explanation-->
+<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb348-1" data-line-number="1">movies_sample <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb348-2" data-line-number="2"><span class="st">  </span><span class="kw">specify</span>(<span class="dt">formula =</span> rating <span class="op">~</span><span class="st"> </span>genre) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb348-3" data-line-number="3"><span class="st">  </span><span class="kw">hypothesize</span>(<span class="dt">null =</span> <span class="st">&quot;independence&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb348-4" data-line-number="4"><span class="st">  </span><span class="kw">generate</span>(<span class="dt">reps =</span> <span class="dv">1000</span>, <span class="dt">type =</span> <span class="st">&quot;permute&quot;</span>)</a></code></pre></div>
+<p>Note that the resulting data frame has 68,000 rows. This is because we performed shuffles/permutations of the 68 values of <code>genre</code> 1000 times and thus 68,000 = 1000 <span class="math inline">\(\times\)</span> 68. Accordingly the variable <code>replicate</code>, indicating which resample each row belongs to, has the value <code>1</code> 68 times, the value <code>2</code> 68 times, all the way through to the value <code>1000</code> 68 times.</p>
+</div>
+<div id="calculate-summary-statistics-1" class="section level4 unnumbered">
+<h4>4. <code>calculate</code> summary statistics</h4>
+<p>Now that we have 1000 replicated “shuffles” assuming the null hypothesis that both “Romance” and “Action” movies have the same ratings on average, let’s <code>calculate()</code>  the appropriate summary statistic for each of our 1000 shuffles.</p>
+<p>For each of our 1000 shuffles, we can calculate the difference in means by setting <code>stat = &quot;diff in means&quot;</code>. Let’s save the result in a data frame called <code>null_distribution</code>:</p>
+<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb349-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">2018</span>)</a>
+<a class="sourceLine" id="cb349-2" data-line-number="2">null_distribution &lt;-<span class="st"> </span>movies_sample <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb349-3" data-line-number="3"><span class="st">  </span><span class="kw">specify</span>(<span class="dt">formula =</span> rating <span class="op">~</span><span class="st"> </span>genre) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb349-4" data-line-number="4"><span class="st">  </span><span class="kw">hypothesize</span>(<span class="dt">null =</span> <span class="st">&quot;independence&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb349-5" data-line-number="5"><span class="st">  </span><span class="kw">generate</span>(<span class="dt">reps =</span> <span class="dv">1000</span>, <span class="dt">type =</span> <span class="st">&quot;permute&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb349-6" data-line-number="6"><span class="st">  </span><span class="kw">calculate</span>(<span class="dt">stat =</span> <span class="st">&quot;diff in means&quot;</span>, <span class="dt">order =</span> <span class="kw">c</span>(<span class="st">&quot;Romance&quot;</span>, <span class="st">&quot;Action&quot;</span>))</a>
+<a class="sourceLine" id="cb349-7" data-line-number="7">null_distribution</a></code></pre></div>
+<pre><code># A tibble: 1,000 x 2
+   replicate    stat
+       &lt;int&gt;   &lt;dbl&gt;
+ 1         1 -0.783 
+ 2         2 -0.0389
+ 3         3 -0.110 
+ 4         4 -0.0979
+ 5         5  0.575 
+ 6         6  0.203 
+ 7         7  0.280 
+ 8         8 -0.7   
+ 9         9  0.298 
+10        10  0.233 
+# … with 990 more rows</code></pre>
+<p>Observe that we have 1000 values of <code>stat</code>, each representing one “shuffled” instance of <span class="math inline">\(\bar{x}_{Romance} - \bar{x}_{Action}\)</span> in a hypothesized world of no rating difference across genres.</p>
+<p>But wait! What happened in real-life? What was the observed difference in average ratings? In other words, what was the <em>observed estimate</em> <span class="math inline">\(\bar{x}_{Romance} - \bar{x}_{Action}\)</span>? Recall from Section <a href="11-pvalues.html#imdb">11.3.1</a> that we computed this observed difference 6.32 - 5.28 = 1.05. We can also achieve this using the code above but with the <code>hypothesize()</code> and <code>generate()</code> steps removed. Let’s save this in <code>obs_diff_means</code></p>
+<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb351-1" data-line-number="1">obs_diff_means &lt;-<span class="st"> </span>movies_sample <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb351-2" data-line-number="2"><span class="st">  </span><span class="kw">specify</span>(<span class="dt">formula =</span> rating <span class="op">~</span><span class="st"> </span>genre) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb351-3" data-line-number="3"><span class="st">  </span><span class="kw">calculate</span>(<span class="dt">stat =</span> <span class="st">&quot;diff in means&quot;</span>, <span class="dt">order =</span> <span class="kw">c</span>(<span class="st">&quot;Romance&quot;</span>, <span class="st">&quot;Action&quot;</span>))</a>
+<a class="sourceLine" id="cb351-4" data-line-number="4">obs_diff_means</a></code></pre></div>
+<pre><code># A tibble: 1 x 1
+   stat
+  &lt;dbl&gt;
+1  1.05</code></pre>
+</div>
+<div id="visualize-the-p-value" class="section level4 unnumbered">
+<h4>5. <code>visualize</code> the p-value</h4>
+<p>The final step is to measure how surprised we would be by a difference in average ratings of 1.05 in a hypothesized universe of no difference across genres. If very surprised, then we would be inclined to reject the validity of our hypothesized universe.</p>
+<p>We start by visualizing the <em>null distribution</em> of our 1000 values of <span class="math inline">\(\bar{x}_{Romance} - \bar{x}_{Action}\)</span> using <code>visualize()</code>  in Figure <a href="11-pvalues.html#fig:null-distribution-infer">11.8</a>. Recall that these are values of the difference in average ratings assuming the null hypothesis is true.</p>
+<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb353-1" data-line-number="1"><span class="kw">visualize</span>(null_distribution, <span class="dt">binwidth =</span> <span class="fl">0.1</span>)</a></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:null-distribution-infer"></span>
+<img src="ismaykimkuyper_files/figure-html/null-distribution-infer-1.png" alt="Bootstrap distribution" width="\textwidth" />
+<p class="caption">
+FIGURE 11.8: Bootstrap distribution
+</p>
+</div>
+<p>Let’s now add what happened in real-life to Figure <a href="11-pvalues.html#fig:null-distribution-infer">11.8</a>, the observed difference in promotions rates of 6.32 - 5.28 = 1.05. However, instead of merely adding a vertical line using <code>geom_vline()</code>, let’s use the  <code>shade_p_value()</code> function with <code>obs_stat</code> set to the observed test statistic value we saved in <code>obs_diff_means</code> and <code>direction = &quot;right&quot;</code>:</p>
+<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb354-1" data-line-number="1"><span class="kw">visualize</span>(null_distribution, <span class="dt">binwidth =</span> <span class="fl">0.1</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb354-2" data-line-number="2"><span class="st">  </span><span class="kw">shade_p_value</span>(<span class="dt">obs_stat =</span> obs_diff_means, <span class="dt">direction =</span> <span class="st">&quot;right&quot;</span>)</a></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:null-distribution-infer-2"></span>
+<img src="ismaykimkuyper_files/figure-html/null-distribution-infer-2-1.png" alt="Shaded histogram to show p-value." width="\textwidth" />
+<p class="caption">
+FIGURE 11.9: Shaded histogram to show p-value.
+</p>
+</div>
+<p>In the resulting Figure <a href="11-pvalues.html#fig:null-distribution-infer-2">11.9</a>, the solid red line marks our observed difference in means. However, what does the shaded-region correspond to? This is the p-value. Judging by the shaded region in Figure <a href="11-pvalues.html#fig:null-distribution-infer-2">11.9</a>, it seems we would somewhat rarely observe differences in ratings of 1.05 or more in a hypothesized universe of no differences across genres. In other words, the p-value is somewhat small. Hence, we would be inclined to reject this hypothesized universe.</p>
+<p>What fraction of the null distribution is shaded? In other words, what is the exact p-value? We can compute its numerical value using the <code>get_p_value()</code>  function using the exact same arguments as with the <code>visualize()</code> code above:</p>
+<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb355-1" data-line-number="1">null_distribution <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb355-2" data-line-number="2"><span class="st">  </span><span class="kw">get_p_value</span>(<span class="dt">obs_stat =</span> obs_diff_means, <span class="dt">direction =</span> <span class="st">&quot;right&quot;</span>)</a></code></pre></div>
+<pre><code># A tibble: 1 x 1
+  p_value
+    &lt;dbl&gt;
+1   0.004</code></pre>
+<p>In other words, the probability of observing a difference in ratings as large as 1.05 due to sampling variation alone is only 0.004 = 0.4%.</p>
 </div>
 </div>
 </div>
+<div id="interpretation-of-p-values" class="section level2">
+<h2><span class="header-section-number">11.4</span> Interpretation of P-values</h2>
+<p>Like many statistical concepts, p-values are often misunderstood and misinterpreted. Remember, a p-value is the probability that you would observe data as extreme as the data you do if, in fact, the null hypothesis is true. As Wikipedia notes:</p>
+<ul>
+<li>The p-value is not the probability that the null hypothesis is true, or the probability that the alternative hypothesis is false.</li>
+<li>The p-value is not the probability that the observed effects were produced by random chance alone.</li>
+<li>The p-value does not indicate the size or importance of the observed effect.</li>
+</ul>
+<p>Finally, remember that the p-value is a probabilistic attempt at making a proof by contradiction. Unlike in math, this is not a definitive proof. For example, if the p-value is 0.10, this means that if the null hypothesis is true, there is a 10% chance that you would observe an effect as large as the one in your sample. Depending upon if you are a glass-half-empty or glass-half-full kind of person, this could be seen as large or small:</p>
+<ul>
+<li>“Only 10% chance is small, which is unlikely. This must mean that the null hypothesis is not true,” or</li>
+<li>“But we don’t know that for sure: in 10% of possible samples, this does occur just by chance. The null hypothesis could be true.”</li>
+</ul>
+<p>This will be important to keep in mind as we move towards using p-values for decision making in Chapter 12.</p>
 
-
-
-<h3>References</h3>
-<div id="refs" class="references">
-<div id="ref-usedtor2016">
-<p>Ismay, Chester. 2016. <em>Getting Used to R, RStudio, and R Markdown</em>. <a href="http://ismayc.github.io/rbasics-book">http://ismayc.github.io/rbasics-book</a>.</p>
-</div>
-<div id="ref-R-nycflights13">
-<p>Wickham, Hadley. 2018. <em>Nycflights13: Flights That Departed Nyc in 2013</em>. <a href="https://CRAN.R-project.org/package=nycflights13">https://CRAN.R-project.org/package=nycflights13</a>.</p>
 </div>
 </div>
             </section>
@@ -913,8 +860,8 @@ FIGURE 2.1: ModernDive flowchart
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="3-viz.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="10-CIs.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="12-hypothesis-tests.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -944,7 +891,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/nulib/moderndive_book/edit/master/02-getting-started.Rmd",
+"link": "https://github.com/nulib/moderndive_book/edit/master/11-p-values.Rmd",
 "text": "Edit"
 },
 "history": {
