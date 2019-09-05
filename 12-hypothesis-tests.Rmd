@@ -429,7 +429,7 @@ Thus we can draw parallels between our teaching evals analysis and all the sampl
 if(!file.exists("rds/sampling_scenarios.rds")){
   sampling_scenarios <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd6bBgNwM3z-AJ7o4gZOiPAdPfbTp_V15HVHRmOH5Fc9w62yaG-fEKtjNUD2wOSa5IJkrDMaEBjRnA/pub?gid=0&single=true&output=csv" %>% 
     read_csv(na = "")
-  write_rds(table_ch3, "rds/sampling_scenarios.rds")
+  write_rds(sampling_scenarios, "rds/sampling_scenarios.rds")
 } else {
   sampling_scenarios <- read_rds("rds/sampling_scenarios.rds")
 }
