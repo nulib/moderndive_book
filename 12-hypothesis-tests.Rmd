@@ -1,4 +1,4 @@
-# Hypothesis tests {#hypothesis-tests}
+# [Hypothesis tests](#hypothesis-tests)
 
 ```{r setup-hypothesis-tests, include=FALSE, purl=FALSE}
 chap <- 12
@@ -7,20 +7,20 @@ rq <- 0
 # **`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`**
 # **`r paste0("(RQ", chap, ".", (rq <- rq + 1), ")")`**
 knitr::opts_chunk$set(
-  tidy = FALSE, 
-  out.width = '\\textwidth', 
+  tidy = FALSE,
+  out.width = '\\textwidth',
   fig.height = 4,
   fig.align='center',
   warning = FALSE
   )
 options(scipen = 99, digits = 3)
-# Set random number generator see value for replicable pseudorandomness. 
+# Set random number generator see value for replicable pseudorandomness.
 set.seed(2018)
 ```
 
-In Chapter \@ref(pvalues), we introduced the p-value, which provides analysts with a probability (between 0 and 1) that the observed data would be found if the null hypothesis were true. Readers familiar with the use of statistics may have noticed, however, that Chapter \@ref(pvalues) did not refer to any criteria (e.g., p < .05) or use the phrase “statistically significant”. This is because the concept of a p-value is distinct from the use of a p-value to make a decision. In this chapter, we introduce hypothesis testing, which can be used for just this purpose. 
+In Chapter \@ref(pvalues), we introduced the p-value, which provides analysts with a probability (between 0 and 1) that the observed data would be found if the null hypothesis were true. Readers familiar with the use of statistics may have noticed, however, that Chapter \@ref(pvalues) did not refer to any criteria (e.g., p < .05) or use the phrase “statistically significant”. This is because the concept of a p-value is distinct from the use of a p-value to make a decision. In this chapter, we introduce hypothesis testing, which can be used for just this purpose.
 
-###Needed Packages {-}
+### Needed Packages {-}
 
 Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). If needed, read Section \@ref(packages) for information on how to install and load R packages.
 
@@ -40,71 +40,71 @@ library(patchwork)
 library(scales)
 ```
 
-##Decision making {#decision-making}
+## [Decision making](#decision-making)
 
-Remember that a p-value is a probabilistic proof by contradiction. It might show that the chance that the observed data would occur under the null hypothesis is 2%, 20%, or 50%. But at what level is the evidence enough that we would decide that the null hypothesis must not be true? 
+Remember that a p-value is a probabilistic proof by contradiction. It might show that the chance that the observed data would occur under the null hypothesis is 2%, 20%, or 50%. But at what level is the evidence enough that we would decide that the null hypothesis must not be true?
 
 Conventional wisdom is to use $p < 0.05$ as this threshold, where $p$ denotes the p-value. But as many have pointed out – particularly in the current ‘replication crisis’ era – this threshold is arbitrary. Why is 5% considered small enough? Why not 0.5%? Why not 0.05%? Decisions regarding these thresholds require substantive knowledge of a field, the role of statistics in science, and some important trade-offs, which we will introduce next.
 
 <!-- link to a replication crisis article? -->
 
-##Decision making trade-offs {#trade-offs}
+## [Decision making trade-offs](#trade-offs)
 
 Imagine that you’ve been invited to a party, and you are trying to decide if you should go. On the one hand, the party might be a good time, and you’d be happy that you went. On the other hand, it might not be that much fun and you’d be unhappy that you went. In advance, you don’t know which kind of party it will be. How do you decide?
 We can formalize this decision making in terms of a 2x2 table crossing your decision (left) with information about the party (top):
 
 ```{r party-table, echo=FALSE, message=FALSE}
 if(!file.exists("rds/party_table.rds")){
-  party_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTFrvHwKsz8Jp2z3W48yxYO3PnbUUCy8CwBzn9WjiFhrB0OQQaLx8gte64gz0L1O2BlGq6hARAHb3NG/pub?output=csv" %>% 
+  party_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTFrvHwKsz8Jp2z3W48yxYO3PnbUUCy8CwBzn9WjiFhrB0OQQaLx8gte64gz0L1O2BlGq6hARAHb3NG/pub?output=csv" %>%
     read_csv(na = "")
     write_rds(party_table, "rds/party_table.rds")
 } else {
   party_table <- read_rds("rds/party_table.rds")
 }
-party_table %>% 
+party_table %>%
   kable(
-    caption = "Party decision making", 
+    caption = "Party decision making",
     booktabs = TRUE,
     escape = FALSE
-  ) %>% 
+  ) %>%
   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-                latex_options = c("HOLD_position")) 
+                latex_options = c("HOLD_position"))
 ```
 
 As you can see from this table, there are 4 possible combinations. If you decide to go to the party and it is in fact fun, you’re happy. If you decide to stay home and you hear from your friends that it was terrible, you’re happy. But in the other two cases you are *not happy*:
 
-* Type I error: You decide to go to the party and the party is lame. You’ve now wasted your time and are unhappy. 
+* Type I error: You decide to go to the party and the party is lame. You’ve now wasted your time and are unhappy.
 * Type II error: You decide to forgo the party and stay home, but you later hear that the party was awesome. You’ve now missed out and are unhappy.
 
-In life, we often have to make decisions like this. In making these decisions, there are trade-offs. Perhaps you are the type of person that has FOMO – in that case, you may really want to minimize your Type II error, but at the expense of attending some boring parties and wasting your time (a higher Type I error). Or perhaps you are risk averse and hate wasting time – in which case you want to minimize your Type I error, at the expense of missing out on some really great parties (a higher Type II error). 
+In life, we often have to make decisions like this. In making these decisions, there are trade-offs. Perhaps you are the type of person that has FOMO – in that case, you may really want to minimize your Type II error, but at the expense of attending some boring parties and wasting your time (a higher Type I error). Or perhaps you are risk averse and hate wasting time – in which case you want to minimize your Type I error, at the expense of missing out on some really great parties (a higher Type II error).
 
 There are a few important points here:
-* When making a decision, you cannot know in advance what the actual outcome will be. 
+* When making a decision, you cannot know in advance what the actual outcome will be.
 * Sometimes your decision will be the right one. Ideally, you’d like this to be most of the time.
-* But, sometimes your decision will be the wrong one. Importantly, you cannot minimize both Type I and II errors at the same time. One will be minimized at the expense of the other. 
+* But, sometimes your decision will be the wrong one. Importantly, you cannot minimize both Type I and II errors at the same time. One will be minimized at the expense of the other.
 * Depending upon the context, you may decide that minimizing Type I or II errors is more important to you.
 
-These features of decision-making play out again and again in life. In the next sections, we provide two common examples, one in medicine, the other in law. 
+These features of decision-making play out again and again in life. In the next sections, we provide two common examples, one in medicine, the other in law.
 
-###Medicine {#medicine}
+### [Medicine](#medicine)
 Imagine that you might be pregnant and take a pregnancy test. This test is based upon levels of HcG in your urine, and when these levels are “high enough” (determined by the pregnancy test maker), the test will tell you that you are pregnant (+). If the levels are not “high enough”, the test will tell you that you are not pregnant (-). Depending upon how the test determines “high enough” levels of HcG, however, the test might be wrong. To see how, examine the following table.
 
 ```{r medicine-table, echo=FALSE, message=FALSE}
 if(!file.exists("rds/medicine_table.rds")){
-  medicine_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTmSF5bh4fg-QeydYItlgDUYUXCyM-axGzqMqRdwKfR7somtZ12L4kWgEXSbc5CEC4rS7aiffGb_N8D/pub?output=csv" %>% 
+  medicine_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTmSF5bh4fg-QeydYItlgDUYUXCyM-axGzqMqRdwKfR7somtZ12L4kWgEXSbc5CEC4rS7aiffGb_N8D/pub?output=csv" %>%
     read_csv(na = "")
     write_rds(medicine_table, "rds/medicine_table.rds")
 } else {
   medicine_table <- read_rds("rds/medicine_table.rds")
 }
-medicine_table %>% 
+medicine_table %>%
   kable(
-    caption = "Pregnancy test decision making", 
+    caption = "Pregnancy test decision making",
     booktabs = TRUE,
     escape = FALSE
-  ) %>% 
+  ) %>%
   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-                latex_options = c("HOLD_position")) 
+                latex_options = c("HOLD_position"))
 ```
 
 As the table notes, in two of the cases, the test correctly determines that you are either pregnant or not pregnant. But there are also two cases in which the test (a decision) is incorrect:
@@ -113,59 +113,59 @@ As the table notes, in two of the cases, the test correctly determines that you 
 
 When a pregnancy test manufacturer develops the test, they have to pay attention to these two possible error types and think through the trade-offs of each. For example, if they wanted to minimize the Type II error (False Negative), they could just create a test that always tells people they are pregnant (i.e., HcG >= 0). Conversely, if they wanted to minimize the Type I error (False Positive), they could set the HcG level to be very high, so that it only detects pregnancy for those that are 6 months pregnant. Of course, the trade-off here is that certainly many who took the test would actually be pregnant, and yet the test would tell them otherwise.
 
-In developing these tests, which do you think test manufacturers focus on minimizing: Type I or II errors? 
+In developing these tests, which do you think test manufacturers focus on minimizing: Type I or II errors?
 
-###Law {#law}
+### [Law](#law)
 Imagine that you are on the jury of a criminal trial. You are presented with evidence that a crime has been committed and must make a decision regarding the guilt of the defendant. But you were not there when the crime was committed, so it is impossible to know with 100% accuracy that your decision is correct. Instead, you again encounter this 2x2 table:
 
 ```{r law-table, echo=FALSE, message=FALSE}
 if(!file.exists("rds/law_table.rds")){
-  law_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vThQr10AKx5Asna-4yB-0kDKoQrycroVKL-Dvfm7F5HsLkTZyic_fDav18AUN4hnTIeEaZW1zXY0Amt/pub?output=csv" %>% 
+  law_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vThQr10AKx5Asna-4yB-0kDKoQrycroVKL-Dvfm7F5HsLkTZyic_fDav18AUN4hnTIeEaZW1zXY0Amt/pub?output=csv" %>%
     read_csv(na = "")
     write_rds(law_table, "rds/law_table.rds")
 } else {
   law_table <- read_rds("rds/law_table.rds")
 }
-law_table %>% 
+law_table %>%
   kable(
-    caption = "Criminal trial decision making", 
+    caption = "Criminal trial decision making",
     booktabs = TRUE,
     escape = FALSE
-  ) %>% 
+  ) %>%
   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-                latex_options = c("HOLD_position")) 
+                latex_options = c("HOLD_position"))
 ```
 
 As the table notes, in two of the cases, the jury correctly determines that the defendant is either guilty or not. But there are also two cases in which the jury’s decision is incorrect:
 * Type I error: Wrongly Convicted. In this case, the jury decides that the defendant is guilty when in fact they are not. This might be because evidence that was presented was falsified or because prejudices and discrimination affect how the jury perceives the defendant.
 * Type II error: Insufficient Evidence. In this case, the jury decides that the defendant is “not guilty” when in fact they are. This is typically because there is insufficient evidence.
 
-In the US court system, the assumption is supposed to be that a defendant is innocent until proven guilty, meaning that a high burden of proof is required to find a defendant guilty. This means that the system is designed to have a low Type I error. The trade-off implicit in this is that the Type II error may be higher – that is, that because the burden of proof is high, some perpetrators will “get off”. (Note, of course, that we’re describing the ideal; as the [Innocence Project’s work](https://www.innocenceproject.org) shows, Type I errors are more common than we’d like, particularly among racial minorities). 
+In the US court system, the assumption is supposed to be that a defendant is innocent until proven guilty, meaning that a high burden of proof is required to find a defendant guilty. This means that the system is designed to have a low Type I error. The trade-off implicit in this is that the Type II error may be higher – that is, that because the burden of proof is high, some perpetrators will “get off”. (Note, of course, that we’re describing the ideal; as the [Innocence Project’s work](https://www.innocenceproject.org) shows, Type I errors are more common than we’d like, particularly among racial minorities).
 
-###Commonalities
-Before connecting these to statistical decision making, it’s interesting to note that in all three of the cases we’ve introduced here – party attendance, medicine, and law – the minimization of Type I error is often primary. That is, we’d prefer a decision rule that doesn’t send us to parties we don’t like, doesn’t tell us we are pregnant when we aren’t, and doesn’t wrongfully convict people of crimes. This is not to say Type II error doesn’t matter, but that it is often seen as secondary to Type I. 
+### Commonalities
+Before connecting these to statistical decision making, it’s interesting to note that in all three of the cases we’ve introduced here – party attendance, medicine, and law – the minimization of Type I error is often primary. That is, we’d prefer a decision rule that doesn’t send us to parties we don’t like, doesn’t tell us we are pregnant when we aren’t, and doesn’t wrongfully convict people of crimes. This is not to say Type II error doesn’t matter, but that it is often seen as secondary to Type I.
 
 ##Hypothesis test: Decision making in statistics {#ht}
-The same sort of decision making problems face statistics as well: based on some p-value criterion, we could either reject the null hypothesis or not. And either the null hypothesis is true, or it is not – in which case some *alternative* hypothesis must be true. 
+The same sort of decision making problems face statistics as well: based on some p-value criterion, we could either reject the null hypothesis or not. And either the null hypothesis is true, or it is not – in which case some *alternative* hypothesis must be true.
 
 This is the first time we have mentioned an **alternative hypothesis**. This hypothesis is what we are seeking evidence to prove when we are conducting what is called a **hypothesis test**:
 
 ```{r ht-table, echo=FALSE, message=FALSE}
 if(!file.exists("rds/ht_table.rds")){
-  ht_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vSewsAMZzqDMnWezCZRUnXRBQuzTPdMDuO3q_z6vGipUz_XKtkziTsZaby30bAZVCgKmh_q8mnJgUGe/pub?gid=1481362109&single=true&output=csv" %>% 
+  ht_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vSewsAMZzqDMnWezCZRUnXRBQuzTPdMDuO3q_z6vGipUz_XKtkziTsZaby30bAZVCgKmh_q8mnJgUGe/pub?gid=1481362109&single=true&output=csv" %>%
     read_csv(na = "")
     write_rds(ht_table, "rds/ht_table.rds")
 } else {
   ht_table <- read_rds("rds/ht_table.rds")
 }
-ht_table %>% 
+ht_table %>%
   kable(
-    caption = "Hypothesis test decision making", 
+    caption = "Hypothesis test decision making",
     booktabs = TRUE,
     escape = FALSE
-  ) %>% 
+  ) %>%
   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-                latex_options = c("HOLD_position")) 
+                latex_options = c("HOLD_position"))
 ```
 There is a lot of new information here to define:
 * We **reject** the null hypothesis if the p-value is smaller than some threshold (i.e., p < threshold).
@@ -178,7 +178,7 @@ Just as in the other decision-making context, there are two cases in which these
 * $\boldsymbol{\alpha} =$ **Type I error:** The test rejects the null hypothesis (because p < threshold), yet the null hypothesis is actually true. For example, the test indicates that there is a relationship between education and income when in fact there is not.
 * $\boldsymbol{\beta =}$ **Type II error:** The test does not reject the null hypothesis (because p > threshold), but the alternative hypothesis is actually true. For example, the test indicates that there is not enough evidence to indicate a relationship between education and income, yet in fact there is a relationship.
 
-Just as in your social life, medicine, and law, these two error types are in conflict with one another. A test that minimizes Type I error completely (by setting the threshold to 0) *never* rejects the null hypothesis, thus maximizing the Type II error. And vice versa, a test that minimizes Type II error completely (by setting the threshold to 1) *always* rejects the null hypothesis, thus maximizing the Type I error. 
+Just as in your social life, medicine, and law, these two error types are in conflict with one another. A test that minimizes Type I error completely (by setting the threshold to 0) *never* rejects the null hypothesis, thus maximizing the Type II error. And vice versa, a test that minimizes Type II error completely (by setting the threshold to 1) *always* rejects the null hypothesis, thus maximizing the Type I error.
 
 In science, these values have been somewhat arbitrarily set as:
 
@@ -188,7 +188,7 @@ In science, these values have been somewhat arbitrarily set as:
 This use of a threshold for rejecting a null hypothesis gives rise to some important language:
 
 * When $p < 0.05$ (or whatever threshold is used), we say that we **reject the null hypothesis**. This is often referred to as a “statistically significant” effect.
-* When $p > 0.05$ (or whatever threshold is used), we say that we **do not have enough evidence to reject the null hypothesis**. Note that it is not appropriate to say that we *accept* the null hypothesis. 
+* When $p > 0.05$ (or whatever threshold is used), we say that we **do not have enough evidence to reject the null hypothesis**. Note that it is not appropriate to say that we *accept* the null hypothesis.
 
 Finally, there is one more piece of vocabulary that is important:
 
@@ -201,7 +201,7 @@ Finally, there is one more piece of vocabulary that is important:
 * The type I error rate ($\alpha$)
 * Sometimes other sample statistics
 
-## Conducting Hypothesis Tests 
+## Conducting Hypothesis Tests
 
 In data analysis, hypothesis tests can be broken down into the following framework given by Allen Downey [here](http://allendowney.blogspot.com/2016/06/there-is-still-only-one-test.html):
 
@@ -218,9 +218,9 @@ In practice, conducting a hypothesis test is straightforward:
 
 This last point is significant – for the hypothesis test to be valid, **you must pre-specify your threshold, not after you have seen the p-value in your data.**
 
-###Promotions Example {#ht-activity}
+### [Promotions Example](#ht-activity)
 
-Let's consider a study that investigated gender discrimination in the workplace that was published in the "Journal of Applied Psychology" in 1974. This data is also used in the [OpenIntro](https://www.openintro.org/) series of statistics textbooks. Study participants included 48 male bank supervisors who attended a management institute at University of North Carolina in 1972. The supervisors were asked to assume the hypothetical role of a personnel director at the bank. Each supervisor was given a job candidate's personnel file and asked to decide whether or not the candidate should be promoted to a manager position at the bank. 
+Let's consider a study that investigated gender discrimination in the workplace that was published in the "Journal of Applied Psychology" in 1974. This data is also used in the [OpenIntro](https://www.openintro.org/) series of statistics textbooks. Study participants included 48 male bank supervisors who attended a management institute at University of North Carolina in 1972. The supervisors were asked to assume the hypothetical role of a personnel director at the bank. Each supervisor was given a job candidate's personnel file and asked to decide whether or not the candidate should be promoted to a manager position at the bank.
 
 Each of the personnel files given to the supervisors were identical except that half of them indicated that the candidate was female and half indicated the candidate was male. Personnel files were randomly distributed to the 48 supervisors. Because only the candidate's gender varied from file to file, and the files were randomly assigned to study participants, the researchers were able to isolate the effect of gender on promotion rates.  
 
@@ -232,7 +232,7 @@ promotions
 
 The variable `id` acts as an identification variable for all 48 rows, the `decision` variable indicates whether the candidate was selected for promotion or not, while the `gender` variable indicates the gender of the candidate indicated on the personnel file. Recall that this data does not pertain to 24 actual men and 24 actual women, but rather 48 identical personnel files of which 24 were indicated to be male candidates and 24 were indicated to be female candidates.
 
-Let's perform an exploratory data analysis of the relationship between the two categorical variables `decision` and `gender`. Recall that we saw in Section \@ref(two-categ-barplot) that one way we can visualize such a relationship is using a stacked barplot. 
+Let's perform an exploratory data analysis of the relationship between the two categorical variables `decision` and `gender`. Recall that we saw in Section \@ref(two-categ-barplot) that one way we can visualize such a relationship is using a stacked barplot.
 
 ```{r promotions-barplot, fig.cap="Barplot of relationship between gender and promotion decision."}
 ggplot(promotions, aes(x = gender, fill = decision)) +
@@ -243,19 +243,19 @@ ggplot(promotions, aes(x = gender, fill = decision)) +
 Observe in Figure \@ref(fig:promotions-barplot) that it appears that female personnel files were much less likely to be accepted for promotion.  Let's quantify these promotions rates by computing the proportion of personnel files accepted for promotion for each group using the `dplyr` package for data wrangling:
 
 ```{r}
-promotions %>% 
-  group_by(gender, decision) %>% 
+promotions %>%
+  group_by(gender, decision) %>%
   summarize(n = n())
 ```
 ```{r, echo=FALSE}
-observed_point_estimate <- promotions %>% 
-  specify(decision ~ gender, success = "promoted") %>% 
-  calculate(stat = "diff in props", order = c("male", "female")) %>% 
-  pull(stat) %>% 
+observed_point_estimate <- promotions %>%
+  specify(decision ~ gender, success = "promoted") %>%
+  calculate(stat = "diff in props", order = c("male", "female")) %>%
+  pull(stat) %>%
   round(3)
 ```
 
-So of the 24 male files, 21 were selected for promotion, for a proportion of 21/24 = 0.875 = 87.5%. On the other hand, of the 24 female files, 14 were selected for promotion, for a proportion of 14/24 = 0.583 = 58.3%. Comparing these two rates of promotion, it appears that males were selected for promotion at a rate 0.875 - 0.583 = `r observed_point_estimate` = `r observed_point_estimate*100`% higher than females. 
+So of the 24 male files, 21 were selected for promotion, for a proportion of 21/24 = 0.875 = 87.5%. On the other hand, of the 24 female files, 14 were selected for promotion, for a proportion of 14/24 = 0.583 = 58.3%. Comparing these two rates of promotion, it appears that males were selected for promotion at a rate 0.875 - 0.583 = `r observed_point_estimate` = `r observed_point_estimate*100`% higher than females.
 
 The question is however, does this provide *conclusive* evidence that there is gender discrimination in this context? Could a difference in promotion rates of `r observed_point_estimate*100`% still occur by chance, even in a hypothetical world where no gender-based discrimination existed? To answer this question, we can conduct the following hypothesis test:
 
@@ -263,17 +263,17 @@ $$H_0: \pi_m = \pi_f$$
 $$H_1: \pi_m \neq \pi_f,$$
 where $\pi_f$ is the proportion of female files selected for promotion and $pi_m$ is the propotion of male files selected for promotion. Here the null hypothesis corresponds to the scenario in which there is *no gender discrimination*; that is, males and females are promoted at identical rates. We will specify this test ahead of time to have $\alpha = 0.05$. That is, we are comfortable with a 5% Type I error rate, and we will reject the null hypothesis if $p < 0.05$.
 
-Note the null hypothesis can be rewritten as 
-$$H_0: \pi_m - \pi_f = 0$$ by subtracting $\pi_m$ from both sides. Therefore, the population proportion we are interested in is $\pi_m - \pi_f$. Referring back to Table \@ref(tab:SE-table), we can see that the appropriate estimator is $\hat{\pi}_m - \hat{\pi}_f$. Under the null hypothesis, $\hat{\pi}_m - \hat{\pi}_f$ is normally distributed with mean $\pi_m - \pi_f$ and standard error $\sqrt{\frac{\hat{\pi}_m(1-\hat{\pi}_m)}{n_m} + \frac{\hat{\pi}_f(1-\hat{\pi}_f)}{n_f}}$. 
+Note the null hypothesis can be rewritten as
+$$H_0: \pi_m - \pi_f = 0$$ by subtracting $\pi_m$ from both sides. Therefore, the population proportion we are interested in is $\pi_m - \pi_f$. Referring back to Table \@ref(tab:SE-table), we can see that the appropriate estimator is $\hat{\pi}_m - \hat{\pi}_f$. Under the null hypothesis, $\hat{\pi}_m - \hat{\pi}_f$ is normally distributed with mean $\pi_m - \pi_f$ and standard error $\sqrt{\frac{\hat{\pi}_m(1-\hat{\pi}_m)}{n_m} + \frac{\hat{\pi}_f(1-\hat{\pi}_f)}{n_f}}$.
 
-Recall from Chapter \@ref(pvalues) that we calculate a test statistic using the following general formula: 
+Recall from Chapter \@ref(pvalues) that we calculate a test statistic using the following general formula:
 $$t\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)}$$
 In this example, we have $$test\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_m(1-\pi_m)}{n_m} + \frac{\pi_f(1-\pi_f)}{n_f}}}$$ Note that the null value here is $0$ because our null hypothesis states $\pi_m - \pi_f = 0$. We can use the promotions data to compute this observed test statistic. However, on the denominator we need separate values for $\pi_m$ and $\pi_f$, which aren't specified in our null hypothesis. When conducting a hypothesis test on the difference in proportions, we compute a *pooled* proportion to plug in for these unknown values. This pooled estimate, which we will denote $\pi_0$ can be calculated by $$\pi_{0} = \frac{\# \ of \ successes_1 + \# of successes_2}{n_1 + n_2}.$$ Therefore, the test statistic is computed by $$t\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_0(1-\pi_0)}{n_m} + \frac{\pi_0(1-\pi_0)}{n_f}}}$$
 
 ```{r, promotions-t-stat}
-results <- promotions %>% 
-  group_by(gender, decision) %>% 
-  summarize(n = n()) %>% 
+results <- promotions %>%
+  group_by(gender, decision) %>%
+  summarize(n = n()) %>%
   mutate(prop = n / sum(n))
 
 male_promotions <- as.numeric(results[2,3])
@@ -283,8 +283,8 @@ n_m <- 24
 n_f <- 24
 
 pi_0 <- (male_promotions + female_promotions) / (n_m + n_f)
-pi_0 
-SE_pi_0 <- sqrt(pi_0 * (1 - pi_0) / n_m 
+pi_0
+SE_pi_0 <- sqrt(pi_0 * (1 - pi_0) / n_m
            + pi_0 * (1 - pi_0) / n_f)
 pi_hat_m <- as.numeric(results[2,4])
 pi_hat_f <- as.numeric(results[4,4])
@@ -306,10 +306,10 @@ shade_curve <- function(MyDF, tstart, tend, fill = "red", alpha = .5){
             aes(y=y), fill = fill, color = NA, alpha = alpha)
 }
 
-data <- data.frame(x = seq(from = -5, to = 5, by = 0.01)) %>% 
+data <- data.frame(x = seq(from = -5, to = 5, by = 0.01)) %>%
   mutate(y = dnorm(x))
 ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
-    stat_function(fun = dnorm, 
+    stat_function(fun = dnorm,
                     aes(colour = "Z-distribution"), size = 1) +
   geom_vline(xintercept = test_stat, linetype = 2) +
   geom_vline(xintercept = -test_stat, linetype = 2) +
@@ -319,11 +319,11 @@ ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
   theme(legend.position = "none")
 
 ```
-Note that we use the function `pnorm()` here because our test statistic follows the normal distribution. We set `lower.tail = FALSE` so that it gives us the probability in the left tail of the distribution, and we multiply by 2 because we are conducting a two-sided hypothesis test. The p-value = `r round(p_value, 2)` is represented by the shaded region in Figure \@ref(fig:promotions-p-value). Because our p-value is less than our pre-specified level of $\alpha = 0.05$, we **reject the null hypothesis** and conclude that there is sufficient evidence of gender discrimination in this context. 
+Note that we use the function `pnorm()` here because our test statistic follows the normal distribution. We set `lower.tail = FALSE` so that it gives us the probability in the left tail of the distribution, and we multiply by 2 because we are conducting a two-sided hypothesis test. The p-value = `r round(p_value, 2)` is represented by the shaded region in Figure \@ref(fig:promotions-p-value). Because our p-value is less than our pre-specified level of $\alpha = 0.05$, we **reject the null hypothesis** and conclude that there is sufficient evidence of gender discrimination in this context.
 
 ### Regression Example
 
-Let's return to our example from Chapter \@ref(regression) on teaching evaluations and demonstrate how to conduct a hypothesis test on regression coefficients. 
+Let's return to our example from Chapter \@ref(regression) on teaching evaluations and demonstrate how to conduct a hypothesis test on regression coefficients.
 
 Recall using simple linear regression \index{regression!simple linear} we modeled the relationship between
 
@@ -354,7 +354,7 @@ ggplot(evals_ch6, aes(x = bty_avg, y = score)) +
   geom_smooth(method = "lm", se = FALSE)
 ```
 
-Looking at this plot again, you might be asking "Does that line really have all that positive of a slope?" It does increase from left to right as the `bty_avg` variable increases, but by how much? To get to this information, recall that we followed a two-step procedure: 
+Looking at this plot again, you might be asking "Does that line really have all that positive of a slope?" It does increase from left to right as the `bty_avg` variable increases, but by how much? To get to this information, recall that we followed a two-step procedure:
 
 1. We first "fit" the linear regression model using the `lm()` function with the formula `score ~ bty_avg`. We saved this model in `score_model`.
 1. We get the regression table by applying the `get_regression_table()` \index{moderndive!get\_regression\_table()} from the `moderndive` package to `score_model`.
@@ -377,7 +377,7 @@ get_regression_table(score_model) %>%
   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
                 latex_options = c("hold_position"))
 # slope:
-slope_row <- get_regression_table(score_model) %>% 
+slope_row <- get_regression_table(score_model) %>%
   filter(term == "bty_avg")
 b1 <- slope_row %>% pull(estimate)
 se1 <- slope_row %>% pull(std_error)
@@ -385,7 +385,7 @@ t1 <- slope_row %>% pull(statistic)
 lower1 <- slope_row %>% pull(lower_ci)
 upper1 <- slope_row %>% pull(upper_ci)
 # intercept:
-intercept_row <- get_regression_table(score_model) %>% 
+intercept_row <- get_regression_table(score_model) %>%
   filter(term == "intercept")
 b0 <- intercept_row %>% pull(estimate)
 se0 <- intercept_row %>% pull(std_error)
@@ -394,7 +394,7 @@ lower0 <- intercept_row %>% pull(lower_ci)
 upper0 <- intercept_row %>% pull(upper_ci)
 ```
 
-Using the values in the `estimate` column of the resulting regression table in Table \@ref(tab:regtable-11), we could then obtain the equation of the "best-fitting" regression line in Figure \@ref(fig:regline): 
+Using the values in the `estimate` column of the resulting regression table in Table \@ref(tab:regtable-11), we could then obtain the equation of the "best-fitting" regression line in Figure \@ref(fig:regline):
 
 $$
 \begin{aligned}
@@ -407,49 +407,49 @@ $$
 where $b_0$ is the fitted intercept and $b_1$ is the fitted slope for `bty_avg`. Recall the interpretation of the $b_1$ = `r b1` value of the fitted slope:
 
 > For every increase of one unit in "beauty" rating, there is an associated increase, on average, of `r b1` units of evaluation score.
-Thus, the slope value quantifies the relationship between the y variable of `score` and the x variable `bty_avg`. We also discussed the intercept value of $b_0$ = `r get_regression_table(score_model) %>% filter(term == "intercept") %>% pull(estimate)` and its lack of practical interpretation, since the range of possible "beauty" scores does not include 0. 
+Thus, the slope value quantifies the relationship between the y variable of `score` and the x variable `bty_avg`. We also discussed the intercept value of $b_0$ = `r get_regression_table(score_model) %>% filter(term == "intercept") %>% pull(estimate)` and its lack of practical interpretation, since the range of possible "beauty" scores does not include 0.
 
-Let's now formally test whether there is a relationship between teaching score and beauty score, beyond what we would expect simply due to chance. 
+Let's now formally test whether there is a relationship between teaching score and beauty score, beyond what we would expect simply due to chance.
 
 ### Sampling scenario
 
-Let's now revisit this study in terms of terminology and notation related to sampling we studied in Section \@ref(terminology-and-notation). 
+Let's now revisit this study in terms of terminology and notation related to sampling we studied in Section \@ref(terminology-and-notation).
 
-First, let's view the instructors for these `r nrow(evals_ch6)` courses as a *representative sample* from a greater *study population*. In our case, let's assume that the study population is *all* instructors at UT Austin and that the sample of instructors who taught these 463 is a representative sample. Unfortunately, we can only *assume* these two facts without more knowledge of the *sampling methodology*\index{sampling methodology} used by the researchers. 
+First, let's view the instructors for these `r nrow(evals_ch6)` courses as a *representative sample* from a greater *study population*. In our case, let's assume that the study population is *all* instructors at UT Austin and that the sample of instructors who taught these 463 is a representative sample. Unfortunately, we can only *assume* these two facts without more knowledge of the *sampling methodology*\index{sampling methodology} used by the researchers.
 
-Since we are viewing these $n$ = 463 courses as a sample, we can view our fitted slope $b_1$ = `r b1` as a *point estimate* of the *population slope* $\beta_1$. In other words, $\beta_1$ quantifies the relationship between teaching `score` and "beauty" average `bty_avg` for *all* instructors at UT Austin. Similarly, we can view our fitted intercept $b_0$ = `r b0` as a *point estimate* of the *population intercept* $\beta_0$ for *all* instructors at UT Austin. 
+Since we are viewing these $n$ = 463 courses as a sample, we can view our fitted slope $b_1$ = `r b1` as a *point estimate* of the *population slope* $\beta_1$. In other words, $\beta_1$ quantifies the relationship between teaching `score` and "beauty" average `bty_avg` for *all* instructors at UT Austin. Similarly, we can view our fitted intercept $b_0$ = `r b0` as a *point estimate* of the *population intercept* $\beta_0$ for *all* instructors at UT Austin.
 
 Putting these two ideas together, we can view the equation of the fitted line $\widehat{y}$ = $b_0 + b_1 \cdot x$ = $3.880 + 0.067 \cdot \text{bty}\_\text{avg}$ as an estimate of some true and unknown *population line* $y = \beta_0 + \beta_1 \cdot x$.
 
-Thus we can draw parallels between our teaching evals analysis and all the sampling scenarios we've seen previously in Table \@ref(tab:table-ch8). In this chapter, we'll focus on the final two scenarios: regression slopes and regression intercepts. 
+Thus we can draw parallels between our teaching evals analysis and all the sampling scenarios we've seen previously in Table \@ref(tab:table-ch8). In this chapter, we'll focus on the final two scenarios: regression slopes and regression intercepts.
 
 ```{r summarytable-ch11, echo=FALSE, message=FALSE}
 # The following Google Doc is published to CSV and loaded using read_csv():
 # https://docs.google.com/spreadsheets/d/1QkOpnBGqOXGyJjwqx1T2O5G5D72wWGfWlPyufOgtkk4/edit#gid=0
 if(!file.exists("rds/sampling_scenarios.rds")){
-  sampling_scenarios <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd6bBgNwM3z-AJ7o4gZOiPAdPfbTp_V15HVHRmOH5Fc9w62yaG-fEKtjNUD2wOSa5IJkrDMaEBjRnA/pub?gid=0&single=true&output=csv" %>% 
+  sampling_scenarios <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd6bBgNwM3z-AJ7o4gZOiPAdPfbTp_V15HVHRmOH5Fc9w62yaG-fEKtjNUD2wOSa5IJkrDMaEBjRnA/pub?gid=0&single=true&output=csv" %>%
     read_csv(na = "")
   write_rds(sampling_scenarios, "rds/sampling_scenarios.rds")
 } else {
   sampling_scenarios <- read_rds("rds/sampling_scenarios.rds")
 }
 sampling_scenarios %>%  
-  filter(Scenario %in% 1:6) %>% 
+  filter(Scenario %in% 1:6) %>%
   kable(
-    caption = "Scenarios of sampling for inference", 
+    caption = "Scenarios of sampling for inference",
     booktabs = TRUE,
     escape = FALSE
-  ) %>% 
+  ) %>%
   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
                 latex_options = c("hold_position")) %>%
-  column_spec(1, width = "0.5in") %>% 
+  column_spec(1, width = "0.5in") %>%
   column_spec(2, width = "0.7in") %>%
   column_spec(3, width = "1in") %>%
-  column_spec(4, width = "1.1in") %>% 
+  column_spec(4, width = "1.1in") %>%
   column_spec(5, width = "1in")
 ```
 
-Since we are now viewing our fitted slope $b_1$ and fitted intercept $b_0$ as *point estimates* based on a *sample*, these estimates will be subject to *sampling variability*, as we've seen numerous times throughout this book. In other words, if we collected new sample of data on a different set of $n$ = 463 courses and their instructors, the new fitted slope $b_1$ will likely differ from `r b1`. The same goes for the new fitted intercept $b_0$. 
+Since we are now viewing our fitted slope $b_1$ and fitted intercept $b_0$ as *point estimates* based on a *sample*, these estimates will be subject to *sampling variability*, as we've seen numerous times throughout this book. In other words, if we collected new sample of data on a different set of $n$ = 463 courses and their instructors, the new fitted slope $b_1$ will likely differ from `r b1`. The same goes for the new fitted intercept $b_0$.
 
 But by how much will they differ? In other words, by how much will these estimates *vary*? This information is contained in the remaining columns of the regression table in Table \@ref(tab:regtable-11). Our knowledge of sampling from Chapter \@ref(sampling), confidence intervals from Chapter \@ref(confidence-intervals), and hypothesis tests from Chapter \@ref(hypothesis-testing) will help us interpret these remaining columns.
 
@@ -459,14 +459,14 @@ But by how much will they differ? In other words, by how much will these estimat
 
 
 
-## Interpreting regression tables {#regression-interp}
+## [Interpreting regression tables](#regression-interp)
 
 In Chapters \@ref(regression) and \@ref(multiple-regression) and in our regression refresher earlier, we focused only on the two leftmost columns the regression table in Table \@ref(tab:regtable-11): `term` and `estimate`. Let's now shift our attention to the remaining columns: `std_error`, `statistic`, `p_value`, `lower_ci` and `upper_ci`.
 
 ```{r score-model-part-deux, echo=FALSE}
 get_regression_table(score_model) %>%
   knitr::kable(
-    caption = "Previously seen regression table.", 
+    caption = "Previously seen regression table.",
     digits = 3,
     booktabs = TRUE
   ) %>%
@@ -474,7 +474,7 @@ get_regression_table(score_model) %>%
                 latex_options = c("hold_position"))
 ```
 
-Given the lack of practical interpretation for the fitted intercept $b_0$, in this section we'll focus only on the second row of the table corresponding to the fitted slope $b_1$. We'll first interpret the `std_error`, `statistic`, `p_value`, `lower_ci` and `upper_ci` columns. Afterwards in the upcoming Subsection \@ref(regression-table-computation), we'll discuss how R computes these values. 
+Given the lack of practical interpretation for the fitted intercept $b_0$, in this section we'll focus only on the second row of the table corresponding to the fitted slope $b_1$. We'll first interpret the `std_error`, `statistic`, `p_value`, `lower_ci` and `upper_ci` columns. Afterwards in the upcoming Subsection \@ref(regression-table-computation), we'll discuss how R computes these values.
 
 ### Standard error {#regression-se}
 
@@ -483,16 +483,16 @@ The third column of the regression table in Table \@ref(tab:regtable-11) `std_er
 > The *standard error* is the standard deviation of any point estimate computed from a sample.
 So what does this mean in terms of the fitted slope $b_1$ = `r b1`? This value is just one possible value of the fitted slope resulting from *this particular sample* of $n$ = 463 pairs of teaching and beauty scores. However, if we collected a different sample of $n$ = 463 pairs of teaching and beauty scores, we will almost certainly obtain a different fitted slope $b_1$. This is due to *sampling variability*.
 
-Say we hypothetically collected 1000 such samples of pairs of teaching and beauty scores, computed the 1000 resulting values of the fitted slope $b_1$, and visualized them in a histogram. This would be a visualization of the *sampling distribution* of $b_1$, which we defined in Subsection \@ref(sampling-definitions). Further recall that the standard deviation of the *sampling distribution* of $b_1$ has a special name: the *standard error*. 
+Say we hypothetically collected 1000 such samples of pairs of teaching and beauty scores, computed the 1000 resulting values of the fitted slope $b_1$, and visualized them in a histogram. This would be a visualization of the *sampling distribution* of $b_1$, which we defined in Subsection \@ref(sampling-definitions). Further recall that the standard deviation of the *sampling distribution* of $b_1$ has a special name: the *standard error*.
 
 Recall that we constructed three sampling distributions for the sample proportion $\widehat{p}$ using shovels of size 25, 50, and 100 in Figure \@ref(fig:comparing-sampling-distributions). We observed that as the sample size increased, the standard error decreased as evidenced by the narrowing sampling distribution.
 
 The *standard error* of $b_1$ similarly quantifies how much variation in the fitted slope $b_1$ one would expect between different samples. So in our case, we can expect about `r se1` units of variation in the `bty_avg` slope variable. Recall that the `estimate` and `std_error` values play a key role in *inferring* the value of the unknown population slope $\beta_1$ relating to *all* instructors.
 
-In Section \@ref(infer-regression), we'll perform a simulation using the `infer` package to construct the bootstrap distribution for $b_1$ in this case. Recall from Subsection \@ref(bootstrap-vs-sampling) that the bootstrap distribution is an *approximation* to the sampling distribution in that they have a similar shape. Since they have a similar shape, they have similar *standard errors*. However, unlike the sampling distribution, the bootstrap distribution is constructed from a *single* sample, which is a practice more aligned with what's done in real-life. 
+In Section \@ref(infer-regression), we'll perform a simulation using the `infer` package to construct the bootstrap distribution for $b_1$ in this case. Recall from Subsection \@ref(bootstrap-vs-sampling) that the bootstrap distribution is an *approximation* to the sampling distribution in that they have a similar shape. Since they have a similar shape, they have similar *standard errors*. However, unlike the sampling distribution, the bootstrap distribution is constructed from a *single* sample, which is a practice more aligned with what's done in real-life.
 
 
-### Test statistic {#regression-test-statistic}
+### [Test statistic](#regression-test-statistic)
 
 The fourth column of the regression table in Table \@ref(tab:regtable-11) `statistic` corresponds to a *test statistic* relating to the following *hypothesis test*:
 
@@ -506,27 +506,27 @@ $$
 Recall our terminology, notation, and definitions related to hypothesis tests we introduced in Section \@ref(understanding-ht).
 
 > A *hypothesis test* consists of a test between two competing hypotheses: 1) a *null hypothesis* $H_0$ versus 2) an *alternative hypothesis* $H_A$.
-> 
+>
 > A *test statistic* is a point estimate/sample statistic formula used for hypothesis testing.
-Here, our *null hypothesis* $H_0$ assumes that the population slope $\beta_1$ is 0. If the population slope $\beta_1$ is truly 0, then this is saying that there is *no true relationship* between teaching and "beauty" scores for *all* the instructors in our population. In other words, $x$ = "beauty" score would have no associated effect on $y$ = teaching score. 
-The *alternative hypothesis* $H_A$, on the other hand, assumes that population slope $\beta_1$ is not 0, meaning it could be either positive or negative, suggesting either a positive or negative relationship between teaching and "beauty" scores. Recall we called such alternative hypotheses *two-sided*. By convention, all hypothesis testing for regression assumes two-sided alternatives. 
+Here, our *null hypothesis* $H_0$ assumes that the population slope $\beta_1$ is 0. If the population slope $\beta_1$ is truly 0, then this is saying that there is *no true relationship* between teaching and "beauty" scores for *all* the instructors in our population. In other words, $x$ = "beauty" score would have no associated effect on $y$ = teaching score.
+The *alternative hypothesis* $H_A$, on the other hand, assumes that population slope $\beta_1$ is not 0, meaning it could be either positive or negative, suggesting either a positive or negative relationship between teaching and "beauty" scores. Recall we called such alternative hypotheses *two-sided*. By convention, all hypothesis testing for regression assumes two-sided alternatives.
 
-Recall our "hypothesized universe" of no gender discrimination we *assumed* in our `promotions` activity in Section \@ref(ht-activity). Similarly here when conducting this hypothesis test, we'll assume a "hypothesized universe" where there is no relationship between teaching and "beauty" scores. In other words, we'll assume the null hypothesis $H_0: \beta_1 = 0$ is true. 
+Recall our "hypothesized universe" of no gender discrimination we *assumed* in our `promotions` activity in Section \@ref(ht-activity). Similarly here when conducting this hypothesis test, we'll assume a "hypothesized universe" where there is no relationship between teaching and "beauty" scores. In other words, we'll assume the null hypothesis $H_0: \beta_1 = 0$ is true.
 
 The `statistic` column in the regression table is a tricky one however. It corresponds to a standardized *t-test statistic*, much like the *two-sample $t$ statistic* we saw in Subsection \@ref(theory-hypo) where we used a theory-based method for conducting hypothesis tests. In both these cases, the *null distribution* can be mathematically proven to be a *$t$-distribution*. Since such test statistics are tricky for individuals new to statistical inference to study, we'll skip this and jump into interpreting the p-value. If you're curious however, we've included a discussion of this standardized *t-test statistic* in Subsection \@ref(theory-regression).
 
 ### p-value
 
-The fifth column of the regression table in Table \@ref(tab:regtable-11) `p-value` corresponds to the *p-value* of the hypothesis test $H_0: \beta_1 = 0$ versus  $H_A: \beta_1 \neq 0$. 
+The fifth column of the regression table in Table \@ref(tab:regtable-11) `p-value` corresponds to the *p-value* of the hypothesis test $H_0: \beta_1 = 0$ versus  $H_A: \beta_1 \neq 0$.
 
 Again recalling our terminology, notation, and definitions related to hypothesis tests we introduced in Section \@ref(understanding-ht), let's focus on the definition of the p-value:
 
 > A *p-value* is the probability of obtaining a test statistic just as extreme or more extreme than the observed test statistic *assuming the null hypothesis $H_0$ is true*
-Recall that you can intuitively think of the p-value as quantifying how "extreme" the observed fitted slope of $b_1$ = `r b1` is in a "hypothesized universe" where is there is no relationship between teaching and "beauty" scores. 
+Recall that you can intuitively think of the p-value as quantifying how "extreme" the observed fitted slope of $b_1$ = `r b1` is in a "hypothesized universe" where is there is no relationship between teaching and "beauty" scores.
 
-Following the hypothesis testing procedure we outlined in Section \@ref(ht-interpretation), since the p-value in this case is 0, for any choice of significance level $\alpha$ we would reject $H_0$ in favor of $H_A$. Using non-statistical language, this is saying: we reject the hypothesis that there is no relationship between teaching and "beauty" scores in favor of the hypothesis that that is. In other words, the evidence suggests there is a significant relationship, one that is positive. 
+Following the hypothesis testing procedure we outlined in Section \@ref(ht-interpretation), since the p-value in this case is 0, for any choice of significance level $\alpha$ we would reject $H_0$ in favor of $H_A$. Using non-statistical language, this is saying: we reject the hypothesis that there is no relationship between teaching and "beauty" scores in favor of the hypothesis that that is. In other words, the evidence suggests there is a significant relationship, one that is positive.
 
-More precisely however, the p-value corresponds to how extreme the observed test statistic of `r t1` is when compared to the appropriate *null distribution*.  In Section \@ref(infer-regression), we'll perform a simulation using the `infer` package to construct the null distribution in this case. 
+More precisely however, the p-value corresponds to how extreme the observed test statistic of `r t1` is when compared to the appropriate *null distribution*.  In Section \@ref(infer-regression), we'll perform a simulation using the `infer` package to construct the null distribution in this case.
 
 An extra caveat here is that the results of this hypothesis test are only valid if certain "conditions for inference for regression" are met, which we'll introduce shortly in Section \@ref(regression-conditions).
 
@@ -534,10 +534,6 @@ An extra caveat here is that the results of this hypothesis test are only valid 
 ## More advanced points to consider
 As this is an introductory book, we have introduced some concepts but not developed them in full detail. This does not mean that there are not things to say about these – more that there is simply too much to say at this time. These topics include:
 
-* **Planning studies:** If you are planning a study, you need to determine the sample size $n$ that is sufficient for minimizing Type II error (i.e, maximizing power). To do so, you will need to know the sampling distribution of the estimator not just under the null hypothesis, but also under the alternative hypothesis. You will need to specify the size of the outcome, difference, or relationship you are seeking to understand. From this, for a given Type II error level, you can determine the minimum sample size you will need. 
-* **Multiple testing:** We introduced the use of hypothesis testing here with a single test. When you are analyzing data, however, you often conduct multiple hypothesis tests on the same data. By conducting multiple hypothesis tests, in combination Type I error (what is called “familywise error rate”) is typically higher, and sometimes much higher, than the Type I error of each test in isolation. There are procedures you can use to adjust for this. 
+* **Planning studies:** If you are planning a study, you need to determine the sample size $n$ that is sufficient for minimizing Type II error (i.e, maximizing power). To do so, you will need to know the sampling distribution of the estimator not just under the null hypothesis, but also under the alternative hypothesis. You will need to specify the size of the outcome, difference, or relationship you are seeking to understand. From this, for a given Type II error level, you can determine the minimum sample size you will need.
+* **Multiple testing:** We introduced the use of hypothesis testing here with a single test. When you are analyzing data, however, you often conduct multiple hypothesis tests on the same data. By conducting multiple hypothesis tests, in combination Type I error (what is called “familywise error rate”) is typically higher, and sometimes much higher, than the Type I error of each test in isolation. There are procedures you can use to adjust for this.
 * **P-hacking:** Again, we have focused on hypothesis testing as if there is a single test and a single null model. But in practice, analysts might try many different specifications or models, with the goal of finding a test that rejects a null hypothesis (p < .05). Why might an analyst do this? Because the system of rewards in science often tips towards rewarding those that find effects (p < .05), not those that do not. 
-
-
-
-
