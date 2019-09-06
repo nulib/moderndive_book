@@ -1,4 +1,4 @@
-# [Hypothesis tests](#hypothesis-tests)
+# Hypothesis tests {#hypothesis-tests}
 
 ```{r setup-hypothesis-tests, include=FALSE, purl=FALSE}
 chap <- 12
@@ -40,7 +40,7 @@ library(patchwork)
 library(scales)
 ```
 
-## [Decision making](#decision-making)
+## Decision making {#decision-making}
 
 Remember that a p-value is a probabilistic proof by contradiction. It might show that the chance that the observed data would occur under the null hypothesis is 2%, 20%, or 50%. But at what level is the evidence enough that we would decide that the null hypothesis must not be true?
 
@@ -48,7 +48,7 @@ Conventional wisdom is to use $p < 0.05$ as this threshold, where $p$ denotes th
 
 <!-- link to a replication crisis article? -->
 
-## [Decision making trade-offs](#trade-offs)
+## Decision making trade-offs {#trade-offs}
 
 Imagine that you’ve been invited to a party, and you are trying to decide if you should go. On the one hand, the party might be a good time, and you’d be happy that you went. On the other hand, it might not be that much fun and you’d be unhappy that you went. In advance, you don’t know which kind of party it will be. How do you decide?
 We can formalize this decision making in terms of a 2x2 table crossing your decision (left) with information about the party (top):
@@ -86,7 +86,7 @@ There are a few important points here:
 
 These features of decision-making play out again and again in life. In the next sections, we provide two common examples, one in medicine, the other in law.
 
-### [Medicine](#medicine)
+### Medicine {#medicine}
 Imagine that you might be pregnant and take a pregnancy test. This test is based upon levels of HcG in your urine, and when these levels are “high enough” (determined by the pregnancy test maker), the test will tell you that you are pregnant (+). If the levels are not “high enough”, the test will tell you that you are not pregnant (-). Depending upon how the test determines “high enough” levels of HcG, however, the test might be wrong. To see how, examine the following table.
 
 ```{r medicine-table, echo=FALSE, message=FALSE}
@@ -115,7 +115,7 @@ When a pregnancy test manufacturer develops the test, they have to pay attention
 
 In developing these tests, which do you think test manufacturers focus on minimizing: Type I or II errors?
 
-### [Law](#law)
+### Law {#law}
 Imagine that you are on the jury of a criminal trial. You are presented with evidence that a crime has been committed and must make a decision regarding the guilt of the defendant. But you were not there when the crime was committed, so it is impossible to know with 100% accuracy that your decision is correct. Instead, you again encounter this 2x2 table:
 
 ```{r law-table, echo=FALSE, message=FALSE}
@@ -145,7 +145,7 @@ In the US court system, the assumption is supposed to be that a defendant is inn
 ### Commonalities
 Before connecting these to statistical decision making, it’s interesting to note that in all three of the cases we’ve introduced here – party attendance, medicine, and law – the minimization of Type I error is often primary. That is, we’d prefer a decision rule that doesn’t send us to parties we don’t like, doesn’t tell us we are pregnant when we aren’t, and doesn’t wrongfully convict people of crimes. This is not to say Type II error doesn’t matter, but that it is often seen as secondary to Type I.
 
-##Hypothesis test: Decision making in statistics {#ht}
+## Hypothesis test: Decision making in statistics {#ht}
 The same sort of decision making problems face statistics as well: based on some p-value criterion, we could either reject the null hypothesis or not. And either the null hypothesis is true, or it is not – in which case some *alternative* hypothesis must be true.
 
 This is the first time we have mentioned an **alternative hypothesis**. This hypothesis is what we are seeking evidence to prove when we are conducting what is called a **hypothesis test**:
@@ -218,7 +218,7 @@ In practice, conducting a hypothesis test is straightforward:
 
 This last point is significant – for the hypothesis test to be valid, **you must pre-specify your threshold, not after you have seen the p-value in your data.**
 
-### [Promotions Example](#ht-activity)
+### Promotions Example {#ht-activity}
 
 Let's consider a study that investigated gender discrimination in the workplace that was published in the "Journal of Applied Psychology" in 1974. This data is also used in the [OpenIntro](https://www.openintro.org/) series of statistics textbooks. Study participants included 48 male bank supervisors who attended a management institute at University of North Carolina in 1972. The supervisors were asked to assume the hypothetical role of a personnel director at the bank. Each supervisor was given a job candidate's personnel file and asked to decide whether or not the candidate should be promoted to a manager position at the bank.
 
@@ -459,7 +459,7 @@ But by how much will they differ? In other words, by how much will these estimat
 
 
 
-## [Interpreting regression tables](#regression-interp)
+## Interpreting regression tables {#regression-interp}
 
 In Chapters \@ref(regression) and \@ref(multiple-regression) and in our regression refresher earlier, we focused only on the two leftmost columns the regression table in Table \@ref(tab:regtable-11): `term` and `estimate`. Let's now shift our attention to the remaining columns: `std_error`, `statistic`, `p_value`, `lower_ci` and `upper_ci`.
 
@@ -492,7 +492,7 @@ The *standard error* of $b_1$ similarly quantifies how much variation in the fit
 In Section \@ref(infer-regression), we'll perform a simulation using the `infer` package to construct the bootstrap distribution for $b_1$ in this case. Recall from Subsection \@ref(bootstrap-vs-sampling) that the bootstrap distribution is an *approximation* to the sampling distribution in that they have a similar shape. Since they have a similar shape, they have similar *standard errors*. However, unlike the sampling distribution, the bootstrap distribution is constructed from a *single* sample, which is a practice more aligned with what's done in real-life.
 
 
-### [Test statistic](#regression-test-statistic)
+### Test statistic {#regression-test-statistic}
 
 The fourth column of the regression table in Table \@ref(tab:regtable-11) `statistic` corresponds to a *test statistic* relating to the following *hypothesis test*:
 
@@ -536,4 +536,4 @@ As this is an introductory book, we have introduced some concepts but not develo
 
 * **Planning studies:** If you are planning a study, you need to determine the sample size $n$ that is sufficient for minimizing Type II error (i.e, maximizing power). To do so, you will need to know the sampling distribution of the estimator not just under the null hypothesis, but also under the alternative hypothesis. You will need to specify the size of the outcome, difference, or relationship you are seeking to understand. From this, for a given Type II error level, you can determine the minimum sample size you will need.
 * **Multiple testing:** We introduced the use of hypothesis testing here with a single test. When you are analyzing data, however, you often conduct multiple hypothesis tests on the same data. By conducting multiple hypothesis tests, in combination Type I error (what is called “familywise error rate”) is typically higher, and sometimes much higher, than the Type I error of each test in isolation. There are procedures you can use to adjust for this.
-* **P-hacking:** Again, we have focused on hypothesis testing as if there is a single test and a single null model. But in practice, analysts might try many different specifications or models, with the goal of finding a test that rejects a null hypothesis (p < .05). Why might an analyst do this? Because the system of rewards in science often tips towards rewarding those that find effects (p < .05), not those that do not. 
+* **P-hacking:** Again, we have focused on hypothesis testing as if there is a single test and a single null model. But in practice, analysts might try many different specifications or models, with the goal of finding a test that rejects a null hypothesis (p < .05). Why might an analyst do this? Because the system of rewards in science often tips towards rewarding those that find effects (p < .05), not those that do not.
