@@ -28,7 +28,6 @@ Let’s load all the packages needed for this chapter (this assumes you’ve alr
 library(tidyverse)
 library(moderndive)
 library(infer)
-library(ggplot2movies)
 ```
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}

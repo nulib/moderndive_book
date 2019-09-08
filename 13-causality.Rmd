@@ -1,0 +1,145 @@
+# Randomization and Causality {#causality}
+
+```{r setup-causality, include=FALSE, purl=FALSE}
+chap <- 13
+lc <- 0
+rq <- 0
+# **`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`**
+# **`r paste0("(RQ", chap, ".", (rq <- rq + 1), ")")`**
+knitr::opts_chunk$set(
+  tidy = FALSE,
+  out.width = '\\textwidth',
+  fig.height = 4,
+  fig.align='center',
+  warning = FALSE
+  )
+options(scipen = 99, digits = 3)
+# Set random number generator see value for replicable pseudorandomness.
+set.seed(2018)
+```
+
+In this chapter we kick off the third segment of this book, statistical inference. Up until this point, we have focused only on descriptive statistics, exploring data in the sample we have in hand. Very often this is **observational data** – data that is collected via a survey in which nothing is manipulated or a log of data (e.g., scraped from the web). As a result, any relationship we observe is limited to the sample of data, and the relationships are considered **associational**. In this chapter we introduce the idea of making inferences through a discussion of causality and randomization. 
+
+### Needed Packages {-}
+
+Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). If needed, read Section \@ref(packages) for information on how to install and load R packages.
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(moderndive)
+library(infer)
+library(randomizr)
+```
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+# Packages needed internally, but not in text.
+library(readr)
+library(knitr)
+library(kableExtra)
+library(patchwork)
+library(scales)
+```
+
+## Causal Questions {#causal-questions}
+
+What if we wanted to understand not just if X is associated with Y, but if X **causes** Y? Examples of causal questions include:
+
+*	Does *smoking* cause *cancer*?
+*	Do *after school programs* improve student *test scores*?
+*	Does *exercise* make people *happier*?
+*	Does exposure to *abstinence only education* lead to lower *pregnancy rates*?
+*	Does *breastfeeding* increase baby *IQs*?
+
+Importantly, note that while these are all causal questions, they do not all directly use the word *cause*. Other words that imply causality include:
+
+* Improve
+* Increase / decrease
+* Lead to
+* Make
+
+In general, the tale-tale sign that a question is causal is if the analysis is used to make an argument for changing a procedure, policy, or practice. 
+
+## Randomized experiments {#randomized-experiments}
+
+The gold standard for understanding causality is the **randomized experiment**. For sake of this chapter, we will focus on experiments in which people are randomized to one of two conditions: treatment or control. Note, however, that this is just one scenario; for example, schools, offices, countries, states, households, animals, cars, etc can all be randomized as well, and can be randomized to more than two conditions. 
+
+What do we mean by random? Be careful here, as the word “random” is used colloquially differently than it is statistically. When we use the word **random** in this context, we mean:
+
+* Every person has some chance of being selected (i.e., non-zero probability) for the treatment or control
+* The selection is based upon a **random process**, e.g., names out of a hat, a random number generator, rolls of dice, etc
+
+There are several functions in R that generate numbers based on random processes. For example, we can mimic the results of a coin flip using the function `rbernoulli()`. The first argument `n` specifies the number of trials (in this case, coin flips), and `p` specifies the probability of success for each trial. In our coin flip example, we can define success to be when the coin lands on heads. If we're using a fair coin then `p = 0.5`. 
+
+Sometimes a random process can give results that don't *look* random. For example, even though any given coin flip has a 50% chance of landing on heads, it's possible to see many tails in a row, just due to chance. In the example below, 10 coin flips resulted in only 3 heads, and the first 6 flips were tails (here TRUE = heads and FALSE = tails). 
+```{r, echo = FALSE}
+set.seed(2018)
+```
+```{r}
+coin_flips <- rbernoulli(10, 0.5)
+coin_flips
+```
+Importantly, just because the results don't *look* random, does not mean that the results *aren't* random. If we were to repeat this random process, we will get a different set of random results. 
+```{r, echo = FALSE}
+set.seed(2019)
+```
+```{r}
+coin_flips2 <- rbernoulli(10, 0.5)
+coin_flips2
+```
+
+In practice, a randomized experiment involves several steps. 
+
+1.	Half of the sample of people is randomly assigned to the treatment group (T), and the other half is assigned to the control group (C). 
+2.	Those in the treatment group receive a treatment (e.g., a drug) and those in the control group receive something else (e.g., business as usual, a placebo). 
+3.	Outcomes (Y) in the two groups are observed for all people.
+4.	The effect of the treatment is calculated using a simple regression model,
+$$Y_i = \alpha + \beta T_i + \epsilon_i,$$
+where $T_i$ is 1 when individual $i$ is in the treatment group and 0 when they are in the control group. $\beta = \bar{y}_T - \bar{y}_C$ is the observed "treatment effect" - the difference between the treatment and control group averages. 
+
+## Observational data {#observational-data}
+
+In a randomized experiment, we just showed that we can calculate the causal effect of a treatment using a simple regression model. 
+
+Why can’t we use the same model to determine causality with observational data? There may be an **omitted variable** (Z), also known as a **confounder**:
+
+![](confounder.png)
+
+Here are some examples:
+
+* There is a positive relationship between sales of ice cream (X) from street vendors and crime (Y). Does this mean that eating ice cream (T) causes increased crime? No. The omitted variable is the season and weather (Z). That is, there is a positive relationship between warm weather (Z) and ice cream consumption (X) and between warm weather (Z) and crime (Y).
+* Students that play an instrument (X) have higher grades (Y) than those that do not. Does this mean that playing an instrument (T) causes improved academic outcomes? No. The omitted variables here are family socio-economic status and student motivation. That is, there is a positive relationship between student motivation (and family with resources) (Z) and likelihood of playing an instrument (X) and between motivation/ resources and student grades (Y). 
+* Countries that eat a lot of chocolate (X) also win the most Nobel Prizes (Y). Does this mean that higher chocolate consumption (T) causes Nobel Prizes? No. The omitted variable here is a country's wealth (Z). Wealthier countries win more Nobel Prizes and also consume more chocolate. 
+
+Examples of associations that are misinterpreted as causal relationships abound. To see more examples, check out this website: https://www.tylervigen.com/spurious-correlations. 
+
+## The magic of randomization
+
+If omitted variables / confounders are such a threat to determining causality in observational data, why aren’t they also a threat in randomized experiments?
+
+The answer is simple: **randomization**. Because people are randomized to treatment and control groups, on average there is no difference between these two groups on any characteristics *other than their treatment*. 
+
+This means that before the treatment is given, on average the two groups (T and C) are equivalent to one another on every observed *and* unobserved variable. For example, the two groups should be similar in all **pre-treatment** variables: age, gender, motivation levels, heart disease, math ability, etc. Thus, when the treatment is assigned and implemented, any differences between outcomes *can be attributed to the treatment*. 
+
+```{r eclsK-fake, echo=FALSE, message=FALSE}
+if(!file.exists("rds/eclsK_fake.rds")){
+  ed_data <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTE0OPjv8F4YhV1f_YGXVA5fT7kt3CN9qqamQNZV5uLOTvBHDSW7uxn5PL9_JeA/pub?gid=833804186&single=true&output=csv" %>%
+    read_csv(na = "")
+    write_rds(ed_data, "rds/eclsK_fake.rds")
+} else {
+  ed_data <- read_rds("rds/eclsK_fake.rds")
+}
+set.seed(999) 
+```
+
+```{r}
+ed_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTE0OPjv8F4YhV1f_YGXVA5fT7kt3CN9qqamQNZV5uLOTvBHDSW7uxn5PL9_JeA/pub?gid=833804186&single=true&output=csv")
+
+ed_data <- ed_data %>% mutate(Trt_status = complete_ra(dim(ed_data)[1], num_arms = 2))
+ed_data %>% group_by(Trt_status) %>% summarise_if(is.numeric, mean)
+
+ed_data <- ed_data %>% arrange(SES_CONT) %>% mutate(Trt_non_random = c(rep("T1", 168), rep("T2", 167)))
+ed_data %>% group_by(Trt_non_random) %>% summarise_if(is.numeric, mean)                                           
+```
+
+
+
