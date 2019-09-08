@@ -108,6 +108,7 @@ medicine_table %>%
 ```
 
 As the table notes, in two of the cases, the test correctly determines that you are either pregnant or not pregnant. But there are also two cases in which the test (a decision) is incorrect:
+
 * Type I error: False Positive. In this case, the test tells you that you are pregnant when in fact you are not. This would occur if the level of HcG required to indicate positive was too low.
 * Type II error: False Negative. In this case, the test tells you that you are not pregnant but you actually are. This would occur if the level of HcG required to indicate positive is too high.
 
@@ -192,7 +193,7 @@ This use of a threshold for rejecting a null hypothesis gives rise to some impor
 
 Finally, there is one more piece of vocabulary that is important:
 
-* **Power = 1 – Type II error = $1-\beta$.
+* **Power** = 1 – Type II error = $1-\beta$.
 
 **Power** is the probability that we will reject the null hypothesis when in fact it is false. For example, if our Type II error is 0.20, then we can say our test has 80% power for rejecting the null hypothesis when the alternative hypothesis is true. Conversely, if a study has not been designed well, it may be **under-powered** to detect an effect that is substantively important. The power of a hypothesis test depends on:
 
@@ -237,10 +238,10 @@ Let's perform an exploratory data analysis of the relationship between the two c
 ```{r promotions-barplot, fig.cap="Barplot of relationship between gender and promotion decision."}
 ggplot(promotions, aes(x = gender, fill = decision)) +
   geom_bar() +
-  labs(x = "Gender of name on resume")
+  labs(x = "Gender on personnel file")
 ```
 
-Observe in Figure \@ref(fig:promotions-barplot) that it appears that female personnel files were much less likely to be accepted for promotion.  Let's quantify these promotions rates by computing the proportion of personnel files accepted for promotion for each group using the `dplyr` package for data wrangling:
+Observe in Figure \@ref(fig:promotions-barplot) that it appears that female personnel files were much less likely to be accepted for promotion.  Let's quantify these promotion rates by computing the proportion of personnel files accepted for promotion for each group using the `dplyr` package for data wrangling:
 
 ```{r}
 promotions %>%
@@ -255,26 +256,29 @@ observed_point_estimate <- promotions %>%
   round(3)
 ```
 
-So of the 24 male files, 21 were selected for promotion, for a proportion of 21/24 = 0.875 = 87.5%. On the other hand, of the 24 female files, 14 were selected for promotion, for a proportion of 14/24 = 0.583 = 58.3%. Comparing these two rates of promotion, it appears that males were selected for promotion at a rate 0.875 - 0.583 = `r observed_point_estimate` = `r observed_point_estimate*100`% higher than females.
+So of the 24 male files, 21 were selected for promotion, for a proportion of 21/24 = 0.875 = 87.5%. On the other hand, of the 24 female files, 14 were selected for promotion, for a proportion of 14/24 = 0.583 = 58.3%. Comparing these two rates of promotion, it appears that males were selected for promotion at a rate 0.875 - 0.583 = `r observed_point_estimate` = `r observed_point_estimate*100` percentage points higher than females.
 
 The question is however, does this provide *conclusive* evidence that there is gender discrimination in this context? Could a difference in promotion rates of `r observed_point_estimate*100`% still occur by chance, even in a hypothetical world where no gender-based discrimination existed? To answer this question, we can conduct the following hypothesis test:
 
 $$H_0: \pi_m = \pi_f$$
 $$H_1: \pi_m \neq \pi_f,$$
-where $\pi_f$ is the proportion of female files selected for promotion and $pi_m$ is the propotion of male files selected for promotion. Here the null hypothesis corresponds to the scenario in which there is *no gender discrimination*; that is, males and females are promoted at identical rates. We will specify this test ahead of time to have $\alpha = 0.05$. That is, we are comfortable with a 5% Type I error rate, and we will reject the null hypothesis if $p < 0.05$.
+where $\pi_f$ is the proportion of female files selected for promotion and $\pi_m$ is the propotion of male files selected for promotion. Here the null hypothesis corresponds to the scenario in which there is *no gender discrimination*; that is, males and females are promoted at identical rates. We will specify this test ahead of time to have $\alpha = 0.05$. That is, we are comfortable with a 5% Type I error rate, and we will reject the null hypothesis if $p < 0.05$.
 
 Note the null hypothesis can be rewritten as
-$$H_0: \pi_m - \pi_f = 0$$ by subtracting $\pi_m$ from both sides. Therefore, the population proportion we are interested in is $\pi_m - \pi_f$. Referring back to Table \@ref(tab:SE-table), we can see that the appropriate estimator is $\hat{\pi}_m - \hat{\pi}_f$. Under the null hypothesis, $\hat{\pi}_m - \hat{\pi}_f$ is normally distributed with mean $\pi_m - \pi_f$ and standard error $\sqrt{\frac{\hat{\pi}_m(1-\hat{\pi}_m)}{n_m} + \frac{\hat{\pi}_f(1-\hat{\pi}_f)}{n_f}}$.
+$$H_0: \pi_m - \pi_f = 0$$ by subtracting $\pi_f$ from both sides. Therefore, the population parameter we are interested in estimating is $\pi_m - \pi_f$. Referring back to Table \@ref(tab:SE-table), we can see that the appropriate estimator is $\hat{\pi}_m - \hat{\pi}_f$. Under the null hypothesis, $\hat{\pi}_m - \hat{\pi}_f$ is normally distributed with mean $\pi_m - \pi_f$ and standard error $\sqrt{\frac{{\pi}_m(1-{\pi}_m)}{n_m} + \frac{{\pi}_f(1-{\pi}_f)}{n_f}}$.
 
 Recall from Chapter \@ref(pvalues) that we calculate a test statistic using the following general formula:
-$$t\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)}$$
+$$test\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)}$$
 In this example, we have $$test\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_m(1-\pi_m)}{n_m} + \frac{\pi_f(1-\pi_f)}{n_f}}}$$ Note that the null value here is $0$ because our null hypothesis states $\pi_m - \pi_f = 0$. We can use the promotions data to compute this observed test statistic. However, on the denominator we need separate values for $\pi_m$ and $\pi_f$, which aren't specified in our null hypothesis. When conducting a hypothesis test on the difference in proportions, we compute a *pooled* proportion to plug in for these unknown values. This pooled estimate, which we will denote $\pi_0$ can be calculated by $$\pi_{0} = \frac{\# \ of \ successes_1 + \# of successes_2}{n_1 + n_2}.$$ Therefore, the test statistic is computed by $$t\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_0(1-\pi_0)}{n_m} + \frac{\pi_0(1-\pi_0)}{n_f}}}$$
+
+In the promotions example, $$\pi_0 = \frac{21 + 14}{24 + 24} = 0.729.$$ We can compute the test statistic with the following code.
 
 ```{r, promotions-t-stat}
 results <- promotions %>%
   group_by(gender, decision) %>%
   summarize(n = n()) %>%
   mutate(prop = n / sum(n))
+results
 
 male_promotions <- as.numeric(results[2,3])
 female_promotions <- as.numeric(results[4,3])
@@ -292,7 +296,7 @@ test_stat <- (pi_hat_m - pi_hat_f) / SE_pi_0
 test_stat
 ```
 
-In the promotions example, $$\pi_0 = \frac{21 + 14}{24 + 24} = 0.729,$$ and the test statistic is equal to `r round(test_stat,2)`. We can then use this test statistic to compute our p-value.
+Our test statistic is equal to `r round(test_stat,2)`, which we can now use to compute our p-value.
 
 ```{r}
 p_value <- pnorm(test_stat, lower.tail = FALSE)*2
@@ -323,7 +327,7 @@ Note that we use the function `pnorm()` here because our test statistic follows 
 
 ### Regression Example
 
-Let's return to our example from Chapter \@ref(regression) on teaching evaluations and demonstrate how to conduct a hypothesis test on regression coefficients.
+We'll now demonstrate how to conduct a hypothesis test on regression coefficients by returning to our example from Chapter \@ref(regression) on teaching evaluations.
 
 Recall using simple linear regression \index{regression!simple linear} we modeled the relationship between
 
@@ -354,32 +358,32 @@ ggplot(evals_ch6, aes(x = bty_avg, y = score)) +
   geom_smooth(method = "lm", se = FALSE)
 ```
 
-Looking at this plot again, you might be asking "Does that line really have all that positive of a slope?" It does increase from left to right as the `bty_avg` variable increases, but by how much? To get to this information, recall that we followed a two-step procedure:
+Looking at this plot again, you might be asking "Does that line really have all that positive of a slope?" It does increase from left to right as the `bty_avg` variable increases, but by how much? To get to this information, we can follow a two-step procedure:
 
 1. We first "fit" the linear regression model using the `lm()` function with the formula `score ~ bty_avg`. We saved this model in `score_model`.
-1. We get the regression table by applying the `get_regression_table()` \index{moderndive!get\_regression\_table()} from the `moderndive` package to `score_model`.
+1. We get the regression results by applying the `summary()` function to `score_model` and accessing the `coefficients` object stored in the summary results.
 
-```{r, eval=FALSE}
+```{r}
 # Fit regression model:
 score_model <- lm(score ~ bty_avg, data = evals_ch6)
-# Get regression table:
-get_regression_table(score_model)
+# Get regression results:
+summary(score_model)$coefficients
 ```
-```{r regtable-11, echo=FALSE}
+```{r regtable-12, echo=FALSE}
 # Fit regression model:
 score_model <- lm(score ~ bty_avg, data = evals_ch6)
-get_regression_table(score_model) %>%
-  knitr::kable(
-    digits = 3,
-    caption = "Previously seen linear regression table.",
-    booktabs = TRUE
-  ) %>%
-  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-                latex_options = c("hold_position"))
+#summary(score_model)$coefficients %>%
+ # knitr::kable(
+  #  digits = 5,
+   # caption = "Linear regression table.",
+  #  booktabs = TRUE
+  #) %>%
+  #kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+  #              latex_options = c("hold_position"))
 # slope:
 slope_row <- get_regression_table(score_model) %>%
   filter(term == "bty_avg")
-b1 <- slope_row %>% pull(estimate)
+beta_hat_1 <- slope_row %>% pull(estimate)
 se1 <- slope_row %>% pull(std_error)
 t1 <- slope_row %>% pull(statistic)
 lower1 <- slope_row %>% pull(lower_ci)
@@ -394,142 +398,97 @@ lower0 <- intercept_row %>% pull(lower_ci)
 upper0 <- intercept_row %>% pull(upper_ci)
 ```
 
-Using the values in the `estimate` column of the resulting regression table in Table \@ref(tab:regtable-11), we could then obtain the equation of the "best-fitting" regression line in Figure \@ref(fig:regline):
+Using the values in the `Estimate` column of the resulting regression table, we could then obtain the equation of the "best-fitting" regression line in Figure \@ref(fig:regline):
 
 $$
 \begin{aligned}
-\widehat{y} &= b_0 + b_1 \cdot x\\
-\widehat{\text{score}} &= b_0 + b_{\text{bty}\_\text{avg}} \cdot\text{bty}\_\text{avg}\\
+\widehat{y} &= \hat{\beta}_0 + \hat{\beta}_1 \cdot x\\
+\widehat{\text{score}} &= \hat{\beta}_0 + b_{\text{bty}\_\text{avg}} \cdot\text{bty}\_\text{avg}\\
 &= 3.880 + 0.067\cdot\text{bty}\_\text{avg}
 \end{aligned}
 $$
 
-where $b_0$ is the fitted intercept and $b_1$ is the fitted slope for `bty_avg`. Recall the interpretation of the $b_1$ = `r b1` value of the fitted slope:
+where $\hat{\beta}_0$ is the fitted intercept and $\hat{\beta}_1$ is the fitted slope for `bty_avg`. Recall the interpretation of the $\hat{\beta}_1$ = `r beta_hat_1` value of the fitted slope:
 
-> For every increase of one unit in "beauty" rating, there is an associated increase, on average, of `r b1` units of evaluation score.
-Thus, the slope value quantifies the relationship between the y variable of `score` and the x variable `bty_avg`. We also discussed the intercept value of $b_0$ = `r get_regression_table(score_model) %>% filter(term == "intercept") %>% pull(estimate)` and its lack of practical interpretation, since the range of possible "beauty" scores does not include 0.
+> For every increase of one unit in "beauty" rating, there is an associated increase, on average, of `r beta_hat_1` units of evaluation score.
+Thus, the slope value quantifies the relationship between the y variable of `score` and the x variable `bty_avg`. We also discussed the intercept value of $\hat{\beta}_0$ = `r get_regression_table(score_model) %>% filter(term == "intercept") %>% pull(estimate)` and its lack of practical interpretation, since the range of possible "beauty" scores does not include 0.
 
-Let's now formally test whether there is a relationship between teaching score and beauty score, beyond what we would expect simply due to chance.
+We now want to formally test whether there is a relationship between teaching score and beauty score, beyond what we would expect simply due to chance. Recall the terminology and notation related to populations and samples that we studied in Chapter \@ref(populations). First, let's view the instructors for these `r nrow(evals_ch6)` courses as a *random sample* from a greater *population*. In our case, let's assume that the population is *all* instructors at UT Austin and that the sample of instructors who taught these 463 is a random sample. Unfortunately, we can only *assume* these two facts without more knowledge of the *sampling methodology*\index{sampling methodology} used by the researchers.
 
-### Sampling scenario
+Since we are viewing these $n$ = 463 courses as a sample, we can view our fitted slope $\hat{\beta}_1$ = `r beta_hat_1` as a *point estimate* of the *population slope* $\beta_1$. In other words, $\beta_1$ quantifies the relationship between teaching `score` and "beauty" average `bty_avg` for *all* instructors at UT Austin. Similarly, we can view our fitted intercept $\hat{\beta}_0$ = `r b0` as a *point estimate* of the *population intercept* $\beta_0$ for *all* instructors at UT Austin.
 
-Let's now revisit this study in terms of terminology and notation related to sampling we studied in Section \@ref(terminology-and-notation).
+Putting these two ideas together, we can view the equation of the fitted line $\widehat{y}$ = $\hat{\beta}_0 + \hat{\beta}_1 \cdot x$ = $3.880 + 0.067 \cdot \text{bty}\_\text{avg}$ as an estimate of some true and unknown *population line* $y = \beta_0 + \beta_1 \cdot x$.
 
-First, let's view the instructors for these `r nrow(evals_ch6)` courses as a *representative sample* from a greater *study population*. In our case, let's assume that the study population is *all* instructors at UT Austin and that the sample of instructors who taught these 463 is a representative sample. Unfortunately, we can only *assume* these two facts without more knowledge of the *sampling methodology*\index{sampling methodology} used by the researchers.
+In order to answer the question of whether there is a true relationship between teaching score and beauty score, we can test the following hypothesis:
 
-Since we are viewing these $n$ = 463 courses as a sample, we can view our fitted slope $b_1$ = `r b1` as a *point estimate* of the *population slope* $\beta_1$. In other words, $\beta_1$ quantifies the relationship between teaching `score` and "beauty" average `bty_avg` for *all* instructors at UT Austin. Similarly, we can view our fitted intercept $b_0$ = `r b0` as a *point estimate* of the *population intercept* $\beta_0$ for *all* instructors at UT Austin.
+$$H_0: \beta_1 = 0$$
+$$H_1: \beta_1 \neq 0$$
 
-Putting these two ideas together, we can view the equation of the fitted line $\widehat{y}$ = $b_0 + b_1 \cdot x$ = $3.880 + 0.067 \cdot \text{bty}\_\text{avg}$ as an estimate of some true and unknown *population line* $y = \beta_0 + \beta_1 \cdot x$.
+Note that our null hypothesis corresponds to scenario where the slope is 0, which implies the regression line is simply equal to the horizontal line $y= \beta_0$. That is, there is no relationship between $x$ and $y$. Since we are now viewing our fitted slope $\hat{\beta}_1$ as a *point estimate* based on a *sample*, this estimate is subject to *sampling variability*, as we've seen numerous times throughout this book. In other words, if we collected new sample of data on a different set of $n$ = 463 courses and their instructors, the new fitted slope $\hat{\beta}_1$ will likely differ from `r beta_hat_1`. 
 
-Thus we can draw parallels between our teaching evals analysis and all the sampling scenarios we've seen previously in Table \@ref(tab:table-ch8). In this chapter, we'll focus on the final two scenarios: regression slopes and regression intercepts.
+But by how much will it differ? In other words, by how much will this estimate *vary* across repeated samples? When taking sampling variation into account, do we still consider $\hat{\beta}_1$ to be different enough from 0 to reject the null hypothesis that $\beta_1 = 0$? The appropriate test statistic, which takes sampling variation into account via the standard error, will help us answer this question.
 
-```{r summarytable-ch11, echo=FALSE, message=FALSE}
-# The following Google Doc is published to CSV and loaded using read_csv():
-# https://docs.google.com/spreadsheets/d/1QkOpnBGqOXGyJjwqx1T2O5G5D72wWGfWlPyufOgtkk4/edit#gid=0
-if(!file.exists("rds/sampling_scenarios.rds")){
-  sampling_scenarios <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRd6bBgNwM3z-AJ7o4gZOiPAdPfbTp_V15HVHRmOH5Fc9w62yaG-fEKtjNUD2wOSa5IJkrDMaEBjRnA/pub?gid=0&single=true&output=csv" %>%
+The test statistic for this hypothesis test is $$test\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)} = \frac{\hat{\beta}_1 - 0}{SE(\hat{\beta}_1)}$$
+
+The standard error of $\hat{\beta}_1$ can be extracted from the regression summary output. We can store the model summary results in a new object called `model_results`. We can then access the coefficients and their standard errors by calling `model_results$coefficients`.
+
+```{r}
+model_results <- summary(score_model)
+model_results$coefficients
+```
+Note that  $\hat{\beta}_1$ and its standard error are located in the second row and first and second columns of this matrix respectively. We can use these numbers to calculate our test statistic.
+
+```{r}
+beta_hat_1 <- model_results$coefficients[2,1]
+SE_beta_hat_1 <- model_results$coefficients[2,2]
+test_stat <- beta_hat_1 / SE_beta_hat_1
+test_stat
+```
+
+Similar to what we saw in Chapter \@ref(pvalues), this test statistic follows a t-distribution with a specified degrees of freedom. Table \@ref(tab:reg-df) gives the appropriate degrees of freedom for tests of regression coefficients. 
+
+```{r reg-df, echo=FALSE, message=FALSE}
+if(!file.exists("rds/reg_df.rds")){
+  reg_df <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTr6fghH9Et5CucPBRa87hagMV-UQjVpbH2Mxq18bT_S_XGVZtE9jy-mhYvWmUBTP3trPb2fSmhdsEy/pub?gid=0&single=true&output=csv" %>%
     read_csv(na = "")
-  write_rds(sampling_scenarios, "rds/sampling_scenarios.rds")
+    write_rds(reg_df, "rds/reg_df.rds")
 } else {
-  sampling_scenarios <- read_rds("rds/sampling_scenarios.rds")
+  reg_df <- read_rds("rds/reg_df.rds")
 }
-sampling_scenarios %>%  
-  filter(Scenario %in% 1:6) %>%
+reg_df %>%
   kable(
-    caption = "Scenarios of sampling for inference",
+    caption = "t-test for regression coefficients",
     booktabs = TRUE,
     escape = FALSE
   ) %>%
   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-                latex_options = c("hold_position")) %>%
-  column_spec(1, width = "0.5in") %>%
-  column_spec(2, width = "0.7in") %>%
-  column_spec(3, width = "1in") %>%
-  column_spec(4, width = "1.1in") %>%
-  column_spec(5, width = "1in")
+                latex_options = c("HOLD_position"))
 ```
 
-Since we are now viewing our fitted slope $b_1$ and fitted intercept $b_0$ as *point estimates* based on a *sample*, these estimates will be subject to *sampling variability*, as we've seen numerous times throughout this book. In other words, if we collected new sample of data on a different set of $n$ = 463 courses and their instructors, the new fitted slope $b_1$ will likely differ from `r b1`. The same goes for the new fitted intercept $b_0$.
+Note the $p$ refers to the number of explanatory variables in the regression model. In this example, we only have one explanatory variable $x$, the beauty score, so $p = 1$, and the degrees of freedom are $df = n - p - 1 = n - 2$. We can now use this information to calculate our p-value. 
 
-But by how much will they differ? In other words, by how much will these estimates *vary*? This information is contained in the remaining columns of the regression table in Table \@ref(tab:regtable-11). Our knowledge of sampling from Chapter \@ref(sampling), confidence intervals from Chapter \@ref(confidence-intervals), and hypothesis tests from Chapter \@ref(hypothesis-testing) will help us interpret these remaining columns.
+```{r}
+n <- dim(evals_ch6)[1]
+p_value <- pt(test_stat, n-2, lower.tail = FALSE)*2
+p_value
+```
+Note that our calculated `test_stat = ` `r test_stat` is the same value reported in the `t value` column of the regression output, and our calculated p-value is the same as the value reported in the `Pr(>|t|)` column of the regression output. 
 
+```{r eval = FALSE, echo = FALSE}
+#manual calculation of SE(beta_hat_1)
+sx2 <- var(evals_ch6$bty_avg)
+sy2 <- var(evals_ch6$score)
+n <- dim(evals_ch6)[1]
 
-
-
-
-
-
-## Interpreting regression tables {#regression-interp}
-
-In Chapters \@ref(regression) and \@ref(multiple-regression) and in our regression refresher earlier, we focused only on the two leftmost columns the regression table in Table \@ref(tab:regtable-11): `term` and `estimate`. Let's now shift our attention to the remaining columns: `std_error`, `statistic`, `p_value`, `lower_ci` and `upper_ci`.
-
-```{r score-model-part-deux, echo=FALSE}
-get_regression_table(score_model) %>%
-  knitr::kable(
-    caption = "Previously seen regression table.",
-    digits = 3,
-    booktabs = TRUE
-  ) %>%
-  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-                latex_options = c("hold_position"))
+Syy <- (n-1)*sy2
+Sxy <- (n-1)*cov(evals_ch6$bty_avg, evals_ch6$score)
+Sxx <- (n-1)*sx2
+SSE <- Syy - Sxy^2/Sxx
+MSE <- SSE / (n-2)
+SE_beta_hat_1 <- sqrt(MSE)/sqrt(Sxx)
 ```
 
-Given the lack of practical interpretation for the fitted intercept $b_0$, in this section we'll focus only on the second row of the table corresponding to the fitted slope $b_1$. We'll first interpret the `std_error`, `statistic`, `p_value`, `lower_ci` and `upper_ci` columns. Afterwards in the upcoming Subsection \@ref(regression-table-computation), we'll discuss how R computes these values.
-
-### Standard error {#regression-se}
-
-The third column of the regression table in Table \@ref(tab:regtable-11) `std_error` corresponds to the *standard error* of our estimates. Recall the definition of **standard error** \index{standard error} we saw in Subsection \@ref(sampling-definitions):
-
-> The *standard error* is the standard deviation of any point estimate computed from a sample.
-So what does this mean in terms of the fitted slope $b_1$ = `r b1`? This value is just one possible value of the fitted slope resulting from *this particular sample* of $n$ = 463 pairs of teaching and beauty scores. However, if we collected a different sample of $n$ = 463 pairs of teaching and beauty scores, we will almost certainly obtain a different fitted slope $b_1$. This is due to *sampling variability*.
-
-Say we hypothetically collected 1000 such samples of pairs of teaching and beauty scores, computed the 1000 resulting values of the fitted slope $b_1$, and visualized them in a histogram. This would be a visualization of the *sampling distribution* of $b_1$, which we defined in Subsection \@ref(sampling-definitions). Further recall that the standard deviation of the *sampling distribution* of $b_1$ has a special name: the *standard error*.
-
-Recall that we constructed three sampling distributions for the sample proportion $\widehat{p}$ using shovels of size 25, 50, and 100 in Figure \@ref(fig:comparing-sampling-distributions). We observed that as the sample size increased, the standard error decreased as evidenced by the narrowing sampling distribution.
-
-The *standard error* of $b_1$ similarly quantifies how much variation in the fitted slope $b_1$ one would expect between different samples. So in our case, we can expect about `r se1` units of variation in the `bty_avg` slope variable. Recall that the `estimate` and `std_error` values play a key role in *inferring* the value of the unknown population slope $\beta_1$ relating to *all* instructors.
-
-In Section \@ref(infer-regression), we'll perform a simulation using the `infer` package to construct the bootstrap distribution for $b_1$ in this case. Recall from Subsection \@ref(bootstrap-vs-sampling) that the bootstrap distribution is an *approximation* to the sampling distribution in that they have a similar shape. Since they have a similar shape, they have similar *standard errors*. However, unlike the sampling distribution, the bootstrap distribution is constructed from a *single* sample, which is a practice more aligned with what's done in real-life.
-
-
-### Test statistic {#regression-test-statistic}
-
-The fourth column of the regression table in Table \@ref(tab:regtable-11) `statistic` corresponds to a *test statistic* relating to the following *hypothesis test*:
-
-$$
-\begin{aligned}
-H_0 &: \beta_1 = 0\\
-\text{vs } H_A&: \beta_1 \neq 0
-\end{aligned}
-$$
-
-Recall our terminology, notation, and definitions related to hypothesis tests we introduced in Section \@ref(understanding-ht).
-
-> A *hypothesis test* consists of a test between two competing hypotheses: 1) a *null hypothesis* $H_0$ versus 2) an *alternative hypothesis* $H_A$.
->
-> A *test statistic* is a point estimate/sample statistic formula used for hypothesis testing.
-Here, our *null hypothesis* $H_0$ assumes that the population slope $\beta_1$ is 0. If the population slope $\beta_1$ is truly 0, then this is saying that there is *no true relationship* between teaching and "beauty" scores for *all* the instructors in our population. In other words, $x$ = "beauty" score would have no associated effect on $y$ = teaching score.
-The *alternative hypothesis* $H_A$, on the other hand, assumes that population slope $\beta_1$ is not 0, meaning it could be either positive or negative, suggesting either a positive or negative relationship between teaching and "beauty" scores. Recall we called such alternative hypotheses *two-sided*. By convention, all hypothesis testing for regression assumes two-sided alternatives.
-
-Recall our "hypothesized universe" of no gender discrimination we *assumed* in our `promotions` activity in Section \@ref(ht-activity). Similarly here when conducting this hypothesis test, we'll assume a "hypothesized universe" where there is no relationship between teaching and "beauty" scores. In other words, we'll assume the null hypothesis $H_0: \beta_1 = 0$ is true.
-
-The `statistic` column in the regression table is a tricky one however. It corresponds to a standardized *t-test statistic*, much like the *two-sample $t$ statistic* we saw in Subsection \@ref(theory-hypo) where we used a theory-based method for conducting hypothesis tests. In both these cases, the *null distribution* can be mathematically proven to be a *$t$-distribution*. Since such test statistics are tricky for individuals new to statistical inference to study, we'll skip this and jump into interpreting the p-value. If you're curious however, we've included a discussion of this standardized *t-test statistic* in Subsection \@ref(theory-regression).
-
-### p-value
-
-The fifth column of the regression table in Table \@ref(tab:regtable-11) `p-value` corresponds to the *p-value* of the hypothesis test $H_0: \beta_1 = 0$ versus  $H_A: \beta_1 \neq 0$.
-
-Again recalling our terminology, notation, and definitions related to hypothesis tests we introduced in Section \@ref(understanding-ht), let's focus on the definition of the p-value:
-
-> A *p-value* is the probability of obtaining a test statistic just as extreme or more extreme than the observed test statistic *assuming the null hypothesis $H_0$ is true*
-Recall that you can intuitively think of the p-value as quantifying how "extreme" the observed fitted slope of $b_1$ = `r b1` is in a "hypothesized universe" where is there is no relationship between teaching and "beauty" scores.
-
-Following the hypothesis testing procedure we outlined in Section \@ref(ht-interpretation), since the p-value in this case is 0, for any choice of significance level $\alpha$ we would reject $H_0$ in favor of $H_A$. Using non-statistical language, this is saying: we reject the hypothesis that there is no relationship between teaching and "beauty" scores in favor of the hypothesis that that is. In other words, the evidence suggests there is a significant relationship, one that is positive.
-
-More precisely however, the p-value corresponds to how extreme the observed test statistic of `r t1` is when compared to the appropriate *null distribution*.  In Section \@ref(infer-regression), we'll perform a simulation using the `infer` package to construct the null distribution in this case.
-
-An extra caveat here is that the results of this hypothesis test are only valid if certain "conditions for inference for regression" are met, which we'll introduce shortly in Section \@ref(regression-conditions).
-
+Because our $p-value < 0.05$, we can reject the null hypothesis and conclude there is a true relationship between beauty score and teaching score, beyond what would be expected by chance. 
 
 ## More advanced points to consider
 As this is an introductory book, we have introduced some concepts but not developed them in full detail. This does not mean that there are not things to say about these – more that there is simply too much to say at this time. These topics include:
