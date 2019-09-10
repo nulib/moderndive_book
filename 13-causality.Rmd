@@ -18,7 +18,8 @@ options(scipen = 99, digits = 3)
 set.seed(2018)
 ```
 
-In this chapter we kick off the third segment of this book, statistical inference. Up until this point, we have focused only on descriptive statistics, exploring data in the sample we have in hand. Very often this is **observational data** – data that is collected via a survey in which nothing is manipulated or a log of data (e.g., scraped from the web). As a result, any relationship we observe is limited to the sample of data, and the relationships are considered **associational**. In this chapter we introduce the idea of making inferences through a discussion of causality and randomization. 
+In this chapter we kick off the third segment of this book, statistical inference. Up until this point, we have focused only on descriptive statistics, exploring data in the sample we have in hand. Very often this is **observational data** – data that is collected via a survey in which nothing is manipulated or via a log of data (e.g., scraped from the web). As a result, any relationship we observe is limited to the sample of data, and the relationships are considered **associational**. In this chapter we introduce the idea of making inferences through a discussion of **causality** and **randomization**.
+
 
 ### Needed Packages {-}
 
@@ -27,7 +28,6 @@ Let’s load all the packages needed for this chapter (this assumes you’ve alr
 ```{r, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(moderndive)
-library(infer)
 library(randomizr)
 ```
 
@@ -61,21 +61,21 @@ In general, the tale-tale sign that a question is causal is if the analysis is u
 
 ## Randomized experiments {#randomized-experiments}
 
-The gold standard for understanding causality is the **randomized experiment**. For sake of this chapter, we will focus on experiments in which people are randomized to one of two conditions: treatment or control. Note, however, that this is just one scenario; for example, schools, offices, countries, states, households, animals, cars, etc can all be randomized as well, and can be randomized to more than two conditions. 
+The gold standard for understanding causality is the **randomized experiment**. For the sake of this chapter, we will focus on experiments in which people are randomized to one of two conditions: treatment or control. Note, however, that this is just one scenario; for example, schools, offices, countries, states, households, animals, cars, etc. can all be randomized as well, and can be randomized to more than two conditions. 
 
 What do we mean by random? Be careful here, as the word “random” is used colloquially differently than it is statistically. When we use the word **random** in this context, we mean:
 
-* Every person has some chance of being selected (i.e., non-zero probability) for the treatment or control
-* The selection is based upon a **random process**, e.g., names out of a hat, a random number generator, rolls of dice, etc
+* Every person (or unit) has some chance of being selected (i.e., non-zero probability) for the treatment or control
+* The selection is based upon a **random process** (e.g., names out of a hat, a random number generator, rolls of dice, etc.)
 
 There are several functions in R that generate numbers based on random processes. For example, we can mimic the results of a coin flip using the function `rbernoulli()`. The first argument `n` specifies the number of trials (in this case, coin flips), and `p` specifies the probability of success for each trial. In our coin flip example, we can define success to be when the coin lands on heads. If we're using a fair coin then `p = 0.5`. 
 
-Sometimes a random process can give results that don't *look* random. For example, even though any given coin flip has a 50% chance of landing on heads, it's possible to see many tails in a row, just due to chance. In the example below, 10 coin flips resulted in only 3 heads, and the first 6 flips were tails (here TRUE = heads and FALSE = tails). 
+Sometimes a random process can give results that don't *look* random. For example, even though any given coin flip has a 50% chance of landing on heads, it's possible to observe many tails in a row, just due to chance. In the example below, 10 coin flips resulted in only 3 heads, and the first 6 flips were tails. Note TRUE = heads and FALSE = tails. 
 ```{r, echo = FALSE}
 set.seed(2018)
 ```
 ```{r}
-coin_flips <- rbernoulli(10, 0.5)
+coin_flips <- rbernoulli(n = 10, p = 0.5)
 coin_flips
 ```
 Importantly, just because the results don't *look* random, does not mean that the results *aren't* random. If we were to repeat this random process, we will get a different set of random results. 
@@ -98,7 +98,7 @@ where $T_i$ is 1 when individual $i$ is in the treatment group and 0 when they a
 
 ## Observational data {#observational-data}
 
-In a randomized experiment, we just showed that we can calculate the causal effect of a treatment using a simple regression model. 
+In a randomized experiment, we just showed that we can calculate the causal effect ($\beta$) of a treatment using a simple regression model. 
 
 Why can’t we use the same model to determine causality with observational data? There may be an **omitted variable** (Z), also known as a **confounder**:
 
@@ -106,9 +106,9 @@ Why can’t we use the same model to determine causality with observational data
 
 Here are some examples:
 
-* There is a positive relationship between sales of ice cream (X) from street vendors and crime (Y). Does this mean that eating ice cream (T) causes increased crime? No. The omitted variable is the season and weather (Z). That is, there is a positive relationship between warm weather (Z) and ice cream consumption (X) and between warm weather (Z) and crime (Y).
-* Students that play an instrument (X) have higher grades (Y) than those that do not. Does this mean that playing an instrument (T) causes improved academic outcomes? No. The omitted variables here are family socio-economic status and student motivation. That is, there is a positive relationship between student motivation (and family with resources) (Z) and likelihood of playing an instrument (X) and between motivation/ resources and student grades (Y). 
-* Countries that eat a lot of chocolate (X) also win the most Nobel Prizes (Y). Does this mean that higher chocolate consumption (T) causes Nobel Prizes? No. The omitted variable here is a country's wealth (Z). Wealthier countries win more Nobel Prizes and also consume more chocolate. 
+* There is a positive relationship between sales of ice cream (X) from street vendors and crime (Y). Does this mean that eating ice cream causes increased crime? No. The omitted variable is the season and weather (Z). That is, there is a positive relationship between warm weather (Z) and ice cream consumption (X) and between warm weather (Z) and crime (Y).
+* Students that play an instrument (X) have higher grades (Y) than those that do not. Does this mean that playing an instrument causes improved academic outcomes? No. The omitted variables here are family socio-economic status and student motivation. That is, there is a positive relationship between student motivation (and a family with resources) (Z) and likelihood of playing an instrument (X) and between motivation/ resources and student grades (Y). 
+* Countries that eat a lot of chocolate (X) also win the most Nobel Prizes (Y). Does this mean that higher chocolate consumption leads to more Nobel Prizes? No. The omitted variable here is a country's wealth (Z). Wealthier countries win more Nobel Prizes and also consume more chocolate. 
 
 Examples of associations that are misinterpreted as causal relationships abound. To see more examples, check out this website: https://www.tylervigen.com/spurious-correlations. 
 
@@ -120,26 +120,144 @@ The answer is simple: **randomization**. Because people are randomized to treatm
 
 This means that before the treatment is given, on average the two groups (T and C) are equivalent to one another on every observed *and* unobserved variable. For example, the two groups should be similar in all **pre-treatment** variables: age, gender, motivation levels, heart disease, math ability, etc. Thus, when the treatment is assigned and implemented, any differences between outcomes *can be attributed to the treatment*. 
 
-```{r eclsK-fake, echo=FALSE, message=FALSE}
-if(!file.exists("rds/eclsK_fake.rds")){
+### Randomization Example {#ed-data}
+
+Let’s see the magic of randomization in action. First, we'll load in a dataset called `ed_data`. This data originally came from the Early Childhood Longitudinal Study (ECLS) program but has been subsetted for this example. Let's take a look at the data.
+
+```{r eclsK, echo=FALSE, message=FALSE}
+if(!file.exists("rds/eclsK.rds")){
   ed_data <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTE0OPjv8F4YhV1f_YGXVA5fT7kt3CN9qqamQNZV5uLOTvBHDSW7uxn5PL9_JeA/pub?gid=833804186&single=true&output=csv" %>%
     read_csv(na = "")
-    write_rds(ed_data, "rds/eclsK_fake.rds")
+    write_rds(ed_data, "rds/eclsK.rds")
 } else {
-  ed_data <- read_rds("rds/eclsK_fake.rds")
+  ed_data <- read_rds("rds/eclsK.rds")
 }
-set.seed(999) 
+```
+
+```{r, message = FALSE}
+ed_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTE0OPjv8F4YhV1f_YGXVA5fT7kt3CN9qqamQNZV5uLOTvBHDSW7uxn5PL9_JeA/pub?gid=833804186&single=true&output=csv")
+
+glimpse(ed_data)
+```
+It includes information on 335 Kindergarten students: indicator variables for whether they are female or minority students, information on their parents' highest level of education, a continuous measure of the their socio-economic status (SES), and their reading and math scores. For our purposes, we will assume that these are all **pre-treatment variables** that are measured on students at the beginning of the year, before we conduct our (hypothetical) randomized experiment.
+
+In order to randomly assign each of these students to treatment or control, we can use the `complete_ra()` function in the `randomizr` package. The first argument `N` specifies the total number of cases to be randomized, which in this example is `r dim(ed_data)[1]`, the number of Kindergarteners in our dataset. The argument `num_arms` specifies the number of groups you want to randomize into. In this case, we only want to randomize into 1 treatment and 1 control group, so `num_arms = 2`. 
+
+```{r, echo = FALSE}
+set.seed(999)
 ```
 
 ```{r}
-ed_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTE0OPjv8F4YhV1f_YGXVA5fT7kt3CN9qqamQNZV5uLOTvBHDSW7uxn5PL9_JeA/pub?gid=833804186&single=true&output=csv")
-
-ed_data <- ed_data %>% mutate(Trt_status = complete_ra(dim(ed_data)[1], num_arms = 2))
-ed_data %>% group_by(Trt_status) %>% summarise_if(is.numeric, mean)
-
-ed_data <- ed_data %>% arrange(SES_CONT) %>% mutate(Trt_non_random = c(rep("T1", 168), rep("T2", 167)))
-ed_data %>% group_by(Trt_non_random) %>% summarise_if(is.numeric, mean)                                           
+N <- dim(ed_data)[1]
+ed_data <- ed_data %>% mutate(Trt_random = complete_ra(N = N))
 ```
 
+We can then take a look at the new `Trt_random` variable and see that 167 students were assigned a value of 1, which we will define to be the treatment group and 168 were assigned a value of 0, which we will define to be the control group.
+
+```{r}
+table(ed_data$Trt_random)
+```
+
+Remember that because the treatment assignment was **random**, we don't expect a student's treatent status to be correlated with any of their other pre-treatment characteristics. In other words, students in the treatment and control groups should look approximately the same *on average*. Looking at the means of all the numeric variables by treatment group, we can see that this is true in our example.  
+```{r}
+ed_data %>% group_by(Trt_random) %>% summarise_if(is.numeric, mean)
+```
+That is, both the treatment and control groups appear to be approximately the same on average on the observed characteristics of gender, minority status, SES, and pre-treatment reading and math scores. 
+
+In our hypothetical randomized experiment, we would now implement some educational intervention, where the students in the treatment group receive a new specialized curriculum, for example, and the students in the control group receive the "business-as-usual" curriculum. We would then measure student reading and math scores again at the end of the year, and if we observed that the treatment group was scoring higher (or lower) on average than the control group, we could attribute that difference entirely to the intervention. We would not have to worry about other omitted variables being the cause of the difference in test scores, because randomization ensured that the two groups were equivalent on average on *all* pre-treatment characteristics, both observed and unobserved. 
+
+In comparison, in an observational study, the two groups are not equivalent on these pre-treatment variables. In the same example above, let us imagine that instead of being randomly assigned to treatment, instead students with lower SES were assigned to the new specialized curriculum, and those with higher SES were assigned to the business as usual curriculum (T = 0). To accomplish this in R, we can use the `arrange()` function to sort the dataset by `SES_CONT` and then assign the 167 students with the lowest SES (who are now in the first 167 rows) a value of 1 for the treatment group and the 168 students with the highest SES to a value of 0 for the control group.
+
+```{r}
+ed_data <- ed_data %>% arrange(SES_CONT) %>%
+  mutate(Trt_non_random = c(rep(1, 167), rep(0, 168)))
+```
+
+In this case, the table of comparisons between the two groups looks quite different:  
+```{r}
+ed_data %>% group_by(Trt_non_random) %>% summarise_if(is.numeric, mean)
+```
+There are somewhat large differences between the treatment and control group on several pre-treatment variables. Notice that the two groups still appear to be balanced in terms of gender. This is because gender is in general not correlated with SES. However, minority status and test scores are both correlated with SES, so assigning treatment based on SES (instead of via a random process) results in an imbalance on those other pre-treatment variables. Therefore, if we observed differences in test scores at the end of the year, it would be difficult to disambiguate whether the differences were caused by the intervention or due to some of these other pre-treatment differences. 
+ 
+## If you know Z, what about multiple regression?
+
+In the previous sections, we made clear that you cannot calculate the causal effect of a treatment using a *simple* linear regression model unless you have random assignment. What about a *multiple* regression model?
+
+The answer here is more complicated. We’ll give you an overview, but note that this is a tiny sliver of an introduction and that there is an entire *field* of methods devoted to this problem. The field is called **causal inference methods** and focuses on the conditions under and methods in which you can calculate causal effects in observational studies. 
+
+Recall, we said before that in an observational study, the reason you can’t attribute causality between X and Y is because the relationship is **confounded** by an omitted variable Z. What if we included Z in the model (making it no longer omitted), as in:
+
+$$Y_i = \alpha + \beta_1T_i + \beta_2Z_i + \epsilon_i$$
+As we learned in Chapter \@ref(multiple-regression), we can now interpret the coefficient $\beta_1$ as **the effect of the treatment on outcomes, holding constant (or adjusting for) Z**.
+
+Importantly, the relationship between T and Y, adjusting for Z can be similar or different than the relationship between T and Y alone. In advance, you simply cannot know one from the other.
+
+In our `ed_data` example above, let's assume that on average, all students will increase their test scores by about 10 points throughout the year, but those recieving the treatment increase their scores by an additional 20 points on average. That is, let's assume the true treatment effect $\beta_1 = 20$. Note, we would NOT know this in real life - this is what we are trying to estimate- but we can mimic this scenario in R for demonstration purposes. 
+
+Let's create a new variable `MATH_post_random` that corresponds to the (hypothetical) post-treatment math scores in the scenario where treatment was randomly assigned. For the students in the treatment group, we will add approximately 30 points on average to their pre-treatment math score using the function `rnorm(n = 1, mean = 30, sd = 1)`. The function `rnorm` generates a random variable from the normal distribution with the specified mean and standard deviation. For the students in the control group, we will add roughly 10 points to their pre-treatment math scores. Again, it is important to note this is for demonstration purposes only- in real life, we only observe the pre-treatment and post-treatment scores, but we never observe the random process that generated them. 
+```{r, echo = FALSE}
+set.seed(999)
+```
+
+```{r}
+ed_data <- ed_data %>% 
+  mutate(MATH_post_random = case_when(Trt_random == 1 ~ MATH + rnorm(1, 30, 1), 
+                                      Trt_random == 0 ~ MATH + rnorm(1, 10, 1)))
+```
+
+We can verify that this does result in the treatment group scoring approximately 20 points higher than the control group.
+
+```{r}
+ed_data %>% group_by(Trt_random) %>% summarise(mean(MATH_post_random))
+```
+
+Let's create a second set of (hypothetical) post-treatment test scores called `MATH_post_non_random` for the scenario where treatment was not randomly assigned. 
+```{r}
+ed_data <- ed_data %>% 
+  mutate(MATH_post_non_random = case_when(Trt_non_random == 1 ~ MATH + rnorm(1, 30, 1), 
+                                          Trt_non_random == 0 ~ MATH + rnorm(1, 10, 1)))
+ed_data %>% group_by(Trt_non_random) %>% summarise(mean(MATH_post_non_random))
+```
+Note that in this case, even though the treatment increased test scores by 20 points on average, we only observe a post-treatment difference of about half that size. This is because here treatment status is confounded with SES. Let's look at two regression models estimating the effect of treatment on math scores, with and without controlling for SES. 
+```{r}
+fit1_non_random <- lm(MATH_post_non_random ~ Trt_non_random, data = ed_data)
+summary(fit1_non_random)$coefficients
+
+fit2_non_random <- lm(MATH_post_non_random ~ Trt_non_random + SES_CONT, data = ed_data)
+summary(fit2_non_random)$coefficients
+```
+In the first model, the estimate of the treatment effect is `r summary(fit1_non_random)$coefficients[2,1]`, but in the second model once we control for SES, the estimate is `r summary(fit2_non_random)$coefficients[2,1]`. 
+
+Importantly, in the randomized experiment case, controlling for confounders using a multiple regression model is **not** necessary - again, because of the randomization. Let's look at the same two models using the data from the experimental case (i.e. using the variables `Trt_random` and `MATH_post_random`). 
+```{r}
+fit1_random <- lm(MATH_post_random ~ Trt_random, data = ed_data)
+summary(fit1_random)$coefficients
+
+fit2_random <- lm(MATH_post_random ~ Trt_random + SES_CONT, data = ed_data)
+summary(fit2_random)$coefficients
+```
+We can see that both models give estimates of the treatment effect that are roughly same (`r summary(fit1_random)$coefficients[2,1]` and `r summary(fit2_random)$coefficients[2,1]`, regardless of whether or not we control for SES. This is because randomization ensured that the treatment and control group were balanced on all pre-treatment characteristics - including SES, so there is no need to control for them in a multiple regression model. 
+
+## What if you don’t know Z?
+
+In the observational case, if you *know* the process through which people are assigned to or select treatment then the above multiple regression approach can get you pretty close to the causal effect of the treatment on the outcomes. This is what happened in our `fit2_non_random` model above where we knew treatment was determined by SES and so we controlled for it in our model. 
+
+But this is **rarely** the case. In most studies, selection of treatment is **not based on a single variable**. That is, before treatment occurs, those that will ultimately receive the treatment and those that do not might differ in a myriad of ways. For example, students that play instruments may not only come from families with more resources and have higher motivation, but may also play fewer sports, already be great readers, have a natural proclivity for music, or come from a musical family. As an analyst, it is typically very difficult – if not impossible – to know how and why some people selected a treatment and others did not. 
+
+Without randomization, here is the best approach:
+
+1.	Remember: your goal is to approximate a random experiment. You want the two groups to be similar on any and all variables that are related to uptake of the treatment and the outcome.
+2.	Think about the treatment selection process. Why would people choose to play an instrument (or not)? Attend an after-school program (or not)? Be part of a sorority or fraternity (or not)? 
+3.	Look for variables in your data that you can use in a multiple regression to control for these other possible confounders. Pay attention to how your estimate of the treatment impact changes as you add these into your model (often it will decrease). 
+4.	State very clearly the assumptions you are making, the variables you have controlled for, and the possible other variables you were unable to control for. Be tentative in your conclusions and make clear their limitations – that this work is suggestive and that future research – a randomized experiment – would be more definitive. 
+
+## Conclusion
+In this chapter we’ve focused on the role of randomization in our ability to make inferences – here about causation. As you will see in the next few chapters, randomization is also important for making inferences from outcomes observed in a sample to their values in a population. But the importance of randomization goes even deeper than this – one could say that **randomization is at the core of inferential statistics**. 
+
+In situations in which treatment is **randomly assigned** or a sample is **randomly selected** from a population, as a result of **knowing this mechanism**, we are able to imagine and explore alternative realities – what we will call **counter-factual thinking** (Chapter \@ref(sampling)) – and form ways of understanding when “effects” are likely (or unlikely) to be found simply by chance – what we will call **proof by stochastic contradiction** (Chapter \@ref(pvalues)). 
+
+Finally, we would be remiss to end this chapter without including this XKCD comic, which every statistician loves:
+
+![](images/causation.png)
 
 
