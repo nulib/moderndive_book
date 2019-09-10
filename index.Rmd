@@ -59,7 +59,7 @@ needed_CRAN_pkgs <- c(
   
   # Explicitly used packages:
   "tidyverse", "rmarkdown", "knitr", "plotly", "janitor", "skimr",
-  "infer", "moderndive",
+  "infer", "moderndive", "randomizr",
   
   # Internally used packages:
   "webshot", "mvtnorm", "remotes", "devtools", "dygraphs", "gridExtra", "kableExtra"
