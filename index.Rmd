@@ -172,9 +172,9 @@ image_link <- function(path,
 
 
 
-# Introduction {#intro}
+# Preface {-}
 
-***
+
 
 ```{block, type='learncheck', purl=FALSE}
 **Please note that you are currently looking at the "development version" of ModernDive, which is a work in progress currently being edited and thus subject to frequent change. For the latest "released version" of ModernDive, which changes much less frequently, please visit [ModernDive.com](https://moderndive.com/).**
@@ -195,21 +195,19 @@ image_link <- function(path,
 <img src="images/RStudio-Logo-Blue-Gradient.png" style="height: 150px;"/>
 -->
 
-If you're asking yourself this question, then you've come to the right place! Start with our [Introduction for Students](#sec:intro-for-students).
+If you're asking yourself this question, then you've come to the right place! Start with our "Introduction for Students".
 
-* *Are you an instructor hoping to use this book in your courses? Then click [here](#sec:intro-instructors) for more information on how to teach with this book.*
-* *Are you looking to connect with and contribute to ModernDive? Then click [here](#sec:connect-contribute) for information on how.*
-* *Are you curious about the publishing of this book? Then click [here](#sec:about-book) for more information on the open-source technology, in particular R Markdown and the bookdown package.*
+* *Are you an instructor hoping to use this book in your courses? Then read the "Introduction for Instructors" section for more information on how to teach with this book.*
+* *Are you looking to connect with and contribute to ModernDive? Then read the "Connect and contribute" section for information on how.*
+* *Are you curious about the publishing of this book? Then read the "About this book" section for more information on the open-source technology, in particular R Markdown and the bookdown package.*
 
-This is version `r version` of ModernDive published on `r date`. For previous versions of ModernDive, see Section \@ref(sec:about-book). While a PDF version of this book can be found [here](ismaykim.pdf){target="_blank"}, this is very much a work in progress with many things that still need to be fixed. We appreciate your patience. 
-
-
-
-***
+This is version `r version` of ModernDive published on `r date`. For previous versions of ModernDive, see the "About this book" section below.
 
 
 
-## Introduction for students {#sec:intro-for-students}
+
+
+## Introduction for students {-}
 
 This book assumes no prerequisites: no algebra, no calculus, and no prior programming/coding experience. This is intended to be a gentle introduction to the practice of analyzing data and answering questions using data the way data scientists, statisticians, data journalists, and other researchers would. 
 
@@ -239,7 +237,7 @@ knitr::include_graphics("images/flowcharts/flowchart/flowchart.002.png")
 
 
 
-### What you will learn from this book {#subsec:learning-goals}
+### What you will learn from this book {-}
 
 We hope that by the end of this book, you'll have learned
 
@@ -266,7 +264,7 @@ Finally, you'll learn the importance of literate programming.  By this we mean y
 
 We understand that there may be challenging moments as you learn to program.  Both of us continue to struggle and find ourselves often using web searches to find answers and reach out to colleagues for help.  In the long run though, we all can solve problems faster and more elegantly via programming.  We wrote this book as our way to help you get started and you should know that there is a huge community of R users that are always happy to help everyone along as well.  This community exists in particular on the internet on various forums and websites such as [stackoverflow.com](https://stackoverflow.com/).
 
-### Data/science pipeline {#subsec:pipeline}
+### Data/science pipeline {-}
 
 You may think of statistics as just being a bunch of numbers.  We commonly hear the phrase "statistician" when listening to broadcasts of sporting events.  Statistics (in particular, data analysis), in addition to describing numbers like with baseball batting averages, plays a vital role in all of the sciences.  You'll commonly hear the phrase "statistically significant" thrown around in the media.  You'll see articles that say "Science now shows that chocolate is good for you."  Underpinning these claims is data analysis.  By the end of this book, you'll be able to better understand whether these claims should be trusted or whether we should be wary.  Inside data analysis are many sub-fields that we will discuss throughout this book (though not necessarily in this order):
 
@@ -289,7 +287,7 @@ We will begin by digging into the gray **Understand** portion of the cycle with 
 
 There's a reason so many fields require a statistics course. Scientific knowledge grows through an understanding of statistical significance and data analysis. You needn't be intimidated by statistics.  It's not the beast that it used to be and, paired with computation, you'll see how reproducible research in the sciences particularly increases scientific knowledge.
 
-### Reproducible research {#subsec:reproducible}
+### Reproducible research {-}
 
 > "The most important tool is the _mindset_, when starting, that the end product will be reproducible." – Keith Baggerly
 
@@ -313,11 +311,11 @@ At this point, if you are interested in instructor perspectives on this book, wa
 
 
 
-***
 
 
 
-## Introduction for instructors {#sec:intro-instructors}
+
+## Introduction for instructors {-}
 
 This book is inspired by the following books:
 
@@ -354,68 +352,27 @@ Here are some principles and beliefs we kept in mind while writing this text. If
     + We are not teaching a course on coding/programming per se, but rather just enough of the computational and algorithmic thinking necessary for data analysis.
 1. **Complete reproducibility and customizability**
     + We are frustrated when textbooks give examples, but not the source code and the data itself. We give you the source code for all examples as well as the whole book!
-    + Ultimately the best textbook is one you've written yourself. You know best your audience, their background, and their priorities. You know best your own style and the types of examples and problems you like best. Customization is the ultimate end. For more about how to make this book your own, see [About this Book](#sec:about-book).
+    + Ultimately the best textbook is one you've written yourself. You know best your audience, their background, and their priorities. You know best your own style and the types of examples and problems you like best. Customization is the ultimate end. For more about how to make this book your own, see the "About this Book" section.
 
 
-
-***
-
-
-
-## DataCamp {#datacamp}
-
-`r include_image("images/datacamp.png", "width=100%", alt_text = "DataCamp logo")`
-
-DataCamp is a browser-based interactive platform for learning data science, offering courses on a wide array of courses on data science, analytics, statistics, machine learning, and artificial intelligence, where each course is a combination of lectures and exercises that offer immediate feedback.
-
-The following chapters of ModernDive roughly map to the following closely-integrated DataCamp courses that use the same R tools and often even the same datasets. By no means is this an exhaustive list of possible DataCamp courses that are relevant to the topics in this book, we recommend these ones in particular to supplement your ModernDive experience. 
-
-Click on the image for each course to access its webpage on [datacamp.com](https://www.datacamp.com/home). Instructors at accredited universities can sign their class up for a free academic licence at [DataCamp For The Classroom](https://www.datacamp.com/groups/education), giving their students access to all premium courses for 6 months for free.
-
-
-
-
-| Chapter | Topic | DataCamp Courses   
-| :-------------------------|:-------------------------|:-------------------------
-| 2 | Basic R programming concepts | `r image_link(path = "images/datacamp_intro_to_R.png", link = "https://www.datacamp.com/courses/free-introduction-to-r", html_opts = "height: 150px;", latex_opts = "width=0.6\\textwidth", center=FALSE)` `r image_link(path = "images/datacamp_intermediate_R.png", link = "https://www.datacamp.com/courses/intermediate-r", html_opts = "height: 150px;", latex_opts = "width=0.6\\textwidth", center=FALSE)`
-| 3 & 5 | Introductory data visualization and wrangling | `r image_link(path = "images/datacamp_intro_to_tidyverse.png", link = "https://www.datacamp.com/courses/introduction-to-the-tidyverse", html_opts = "height: 150px;", latex_opts = "width=0.6\\textwidth", center=FALSE)`
-| 4 & 5 | Data "tidying" and intermediate data wrangling | `r image_link(path = "images/datacamp_working_with_data.png", link = "https://www.datacamp.com/courses/working-with-data-in-the-tidyverse", html_opts = "height: 150px;", latex_opts = "width=0.6\\textwidth", center=FALSE)`
-| 6 & 7 | Data modeling, basic regression, and multiple regression | `r image_link(path = "images/datacamp_intro_to_modeling.png", link = "https://www.datacamp.com/courses/modeling-with-data-in-the-tidyverse", html_opts = "height: 150px;", latex_opts = "width=0.6\\textwidth", center=FALSE)`
-| 9 & 10 | Statistical inference: confidence intervals and hypothesis testing | `r image_link(path = "images/datacamp_inference_for_numerical_data.png", link = "https://www.datacamp.com/courses/inference-for-numerical-data", html_opts = "height: 150px;", latex_opts = "width=0.6\\textwidth", center=FALSE)` `r image_link(path = "images/datacamp_inference_for_categorical_data.png", link = "https://www.datacamp.com/courses/inference-for-categorical-data", html_opts = "height: 150px;", latex_opts = "width=0.6\\textwidth", center=FALSE)`
-| 11 | Inference for regression | `r image_link(path = "images/datacamp_inference_for_regression.png", link = "https://www.datacamp.com/courses/inference-for-linear-regression", html_opts = "height: 150px;", latex_opts = "width=0.6\\textwidth", center=FALSE)`
-
-
-
-***
-
-
-
-## Connect and contribute {#sec:connect-contribute}
+## Connect and contribute {-}
 
 If you would like to connect with ModernDive, check out the following links:
 
-* If you would like to receive periodic updates about ModernDive (roughly every 3 months), please sign up for our [mailing list](http://eepurl.com/cBkItf).
+* If you would like to receive periodic updates about ModernDive (roughly every 6 months), please sign up for our [mailing list](http://eepurl.com/cBkItf).
 * Contact Albert at [albert.ys.kim@gmail.com](mailto:albert.ys.kim@gmail.com) and Chester at [chester.ismay@gmail.com](mailto:chester.ismay@gmail.com).
-* We're on Twitter at [ModernDive](https://twitter.com/ModernDive).
+* We're on Twitter at [moderndive](https://twitter.com/moderndive).
 
-If you would like to contribute to ModernDive, there are many ways! Let's all work together to make this book as great as possible for as many students and instructors as possible!
+If you would like to contribute to ModernDive, there are many ways! We would love your help and feedback to make this book as great as possible! For example, if you find any errors, typos, or areas for improvement, then please email us or post an issue on our [GitHub issues](https://github.com/moderndive/moderndive_book/issues) \index{GitHub issues} page. If you are familiar with GitHub and would like to contribute more, please see the "About this book" section.
 
-* Please let us know if you find any errors, typos, or areas from improvement on our [GitHub issues](https://github.com/moderndive/moderndive_book/issues) page.
-* If you are familiar with GitHub and would like to contribute more, please see Section \@ref(sec:about-book) below.
-
-For example, we thank
-
-* [Dr Andrew Heiss](https://twitter.com/andrewheiss) for contributing Subsection 2.2.3 on "Errors, warnings, and messages".
-
-The authors would like to thank [Nina Sonneborn](https://github.com/nsonneborn), [Kristin Bott](https://twitter.com/rhobott?lang=en), and the participants of our [USCOTS 2017 workshop](https://www.causeweb.org/cause/uscots/uscots17/workshop/3) for their feedback and suggestions.  A special thanks goes to Dr. Yana Weinstein, cognitive psychological scientist and co-founder of [The Learning Scientists](http://www.learningscientists.org/yana-weinstein/), for her extensive contributions.
+The authors would like to thank [Nina Sonneborn](https://github.com/nsonneborn), [Kristin Bott](https://twitter.com/rhobott?lang=en), [Dr. Jenny Smetzer](https://www.smith.edu/academics/faculty/jennifer-smetzer), and the participants of our [2017](https://www.causeweb.org/cause/uscots/uscots17/workshop/3) and [2019](https://www.causeweb.org/cause/uscots/uscots19/workshop/4) USCOTS workshops for their feedback and suggestions. We'd also like to thank [Dr. Andrew Heiss](https://twitter.com/andrewheiss) for contributing Subsection \@ref(tips-code) on "Errors, warnings, and messages." and [Starry Zhou](https://github.com/Starryz) for her many edits to the book. A special thanks goes to Dr. Yana Weinstein, cognitive psychological scientist and co-founder of [The Learning Scientists](http://www.learningscientists.org/yana-weinstein/), for her extensive feedback.
 
 
 
-***
 
 
 
-## About this book {#sec:about-book}
+## About this book {-}
 
 This book was written using RStudio's [bookdown](https://bookdown.org/) package by Yihui Xie [@R-bookdown]. This package simplifies the publishing of books by having all content written in [R Markdown](http://rmarkdown.rstudio.com/html_document_format.html). The bookdown/R Markdown source code for all versions of ModernDive is available on GitHub:
 
@@ -438,11 +395,11 @@ Finally, feel free to modify the book as you wish for your own needs, but please
 
 
 
-***
 
 
 
-## About the authors {#sec:about-authors}
+
+## About the authors {-}
 
 Who we are!
 
