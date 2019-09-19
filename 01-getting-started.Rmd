@@ -132,7 +132,7 @@ Here are a few useful tips to keep in mind as you learn to program:
 
 ## What are R packages? {#packages}
 
-Another point of confusion with many new R users is the idea of an R package. R packages extend the functionality of R by providing additional functions, data, and documentation. They are written by a world-wide community of R users and can be downloaded for free from the internet. For example, among the many packages we will use in this book are the `ggplot2` package for data visualization in Chapter \@ref(viz), the `dplyr` package for data wrangling in Chapter \@ref(wrangling), the `moderndive` package that accompanies this book, and the `infer` package for "tidy" and transparent statistical inference in Chapters \@ref(confidence-intervals), \@ref(hypothesis-testing), and \@ref(inference-for-regression).
+Another point of confusion with many new R users is the idea of an R package. R packages extend the functionality of R by providing additional functions, data, and documentation. They are written by a world-wide community of R users and can be downloaded for free from the internet. For example, among the many packages we will use in this book are the `ggplot2` package for data visualization in Chapter \@ref(viz), the `dplyr` package for data wrangling in Chapter \@ref(wrangling), and the `moderndive` package that accompanies this book.
 
 A good analogy for R packages is they are like apps you can download onto a mobile phone:
 
@@ -205,7 +205,7 @@ Error in library(ggplot2) : there is no package called ‘ggplot2’
 
 ### Package use {#package-use}
 
-One extremely common mistake new R users make when wanting to use particular packages is they forget to "load" them first by using the `library()` command we just saw. Remember: *you have to load each package you want to use every time you start RStudio.* If you don't first "load" a package, but attempt to use one of its features, you'll see an error message similar to:
+One extremely common mistake new R users make when wanting to use particular packages is that they forget to "load" them first by using the `library()` command we just saw. Remember: *you have to load each package you want to use every time you start RStudio.* If you don't first "load" a package, but attempt to use one of its features, you'll see an error message similar to:
 
 ```
 Error: could not find function
@@ -217,7 +217,7 @@ R is telling you that you are trying to use a function in a package that has not
 
 ## Explore your first dataset {#nycflights13}
 
-Let's put everything we've learned so far into practice and start exploring some real data! Data comes to us in a variety of formats, from pictures to text to numbers.  Throughout this book, we'll focus on datasets that are saved in "spreadsheet"-type format; this is probably the most common way data are collected and saved in many fields. Remember from Subsection \@ref(programming-concepts) that these "spreadsheet"-type datasets are called _data frames_ in R; we will focus on working with data saved as data frames throughout this book.
+Let's put everything we've learned so far into practice and start exploring some real data! Data comes to us in a variety of formats, from pictures to text to numbers. Throughout this book, we'll focus on datasets that are saved in "spreadsheet"-type format; this is probably the most common way data are collected and saved in many fields. Remember from Subsection \@ref(programming-concepts) that these "spreadsheet"-type datasets are called _data frames_ in R; we will focus on working with data saved as data frames throughout this book.
 
 Let's first load all the packages needed for this chapter, assuming you've already installed them. Read Section \@ref(packages) for information on how to install and load R packages if you haven't already.
 
@@ -231,7 +231,7 @@ At the beginning of all subsequent chapters in this text, we'll always have a li
 
 ### `nycflights13` package
 
-Many of us have flown on airplanes or know someone who has. Air travel has become an ever-present aspect in many people's lives.  If you live in or are visiting a relatively large city and you walk around that city's airport, you see gates showing flight information from many different airlines.  And you will frequently see that some flights are delayed because of a variety of conditions. Are there ways that we can avoid having to deal with these flight delays?  
+Many of us have flown on airplanes or know someone who has. Air travel has become an ever-present aspect in many people's lives. If you live in or are visiting a relatively large city and you walk around that city's airport, you see gates showing flight information from many different airlines.  And you will frequently see that some flights are delayed because of a variety of conditions. Are there ways that we can avoid having to deal with these flight delays?  
 
 We'd all like to arrive at our destinations on time whenever possible. (Unless you secretly love hanging out at airports.  If you are one of these people, pretend for the moment that you are very much anticipating being at your final destination.)  Throughout this book, we're going to analyze data related to flights contained in the `nycflights13` package [@R-nycflights13]. Specifically, this package contains five data sets saved in five separate data frames with information about all domestic flights departing from New York City in 2013. These include Newark Liberty International (EWR), John F. Kennedy International (JFK), and LaGuardia (LGA) airports:
 
@@ -287,13 +287,13 @@ Run `View(flights)` in your Console in RStudio, either by typing it or cutting &
 ```{block, type='learncheck'}
 ```
 
-By running `View(flights)`, we see the different *variables* listed in the columns and we see that there are different types of variables.  Some of the variables like `distance`, `day`, and `arr_delay` are what we will call *quantitative* variables. These variables are numerical in nature.  Other variables here are *categorical*.
+By running `View(flights)`, we see the different *variables* listed in the columns and we see that there are different types of variables.  Some of the variables like `distance`, `day`, and `arr_delay` are what we will call *quantitative* variables. These variables are numerical in nature. Other variables here are *categorical*.
 
-Note that if you look in the leftmost column of the `View(flights)` output, you will see a column of numbers.  These are the row numbers of the dataset.  If you glance across a row with the same number, say row 5, you can get an idea of what each row corresponds to.  In other words, this will allow you to identify what object is being referred to in a given row.  This is often called the *observational unit*.  The *observational unit* in this example is an individual flight departing New York City in 2013.  You can identify the observational unit by determining what "thing" is being measured or described by each of the variables.
+Note that if you look in the leftmost column of the `View(flights)` output, you will see a column of numbers.  These are the row numbers of the dataset.  If you glance across a row with the same number, say row 5, you can get an idea of what each row corresponds to.  In other words, this will allow you to identify what object is being referred to in a given row.  This is often called the *observational unit*.  The *observational unit* in this example is an individual flight departing New York City in 2013. You can identify the observational unit by determining what "thing" is being measured or described by each of the variables.
 
 **2. `glimpse()`**:
 
-The second way to explore a data frame is using the `glimpse()` function included in the `dplyr` package. Thus, you can only use the `glimpse()` function after you've loaded the `dplyr` package. This function provides us with an alternative method for exploring a data frame than the `View()` function:
+The second way to explore a data frame is using the `glimpse()` function included in the `dplyr` package. Thus, you can only use the `glimpse()` function after you've loaded the `dplyr` package. This function provides us with an alternative method for exploring a data frame:
 
 ```{r}
 glimpse(flights)
@@ -312,7 +312,7 @@ We see that `glimpse()` will give you the first few entries of each variable in 
 
 **3. `kable()`**:
 
-The final way to explore the entirety of a data frame is using the `kable()` function from the `knitr` package. Let's explore the different carrier codes for all the airlines in our dataset two ways. Run both of these lines of code in your Console:
+The another way to explore the entirety of a data frame is using the `kable()` function from the `knitr` package. Let's explore the different carrier codes for all the airlines in our dataset two ways. Run both of these lines of code in your Console:
 
 ```{r eval=FALSE}
 airlines
