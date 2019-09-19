@@ -718,7 +718,7 @@ ggplot(data = weather, mapping = aes(x = factor(month), y = temp)) +
 The resulting Figure \@ref(fig:monthtempbox) shows 12 separate "box and whiskers" plots with the features we saw earlier focusing only on November:
 
 * The "box" portions of this visualization represent the 1^st^ quartile, the median AKA the 2^nd^ quartile, and the 3^rd^ quartile.
-* The height of each box, i.e. the value of the 3^rd^ quartile minus the value of the 1^st^ quartile, is the *interquartile range*. It is a measure of spread of the middle 50% of values, with longer boxes indicating more variability.
+* The "length" of each box, i.e. the value of the 3^rd^ quartile minus the value of the 1^st^ quartile, is the *interquartile range*. It is a measure of spread of the middle 50% of values, with longer boxes indicating more variability.
 * The "whisker" portions of these plots extend out from the bottoms and tops of the boxes and represent points less than the 25^th^ percentile and greater than the 75^th^ percentiles respectively. They're set to extend out no more than $1.5 \times IQR$ units away from either end of the boxes. We say "no more than" because the ends of the whiskers have to correspond to observed temperatures.  The length of these whiskers show how the data outside the middle 50% of values vary, with longer whiskers indicating more variability.
 * The dots representing values falling outside the whiskers are called *outliers*. These can be thought of as anomalous values.
 
