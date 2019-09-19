@@ -262,7 +262,7 @@ Finally, you'll learn the importance of literate programming.  By this we mean y
 
 > "Programs must be written for people to read, and only incidentally for machines to execute."
 
-We understand that there may be challenging moments as you learn to program.  Both of us continue to struggle and find ourselves often using web searches to find answers and reach out to colleagues for help.  In the long run though, we all can solve problems faster and more elegantly via programming.  We wrote this book as our way to help you get started and you should know that there is a huge community of R users that are always happy to help everyone along as well.  This community exists in particular on the internet on various forums and websites such as [stackoverflow.com](https://stackoverflow.com/).
+We understand that there may be challenging moments as you learn to program. We still continue to struggle and find ourselves often using web searches to find answers and reach out to colleagues for help. In the long run though, we all can solve problems faster and more elegantly via programming. We wrote this book as our way to help you get started and you should know that there is a huge community of R users that are always happy to help everyone along as well. This community exists in particular on the internet on various forums and websites such as [stackoverflow.com](https://stackoverflow.com/).
 
 ### Data/science pipeline {-}
 
