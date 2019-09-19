@@ -177,7 +177,7 @@ image_link <- function(path,
 
 
 ```{block, type='learncheck', purl=FALSE}
-**Please note that you are currently looking at the "development version" of ModernDive, which is a work in progress currently being edited and thus subject to frequent change. For the latest "released version" of ModernDive, which changes much less frequently, please visit [ModernDive.com](https://moderndive.com/).**
+**Please note that this is a "development version" of ModernDive for the new design of STAT 202. Meaning this is a work in progress being edited and updated as we go.**
 ```
 
 **Help! I'm new to R and RStudio and I need to learn about them! However, I'm completely new to coding! What do I do?** 

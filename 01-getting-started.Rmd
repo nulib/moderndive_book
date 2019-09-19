@@ -32,10 +32,6 @@ We'll introduce these concepts in upcoming Sections \@ref(r-rstudio)-\@ref(packa
 
 
 
----
-
-
-
 ## What are R and RStudio? {#r-rstudio}
 
 For much of this book, we will assume that you are using R via RStudio. First time users often confuse the two. At its simplest:
@@ -47,24 +43,19 @@ R: Engine            |  RStudio: Dashboard
 :-------------------------:|:-------------------------:
 ![](images/engine.jpg){ height=1.7in }  |  ![](images/dashboard.jpg){ height=1.7in }
 
-More precisely, R is a programming language that runs computations while RStudio is an *integrated development environment (IDE)* that provides an interface by adding many convenient features and tools. So the way of having access to a speedometer, rearview mirrors, and a navigation system makes driving much easier, using RStudio's interface makes using R much easier as well. 
-
-If you are still not sure about the difference between R and RStudio IDE, we suggest you watch this [DataCamp video](https://campus.datacamp.com/courses/working-with-the-rstudio-ide-part-1/orientation?ex=1).
-
+More precisely, R is a programming language that runs computations while RStudio is an *integrated development environment (IDE)* that provides an interface by adding many convenient features and tools. So just as having access to a speedometer, rearview mirrors, and a navigation system makes driving much easier, using RStudio's interface makes using R much easier as well. 
 
 ### Installing R and RStudio
 
-> **Note about RStudio Server**: If your instructor has provided you with a link and access to RStudio Server, then you can skip this section. We do recommend though after a few months of working on the RStudio Server that you return to these instructions.
+> **Note about RStudio Server or RStudio Cloud**: If your instructor has provided you with a link and access to RStudio Server or RStudio Cloud, then you can skip this section. We do recommend after a few months of working on RStudio Server/Cloud that you return to these instructions to install this software on your own computer though.
+You will first need to download and install both R and RStudio (Desktop version) on your computer. It is important that you install R first and then install RStudio second.
 
-You will first need to download and install both R and RStudio (Desktop version) on your computer. 
-
-1. **You must do this first:** [Download and install R](https://cran.r-project.org/).
-    + Click on the download link corresponding to your computer's operating system.
-1. **You must do this second:** [Download and install RStudio](https://www.rstudio.com/products/rstudio/download3/).
-    + Scroll down to "Installers for Supported Platforms"
-    + Click on the download link corresponding to your computer's operating system.
-
-If you had trouble with these two steps, we suggest you watch this [DataCamp video](https://campus.datacamp.com/courses/working-with-the-rstudio-ide-part-1/orientation?ex=3).
+1. **You must do this first:** [Download and install R](https://cloud.r-project.org/).
+    + If you are a Windows user: Click on "Download R for Windows", then click on "base", then click on the Download link. 
+    + If you are macOS user: Click on "Download R for (Mac) OS X", then under "Latest release:" click on R-X.X.X.pkg, where R-X.X.X is the version number. For example, the latest version of R as of August 10, 2019 was R-3.6.1.
+1. **You must do this second:** [Download and install RStudio](https://www.rstudio.com/products/rstudio/download/).
+    + Scroll down to "Installers for Supported Platforms" near the bottom of the page.
+    + Click on the download link corresponding to your computer's operating system. 
 
 
 ### Using R via RStudio
@@ -81,12 +72,6 @@ After you open RStudio, you should see the following:
 
 Note the three panes, which are three panels dividing the screen: The *Console pane*, the *Files pane*, and the *Environment pane*. Over the course of this chapter, you'll come to learn what purpose each of these panes serve. 
 
-If however you would like an in depth explanation right now however, we suggest you watch following [DataCamp video](https://campus.datacamp.com/courses/working-with-the-rstudio-ide-part-1/orientation?ex=5).
-
-
-
----
-
 
 
 ## How do I code in R? {#code}
@@ -98,49 +83,39 @@ While it is not required to be a seasoned coder/computer programmer to use R, th
 
 ### Basic programming concepts and terminology {#programming-concepts}
 
-To introduce you to many of these basic programming concepts and terminology, we direct you to the following DataCamp online interactive tutorials.  For each of the tutorials, we give a list of the basic programming concepts covered. Note that in this book, we will use a different font to distinguish regular font from `computer_code`.
+We now introduce some basic programming concepts and terminology. Instead of asking you to learn all these concepts and terminology right now, we'll guide you so that you'll "learn by doing." Note that in this book we will always use a different font to distinguish regular text from `computer_code`. The best way to master these topics is, in our opinions, "learning by doing" and lots of repetition.
 
-It is important to note that while these tutorials serve as excellent introductions, a single pass through them is insufficient for long-term learning and retention. The ultimate tools for long-term learning and retention are "learning by doing" and repetition, something we will have you do over the course of the entire book and we encourage this process as much as possible as you learn any new skill.
+* Basics:
+    + *Console*: Where you enter in commands. \index{console}
+    + *Running code*: The act of telling R to perform an act by giving it commands in the console.
+    + *Objects*: Where values are saved in R. We'll show you how to *assign* values to objects and how to display the contents of objects. 
+    + *Data types*: Integers, doubles/numerics, logicals, and characters. 
+* *Vectors*: A series of values. These are created using the `c()` function, where `c()` stands for "combine" or "concatenate." For example: `c(6, 11, 13, 31, 90, 92)`.
+* *Factors*: *Categorical data* are represented in R as factors.
+* *Data frames*: Data frames are like rectangular spreadsheets: they are representations of datasets in R where the rows correspond to *observations* and the columns correspond to *variables* that describe the observations. \index{data frames} We'll cover data frames later in Section \@ref(nycflights13).
+* *Conditionals*: 
+    + Testing for equality in R using `==` (and not `=` which is typically used for assignment). Ex: `2 + 1 == 3` compares `2 + 1` to `3` and is correct R code, while `2 + 1 = 3` will return an error.
+    + Boolean algebra: `TRUE/FALSE` statements and mathematical operators such as `<` (less than), `<=` (less than or equal), and `!=` (not equal to). 
+    + Logical operators: `&` representing "and" as well as `|` representing "or." Ex: `(2 + 1 == 3) & (2 + 1 == 4)` returns `FALSE` since both clauses are not `TRUE` (only the first clause is `TRUE`). On the other hand, `(2 + 1 == 3) | (2 + 1 == 4)` returns `TRUE` since at least one of the two clauses is `TRUE`. 
+* *Functions*, also called *commands*: Functions perform tasks in R. They take in inputs called *arguments* and return outputs. You can either manually specify a function's arguments or use the function's *default values*. 
 
-* From the [Introduction to R](https://www.datacamp.com/courses/free-introduction-to-r) course complete the following chapters.  As you work through the chapters, carefully note the important terms and what they are used for.  We recommend you do so in a notebook that you can easily refer back to.
-    + [Chapter 1 Intro to basics](https://campus.datacamp.com/courses/free-introduction-to-r/chapter-1-intro-to-basics-1?ex=1):
-        + Console pane: where you enter in commands
-        + Objects: where values are saved, how to assign values to objects.
-        + Data types: integers, doubles/numerics, logicals, characters.  
-    + [Chapter 2 Vectors](https://campus.datacamp.com/courses/free-introduction-to-r/chapter-2-vectors-2?ex=1):
-        + Vectors: a series of values.
-    + [Chapter 4 Factors](https://campus.datacamp.com/courses/free-introduction-to-r/chapter-4-factors-4?ex=1):
-        + *Categorical data* (as opposed to *numerical data*) are represented in R as `factor`s.
-    + [Chapter 5 Data frames](https://campus.datacamp.com/courses/free-introduction-to-r/chapter-5-data-frames?ex=1):
-        + Data frames are analogous to rectangular spreadsheets: they are representations of datasets in R where the rows correspond *observations* and the columns correspond to *variables* that describe the observations. We will revisit this later in Section \@ref(nycflights13).
-* From the [Intermediate R](https://www.datacamp.com/courses/intermediate-r) course complete the following chapters:
-    + [Chapter 1 Conditionals and Control Flow](https://campus.datacamp.com/courses/intermediate-r/chapter-1-conditionals-and-control-flow?ex=1):
-        + Testing for equality in R using `==` (and not `=` which is typically used for assignment). Ex: `2 + 1 == 3` compares `2 + 1` to `3` and is correct R syntax, while `2 + 1 = 3` is not and is incorrect R syntax.
-        + Boolean algebra: `TRUE/FALSE` statements and mathematical operators such as `<` (less than), `<=` (less than or equal), and `!=` (not equal to).
-        + Logical operators: `&` representing "and", `|` representing "or". Ex: `(2 + 1 == 3) & (2 + 1 == 4)` returns `FALSE` while `(2 + 1 == 3) | (2 + 1 == 4)` returns `TRUE`.
-    + [Chapter 3 Functions](https://campus.datacamp.com/courses/intermediate-r/chapter-3-functions?ex=1):
-        + Concept of functions: they take in inputs (called *arguments*) and return outputs.
-        + You either manually specify a function's arguments or use the function's *defaults*.
-
-This list is by no means an exhaustive list of all the programming concepts and terminology needed to become a savvy R user; such a list would be so large it wouldn't be very useful, especially for novices. Rather, we feel this is the bare minimum you need to know before you get started; the rest we feel you can learn as you go.  Remember that your knowledge of all of these concepts will build as you get better and better at "speaking R" and getting used to its syntax.
-
+This list is by no means an exhaustive list of all the programming concepts and terminology needed to become a savvy R user; such a list would be so large it wouldn't be very useful, especially for novices. Rather, we feel this is a minimally viable list of programming concepts and terminology you need to know before getting started. We feel that you can learn the rest as you go.  Remember that your mastery of all of these concepts and terminology will build as you practice more and more.
 
 ### Errors, warnings, and messages
 
-One slightly confusing part of R is how it reports errors, warnings, and messages. The default theme in RStudio colors errors, warnings, and messages in red, which makes them seem like you did something wrong. However, seeing red text in the console *is not always bad.*
+One thing that intimidates new R and RStudio users is how it reports *errors*, *warnings*, and *messages*. R reports errors, warnings, and messages in a glaring red font, which makes it seem like it is scolding you. However, seeing red text in the console is not always bad.
 
-R will show red text in the console in three different situations:
+R will show red text in the console pane in three different situations:
 
-* **Errors**: When the red text is a legitimate error, it will be prefaced with "Error in…" and try to explain what went wrong. Generally when there's an error, the code will not run. For example, as shown in Subsection \@ref(package-use) below if you see `Error in ggplot(...) : could not find function "ggplot"`, it means that the `ggplot()` function is not accessible because the package was not loaded with `library(ggplot2)`, and thus you cannot use it.
-* **Warnings**: When the red text is a warning, it will be prefaced with "Warning:" and try to explain why there's a warning. Generally your code will still work, but with some caveats. For example, you see in Chapter \@ref(viz) if you plot a scatterplot and one of the rows in your data frame is missing a value, you will see this warning: `Warning: Removed 1 rows containing missing values (geom_point)`. R will still make the scatterplot with all the remaining values, but it's warning you that one of the points isn't there.
-* **Messages**: When the red text doesn't start with either "Error" or "Warning", it's *just a friendly message*. You'll see these messages when you load some packages like the `dplyr` package in Subsection \@ref(package-loading) below, or when you read data saved in spreadsheet files with `read_csv()` as you'll see in Chapter \@ref(tidy). These are helpful diagnostic messages and they don't stop your code from working. 
+* **Errors**: When the red text is a legitimate error, it will be prefaced with "Error in…" and try to explain what went wrong. Generally when there's an error, the code will not run. For example, we'll see in Subsection \@ref(package-use) if you see `Error in ggplot(...) : could not find function "ggplot"`, it means that the `ggplot()` function is not accessible because the package that contains the function (`ggplot2`) was not loaded with `library(ggplot2)`. Thus you cannot use the `ggplot()` function without the `ggplot2` package being loaded first.
+* **Warnings**: When the red text is a warning, it will be prefaced with "Warning:" and R will try to explain why there's a warning. Generally your code will still work, but with some caveats. For example, you will see in Chapter \@ref(viz) if you create a scatterplot based on a dataset where one of the values is missing, you will see this warning: `Warning: Removed 1 rows containing missing values (geom_point)`. R will still produce the scatterplot with all the remaining values, but it is warning you that one of the points isn't there.
+* **Messages**: When the red text doesn't start with either "Error" or "Warning", it's *just a friendly message*. You'll see these messages when you load *R packages* in the upcoming Subsection \@ref(package-loading) or when you read data saved in spreadsheet files with the `read_csv()` function as you'll see in Chapter \@ref(tidy). These are helpful diagnostic messages and they don't stop your code from working. Additionally, you'll see these messages when you install packages too using `install.packages()`.
 
-Remember, when you see red text in the console, *don't panic*. It doesn't necessarily mean anything is wrong. 
+Remember, when you see red text in the console, *don't panic*. It doesn't necessarily mean anything is wrong. Rather:
 
 * If the text starts with "Error", figure out what's causing it. <span style="color:red">Think of errors as a red traffic light: something is wrong!</span>
 * If the text starts with "Warning", figure out if it's something to worry about. For instance, if you get a warning about missing values in a scatterplot and you know there are missing values, you're fine. If that's surprising, look at your data and see what's missing. <span style="color:gold">Think of warnings as a yellow traffic light: everything is working fine, but watch out/pay attention.</span>
 * Otherwise the text is just a message. Read it, wave back at R, and thank it for talking to you. <span style="color:green">Think of messages as a green traffic light: everything is working fine.</span>
-
 
 ### Tips on learning to code
 
@@ -155,18 +130,9 @@ Here are a few useful tips to keep in mind as you learn to program:
 
 
 
----
-
-
-
 ## What are R packages? {#packages}
 
-Another point of confusion with many new R users is the idea of an R package. R packages extend the functionality of R by providing additional functions, data, and documentation. They are written by a world-wide community of R users and can be downloaded for free from the internet. For example, among the many packages we will use in this book are:
-
-* The `ggplot2` package for data visualization in Chapter \@ref(viz).
-* The `dplyr` package for data wrangling in Chapter \@ref(wrangling).
-* The `moderndive` package that accompanies this book. 
-* The `infer` package for "tidy" and transparent statistical inference in Chapters \@ref(confidence-intervals), \@ref(hypothesis-testing), and \@ref(inference-for-regression).
+Another point of confusion with many new R users is the idea of an R package. R packages extend the functionality of R by providing additional functions, data, and documentation. They are written by a world-wide community of R users and can be downloaded for free from the internet. For example, among the many packages we will use in this book are the `ggplot2` package for data visualization in Chapter \@ref(viz), the `dplyr` package for data wrangling in Chapter \@ref(wrangling), the `moderndive` package that accompanies this book, and the `infer` package for "tidy" and transparent statistical inference in Chapters \@ref(confidence-intervals), \@ref(hypothesis-testing), and \@ref(inference-for-regression).
 
 A good analogy for R packages is they are like apps you can download onto a mobile phone:
 
@@ -245,17 +211,13 @@ One extremely common mistake new R users make when wanting to use particular pac
 Error: could not find function
 ```
 
-R is telling you that you are trying to use a function in a package that has not yet been "loaded." Almost all new users forget do this when starting out, and it is a little annoying to get used. However, you'll remember with pratice.  
-
-
-
----
+R is telling you that you are trying to use a function in a package that has not yet been "loaded." Almost all new users forget do this when starting out, and it is a little annoying to get used to. However, you'll remember with pratice.  
 
 
 
 ## Explore your first dataset {#nycflights13}
 
-Let's put everything we've learned so far into practice and start exploring some real data! Data comes to us in a variety of formats, from pictures to text to numbers.  Throughout this book, we'll focus on datasets that are saved in "spreadsheet"-type format; this is probably the most common way data are collected and saved in many fields.  Remember from Subsection \@ref(programming-concepts) that these "spreadsheet"-type datasets are called _data frames_ in R; we will focus on working with data saved as data frames throughout this book.
+Let's put everything we've learned so far into practice and start exploring some real data! Data comes to us in a variety of formats, from pictures to text to numbers.  Throughout this book, we'll focus on datasets that are saved in "spreadsheet"-type format; this is probably the most common way data are collected and saved in many fields. Remember from Subsection \@ref(programming-concepts) that these "spreadsheet"-type datasets are called _data frames_ in R; we will focus on working with data saved as data frames throughout this book.
 
 Let's first load all the packages needed for this chapter, assuming you've already installed them. Read Section \@ref(packages) for information on how to install and load R packages if you haven't already.
 
@@ -379,10 +341,6 @@ Another nice feature of R is the help system.  You can get help in R by entering
 ```
 
 A help file should pop-up in the Help pane of RStudio. If you have questions about a function or data frame included in an R package, you should get in the habit of consulting the help file right away.
-
-
-
----
 
 
 
