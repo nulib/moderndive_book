@@ -1,4 +1,4 @@
-# Populations {#populations}
+# Populations and Generalizability {#populations}
 
 ```{r setup_pop, include=FALSE, purl=FALSE}
 chap <- 8

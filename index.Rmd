@@ -229,8 +229,8 @@ In Figure \@ref(fig:moderndive-figure) we present a flowchart of what you'll cov
 
 We'll end with a discussion on what it means to "think with data" in Chapter \@ref(thinking-with-data) and present an example case study data analysis of house prices in Seattle.
 
-```{r moderndive-figure, echo=FALSE, fig.align='center', fig.cap="ModernDive Flowchart", fig.width=8}
-knitr::include_graphics("images/flowcharts/flowchart/flowchart.002.png")
+```{r moderndive-figure, echo=FALSE, fig.align='center', fig.cap="Course Flowchart", fig.width=8}
+knitr::include_graphics("images/flowcharts/STAT_202_Diagram-1.png")
 ```
 
 
