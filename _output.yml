@@ -30,7 +30,7 @@ bookdown::gitbook:
     edit:
       link: https://github.com/nulib/moderndive_book/edit/master/%s
   includes:
-    in_header: _includes/analytics.html
+#    in_header: _includes/analytics.html
     before_body: _includes/logo.html
 #bookdown::epub_book: default
 #bookdown::word_document2: default
