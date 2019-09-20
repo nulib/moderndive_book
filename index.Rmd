@@ -305,16 +305,14 @@ Reproducibility means a lot of things in terms of different scientific fields.  
 Additionally, this book will focus on computational thinking, data thinking, and inferential thinking. We'll see throughout the book how these three modes of thinking can build effective ways to work with, to describe, and to convey statistical knowledge.  
 -->
 
-### Final note for students
+### Final note for students {-}
 
 At this point, if you are interested in instructor perspectives on this book, ways to contribute and collaborate, or the technical details of this book's construction and publishing, then continue with the rest of the chapter below.  Otherwise, let's get started with R and RStudio in Chapter \@ref(getting-started)!
 
 
 
 
-
-
-
+<!--
 ## Introduction for instructors {-}
 
 This book is inspired by the following books:
@@ -328,7 +326,7 @@ The first book, while designed for upper-level undergraduates and graduate stude
 
 When looking over the large number of introductory statistics textbooks that currently exist, we found that there wasn't one that incorporated many newly developed R packages directly into the text, in particular the many packages included in the [`tidyverse`](http://tidyverse.org/) collection of packages, such as `ggplot2`, `dplyr`, `tidyr`, and `broom`. Additionally, there wasn't an open-source and easily reproducible textbook available that exposed new learners all of three of the learning goals listed at the outset of Subsection \@ref(subsec:learning-goals).
 
-### Who is this book for?
+### Who is this book for? {-}
 
 This book is intended for instructors of traditional introductory statistics classes using RStudio, either the desktop or server version, who would like to inject more data science topics into their syllabus. We assume that students taking the class will have no prior algebra, calculus, nor programming/coding experience.
 
@@ -367,11 +365,6 @@ If you would like to contribute to ModernDive, there are many ways! We would lov
 
 The authors would like to thank [Nina Sonneborn](https://github.com/nsonneborn), [Kristin Bott](https://twitter.com/rhobott?lang=en), [Dr. Jenny Smetzer](https://www.smith.edu/academics/faculty/jennifer-smetzer), and the participants of our [2017](https://www.causeweb.org/cause/uscots/uscots17/workshop/3) and [2019](https://www.causeweb.org/cause/uscots/uscots19/workshop/4) USCOTS workshops for their feedback and suggestions. We'd also like to thank [Dr. Andrew Heiss](https://twitter.com/andrewheiss) for contributing Subsection \@ref(tips-code) on "Errors, warnings, and messages." and [Starry Zhou](https://github.com/Starryz) for her many edits to the book. A special thanks goes to Dr. Yana Weinstein, cognitive psychological scientist and co-founder of [The Learning Scientists](http://www.learningscientists.org/yana-weinstein/), for her extensive feedback.
 
-
-
-
-
-
 ## About this book {-}
 
 This book was written using RStudio's [bookdown](https://bookdown.org/) package by Yihui Xie [@R-bookdown]. This package simplifies the publishing of books by having all content written in [R Markdown](http://rmarkdown.rstudio.com/html_document_format.html). The bookdown/R Markdown source code for all versions of ModernDive is available on GitHub:
@@ -394,11 +387,6 @@ Could this be a new paradigm for textbooks? Instead of the traditional model of 
 Finally, feel free to modify the book as you wish for your own needs, but please list the authors at the top of `index.Rmd` as "Chester Ismay, Albert Y. Kim, and YOU!"
 
 
-
-
-
-
-
 ## About the authors {-}
 
 Who we are!
@@ -407,7 +395,7 @@ Chester Ismay           |  Albert Y. Kim
 :-------------------------:|:-------------------------:
 `r include_image(path = "images/ismay.png", html_opts = "height=200px", latex_opts = "width=40%")` | `r include_image(path = "images/kim.png", html_opts = "height=200px", latex_opts = "width=40%")`
 
-<!-- <img src="images/ismay.jpeg" alt="Drawing" style="height: 200px;"/>  |  <img src="images/kim.jpeg" alt="Drawing" style="height: 200px;"/> -->
+<!-- <img src="images/ismay.jpeg" alt="Drawing" style="height: 200px;"/>  |  <img src="images/kim.jpeg" alt="Drawing" style="height: 200px;"/> 
 
 * Chester Ismay: Senior Curriculum Lead - DataCamp, Portland, OR, USA.
     + Email: [chester.ismay@gmail.com](mailto:chester.ismay@gmail.com)
@@ -420,12 +408,12 @@ Chester Ismay           |  Albert Y. Kim
     + Twitter: [rudeboybert](https://twitter.com/rudeboybert)
     + GitHub: <https://github.com/rudeboybert>
 
-<!--
-### Colophon 
+
+
+### Colophon {-}
 
 * ModernDive is written using the CC0 1.0 Universal License; more information on this license is available [here](https://creativecommons.org/publicdomain/zero/1.0/).
 * ModernDive uses the following versions of R packages (and their dependent packages):
--->
 
 ```{r colophon, echo=FALSE, eval=FALSE}
 library(kableExtra)
@@ -435,3 +423,4 @@ knitr::kable(devtools::session_info(needed_pkgs)$packages,
   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
                 latex_options = c("HOLD_position"))
 ```
+-->

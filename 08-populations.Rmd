@@ -1,5 +1,3 @@
-# (PART) Inference via infer {-} 
-
 # Populations {#populations}
 
 ```{r setup_pop, include=FALSE, purl=FALSE}

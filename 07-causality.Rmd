@@ -1,3 +1,5 @@
+# (PART) Statistical Inference {-} 
+
 # Randomization and Causality {#causality}
 
 ```{r setup-causality, include=FALSE, purl=FALSE}
