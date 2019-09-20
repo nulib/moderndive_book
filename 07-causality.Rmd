@@ -1,4 +1,4 @@
-# (PART) Statistical Inference {-} 
+# (PART) Statistical Theory {-} 
 
 # Randomization and Causality {#causality}
 

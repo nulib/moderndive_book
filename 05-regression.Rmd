@@ -1,4 +1,4 @@
-# (PART) Data Modeling via moderndive {-} 
+# (PART) Data Modeling {-} 
 
 # Basic Regression {#regression}
 

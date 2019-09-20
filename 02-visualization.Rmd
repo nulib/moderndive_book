@@ -1,4 +1,4 @@
-# (PART) Data Science via the tidyverse {-} 
+# (PART)Data Exploration via the tidyverse {-} 
 
 # Data Visualization {#viz}
 

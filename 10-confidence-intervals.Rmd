@@ -1,3 +1,5 @@
+# (PART) Statistical Inference {-} 
+
 # Confidence Intervals {#CIs}
 
 ```{r setup-CIs, include=FALSE, purl=FALSE}
