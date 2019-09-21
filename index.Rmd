@@ -1,5 +1,5 @@
 --- 
-# title: "Introduction to Statistics and Data Science"
+title: "Introduction to Statistics and Data Science"
 subtitle: "A moderndive into R and the tidyverse"
 author: "Chester Ismay, Albert Y. Kim, Arend M. Kuyper, Elizabeth Tipton, and Kaitlyn Fitzgerald"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
