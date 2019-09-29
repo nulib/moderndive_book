@@ -72,7 +72,7 @@ Specifically, we can break a graphic into the following three essential componen
 
 1. `data`: the data set composed of variables that we map.
 1. `geom`: the geometric object in question. This refers to the type of object we can observe in a plot. For example: points, lines, and bars.
-1. `aes`: aesthetic attributes of the geometric object. For example, x/y position, color, shape, and size.  Each assigned aesthetic attribute can be mapped to a variable in our data set.
+1. `aes`: aesthetic attributes of the geometric object. For example, x-position, y-position, color, shape, and size.  Each assigned aesthetic attribute can be mapped to a variable in our data set.
 
 You might be wondering why we wrote the terms `data`, `geom`, and `aes` in a computer code type font. We'll see very shortly that we'll specify the elements of the grammar in R using these terms. However, let's first break down the grammar with an example.
 
@@ -186,7 +186,7 @@ Let's now put the theory of the Grammar of Graphics into practice.
 
 ## Five Named Graphs - The 5NG {#FiveNG}
 
-In order to keep things simple, we will only five different types of graphics in this book, each with a commonly given name.  We term these "five named graphs" the **5NG**:
+In order to keep things simple, we will only five types of graphics in this book, each with a commonly given name.  We term these "five named graphs" the **5NG**:
 
 1. scatterplots
 1. linegraphs
