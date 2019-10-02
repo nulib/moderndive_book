@@ -333,15 +333,15 @@ Recall using simple linear regression \index{regression!simple linear} we modele
 1. A numerical outcome variable $y$, the instructor's teaching score and
 1. A single numerical explanatory variable $x$, the instructor's "beauty" score.
 
-We first created an `evals_ch6` data frame that selected a subset of variables from the `evals` data frame included in the `moderndive` package. This `evals_ch6` data frame contains only the variables of interest for our analysis, in particular the instructor's teaching `score` and the "beauty" rating `bty_avg`:
+We first created an `evals_ch5` data frame that selected a subset of variables from the `evals` data frame included in the `moderndive` package. This `evals_ch5` data frame contains only the variables of interest for our analysis, in particular the instructor's teaching `score` and the "beauty" rating `bty_avg`:
 
 ```{r}
-evals_ch6 <- evals %>%
+evals_ch5 <- evals %>%
   select(ID, score, bty_avg, age)
-glimpse(evals_ch6)
+glimpse(evals_ch5)
 ```
 ```{r, echo=FALSE}
-cor_ch6 <- evals_ch6 %>%
+cor_ch6 <- evals_ch5 %>%
   summarize(correlation = cor(score, bty_avg)) %>%
   pull(correlation) %>%
   round(3)
@@ -350,7 +350,7 @@ cor_ch6 <- evals_ch6 %>%
 In Section \@ref(model1EDA), we performed an exploratory data analysis of the relationship between these two variables. We saw there that there was a weakly positive correlation of `r cor_ch6` between the two variables. This was evidenced in Figure \@ref(fig:regline) of the scatterplot along with the "best-fitting" regression line that summarizes the linear relationship between the two variables. Recall in Subsection \@ref(leastsquares) that we defined a "best-fitting" line as the line that minimizes the *sum of squared residuals*.
 
 ```{r regline, fig.cap="Relationship with regression line."}
-ggplot(evals_ch6, aes(x = bty_avg, y = score)) +
+ggplot(evals_ch5, aes(x = bty_avg, y = score)) +
   geom_point() +
   labs(x = "Beauty Score", y = "Teaching Score",
        title = "Relationship between teaching and beauty scores") +  
@@ -364,13 +364,13 @@ Looking at this plot again, you might be asking "Does that line really have all 
 
 ```{r}
 # Fit regression model:
-score_model <- lm(score ~ bty_avg, data = evals_ch6)
+score_model <- lm(score ~ bty_avg, data = evals_ch5)
 # Get regression results:
 summary(score_model)$coefficients
 ```
 ```{r regtable-12, echo=FALSE}
 # Fit regression model:
-score_model <- lm(score ~ bty_avg, data = evals_ch6)
+score_model <- lm(score ~ bty_avg, data = evals_ch5)
 #summary(score_model)$coefficients %>%
  # knitr::kable(
   #  digits = 5,
@@ -412,7 +412,7 @@ where $\hat{\beta}_0$ is the fitted intercept and $\hat{\beta}_1$ is the fitted 
 > For every increase of one unit in "beauty" rating, there is an associated increase, on average, of `r beta_hat_1` units of evaluation score.
 Thus, the slope value quantifies the relationship between the y variable of `score` and the x variable `bty_avg`. We also discussed the intercept value of $\hat{\beta}_0$ = `r get_regression_table(score_model) %>% filter(term == "intercept") %>% pull(estimate)` and its lack of practical interpretation, since the range of possible "beauty" scores does not include 0.
 
-We now want to formally test whether there is a relationship between teaching score and beauty score, beyond what we would expect simply due to chance. Recall the terminology and notation related to populations and samples that we studied in Chapter \@ref(populations). First, let's view the instructors for these `r nrow(evals_ch6)` courses as a *random sample* from a greater *population*. In our case, let's assume that the population is *all* instructors at UT Austin and that the sample of instructors who taught these 463 is a random sample. Unfortunately, we can only *assume* these two facts without more knowledge of the *sampling methodology*\index{sampling methodology} used by the researchers.
+We now want to formally test whether there is a relationship between teaching score and beauty score, beyond what we would expect simply due to chance. Recall the terminology and notation related to populations and samples that we studied in Chapter \@ref(populations). First, let's view the instructors for these `r nrow(evals_ch5)` courses as a *random sample* from a greater *population*. In our case, let's assume that the population is *all* instructors at UT Austin and that the sample of instructors who taught these 463 is a random sample. Unfortunately, we can only *assume* these two facts without more knowledge of the *sampling methodology*\index{sampling methodology} used by the researchers.
 
 Since we are viewing these $n$ = 463 courses as a sample, we can view our fitted slope $\hat{\beta}_1$ = `r beta_hat_1` as a *point estimate* of the *population slope* $\beta_1$. In other words, $\beta_1$ quantifies the relationship between teaching `score` and "beauty" average `bty_avg` for *all* instructors at UT Austin. Similarly, we can view our fitted intercept $\hat{\beta}_0$ = `r b0` as a *point estimate* of the *population intercept* $\beta_0$ for *all* instructors at UT Austin.
 
@@ -467,7 +467,7 @@ reg_df %>%
 Note the $p$ refers to the number of explanatory variables in the regression model. In this example, we only have one explanatory variable $x$, the beauty score, so $p = 1$, and the degrees of freedom are $df = n - p - 1 = n - 2$. We can now use this information to calculate our p-value. 
 
 ```{r}
-n <- dim(evals_ch6)[1]
+n <- dim(evals_ch5)[1]
 p_value <- pt(test_stat, n-2, lower.tail = FALSE)*2
 p_value
 ```
@@ -475,12 +475,12 @@ Note that our calculated `test_stat = ` `r test_stat` is the same value reported
 
 ```{r eval = FALSE, echo = FALSE}
 #manual calculation of SE(beta_hat_1)
-sx2 <- var(evals_ch6$bty_avg)
-sy2 <- var(evals_ch6$score)
-n <- dim(evals_ch6)[1]
+sx2 <- var(evals_ch5$bty_avg)
+sy2 <- var(evals_ch5$score)
+n <- dim(evals_ch5)[1]
 
 Syy <- (n-1)*sy2
-Sxy <- (n-1)*cov(evals_ch6$bty_avg, evals_ch6$score)
+Sxy <- (n-1)*cov(evals_ch5$bty_avg, evals_ch5$score)
 Sxx <- (n-1)*sx2
 SSE <- Syy - Sxy^2/Sxx
 MSE <- SSE / (n-2)
