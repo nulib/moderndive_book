@@ -63,30 +63,40 @@ We'll study all four of these regression scenarios using real data, all easily a
 
 ### Needed packages {-}
 
-Let's now load all the packages needed for this chapter. If needed, read Section \@ref(packages) for information on how to install and load R packages. 
+Let's now load all the packages needed for this chapter (this assumes you've already installed them). In this chapter we introduce some new packages:
 
-```{r eval=FALSE}
+1. The `tidyverse` "umbrella" package. Recall from our discussion in Section \@ref(tidyverse-package) that loading the `tidyverse` package by running `library(tidyverse)` loads the following commonly used data science packages all at once:
+    + `ggplot2` for data visualization
+    + `dplyr` for data wrangling
+    + `tidyr` for converting data to "tidy" format
+    + `readr` for importing spreadsheet data into R
+    + As well as the more advanced `purrr`, `tibble`, `stringr`, and `forcats` packages
+1. The `skimr` [@R-skimr] package, which provides a simple-to-use function to quickly compute a wide array of commonly-used summary statistics. \index{summary statistics}
+
+If needed, read Section \@ref(packages) for information on how to install and load R packages.
+
+```{r, eval=FALSE}
 library(tidyverse)
+library(skimr)
 library(gapminder)
 ```
-
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(moderndive)
+# DO NOT load the skimr package as a whole as it will break all kable() code for 
+# the remaining chapters in the book.
+# Furthermore all skimr::skim() output in this Chapter has been hard coded. 
+# library(skimr)
 library(gapminder)
-# library(skimr) (Causes problems with table linking)
 ```
+
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 # Packages needed internally, but not in text.
 library(mvtnorm)
-library(tidyr)
-library(forcats)
-library(gridExtra)
 library(broom)
-library(janitor)
-library(patchwork)
 library(kableExtra)
+library(patchwork)
 ```
 
 
@@ -148,37 +158,72 @@ While a full description of each of these variables can be found at [openintro.o
 1. `bty_avg`: Numerical variable of average "beauty" rating based on a panel of 6 students' scores between 1 and 10. This is the numerical explanatory variable $x$ of interest. Here 1 corresponds to a low beauty rating and 10 to a high beauty rating.
 1. `age`: A numerical variable of age in years as an integer value.
 
-Another way to look at the raw values is using the `glimpse()` function, which gives us a slightly different view of the data. We see `Observations: 463`, indicating that there are 463 observations in `evals`, each corresponding to a particular instructor at UT Austin. Expressed differently, each row in the data frame `evals` corresponds to one of 463 instructors. 
+An alternative way to look at the raw data values is by choosing a random sample of the rows in `evals_ch5` by piping it into the `sample_n()` \index{dplyr!sample\_n()} function from the `dplyr` package. Here we set the `size` argument to be `5`, indicating that we want a random sample of 5 rows. We display the results in Table \@ref(tab:five-random-courses). Note that due to the random nature of the sampling, you will likely end up with a different subset of 5 rows.
 
-```{r}
-glimpse(evals_ch5)
+```{r, eval=FALSE}
+evals_ch5 %>%
+  sample_n(size = 5)
+```
+```{r five-random-courses, echo=FALSE}
+evals_ch5 %>%
+  sample_n(5) %>%
+  knitr::kable(
+    digits = 3,
+    caption = "A random sample of 5 out of the 463 courses at UT Austin",
+    booktabs = TRUE
+  ) %>%
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("hold_position"))
 ```
 
-Since both the outcome variable `score` and the explanatory variable `bty_avg` are numerical, we can compute summary statistics about them such as the mean and median. Let’s take `evals_ch5` and select only the two variables of interest for now. However, let's instead pipe this into the `summary()` function. This function returns the following summary information about each variable. 
+Now that we've looked at the raw values in our `evals_ch5` data frame and got a preliminary sense of the data, let's move on to the next common step in an exploratory data analysis: computing summary statistics. Let's start by computing the mean and median of our numerical outcome variable `score` and our numerical explanatory variable "beauty" score denoted as `bty_avg`. We'll do this by using the `summarize()` function from `dplyr` along with the `mean()` and `median()` summary functions we saw in Section \@ref(summarize).
 
-```{r}
-evals_ch5 %>% 
-  select(score, bty_avg) %>% 
-  summary()
+```{r eval=TRUE}
+evals_ch5 %>%
+  summarize(mean_bty_avg = mean(bty_avg), mean_score = mean(score),
+            median_bty_avg = median(bty_avg), median_score = median(score))
 ```
 
-In this case for our two numerical variables `bty_avg` beauty score and teaching score `score` it returns:
+However, what if we want other summary statistics as well, such as the standard deviation (a measure of spread), the minimum and maximum values, and various percentiles? Typing out all these summary statistic functions in `summarize()` would be long and tedious. Instead, let's use the convenient `skim()` function from the `skimr` \index{R packages!skimr!skim()} package. This function takes in a data frame, "skims" it, and returns commonly used summary statistics. Let's take our `evals_ch5` data frame, `select()` only the outcome and explanatory variables teaching `score` and `bty_avg`, and pipe them into the `skim()` function:
 
-- `Min`: the *minimum* value of the variable observed in the dataset
-- `1st Qu.`: the *1^st^ quartile*, also known as the 25^th^ percentile: the value at which 25% of observations are smaller than it. 
-- `Median`: the "middle" value: the value at which 50% of observations are smaller than it. This is also known as the 2^nd^ quartile or the 50^th^ percentile
-- `mean`: the *average* value of the variable
-- `3rd Qu.`: the *3^rd^ quartile*, also known as the 75^th^ percentile: the value at which 75% of observations are smaller than it. 
-- `Max`: the *maximum* value of the variable observed in the dataset
+```{r eval=FALSE}
+evals_ch5 %>%
+  select(score, bty_avg) %>%
+  skim()
+```
 
+```
+Skim summary statistics
+ n obs: 463 
+ n variables: 2 
+── Variable type:numeric ───────────────────────────────────────────────────────
+ variable missing complete   n mean   sd   p0  p25  p50 p75 p100
+  bty_avg       0      463 463 4.42 1.53 1.67 3.17 4.33 5.5 8.17
+    score       0      463 463 4.17 0.54 2.3  3.8  4.3  4.6 5   
+```
 
-We get an idea of how the values in both variables are distributed. For example, the mean teaching score was 4.17 out of 5 whereas the mean beauty score was 4.42 out of 10. Furthermore, the middle 50% of teaching scores were between 3.80 and 4.6 (the first and third quartiles) while the middle 50% of beauty scores were between 3.17 and 5.5 out of 10. 
+(Note that for formatting purposes, the inline histogram that is usually printed with `skim()` has been removed. This can be done by running `skim_with(numeric = list(hist = NULL))` prior to using the `skim()` function as well.)
 
-The `summary()` function however only returns what are called *univariate* summaries, i.e. summaries about single variables at a time. Since we are considering the relationship between two numerical variables, it would be nice to have a summary statistic that simultaneously considers both variables. The *correlation coefficient* is a *bivariate* summary statistic that fits this bill. *Coefficients* in general are quantitative expressions of a specific property of a phenomenon. A correlation coefficient is a quantitative expression between -1 and 1 that summarizes the *strength of the linear relationship between two numerical variables*:
+For our two numerical variables teaching `score` and "beauty" score `bty_avg` it returns:
 
-* -1 indicates a perfect *negative relationship*: as the value of one variable goes up, the value of the other variable goes down as well.
-* 0 indicates no relationship: the values of both variables go up/down independently of each other.
-* +1 indicates a perfect *positive relationship*: as the value of one variable goes up, the value of the other variable goes up as well.
+- `missing`: the number of missing values
+- `complete`: the number of non-missing or complete values
+- `n`: the total number of values
+- `mean`: the average
+- `sd`: the standard deviation
+- `p0`: the 0^th^ percentile: the value at which 0% of observations are smaller than it (the *minimum* value)
+- `p25`: the 25^th^ percentile: the value at which 25% of observations are smaller than it (the *1^st^ quartile*)
+- `p50`: the 50^th^ percentile: the value at which 50% of observations are smaller than it (the *2^nd^* quartile and more commonly called the *median*)
+- `p75`: the 75^th^ percentile: the value at which 75% of observations are smaller than it (the *3^rd^ quartile*)
+- `p100`: the 100^th^ percentile: the value at which 100% of observations are smaller than it (the *maximum* value)
+
+Looking at this output, we get an idea of how the values of both variables distribute. For example, the mean teaching score was 4.17 out of 5 whereas the mean "beauty" score was 4.42 out of 10. Furthermore, the middle 50% of teaching scores were between 3.80 and 4.6 (the first and third quartiles) whereas the middle 50% of "beauty" scores were between 3.17 and 5.5 out of 10.
+
+The `skim()` function only returns what are known as *univariate* \index{univariate} summary statistics: functions that take a single variable and return some numerical summary of that variable. However, there also exist *bivariate* \index{bivariate} summary statistics: functions that take in two variables and return some summary of those two variables. In particular, when the two variables are numerical, we can compute the \index{correlation (coefficient)} *correlation coefficient*. Generally speaking, *coefficients* are quantitative expressions of a specific phenomenon.  A *correlation coefficient* is a quantitative expression of the *strength of the linear relationship between two numerical variables*. Its value ranges between -1 and 1 where:
+
+* -1 indicates a perfect *negative relationship*: As the value of one variable goes up, the value of the other variable tends to go down following along a straight line.
+* 0 indicates no relationship: The values of both variables go up/down independently of each other.
+* +1 indicates a perfect *positive relationship*: As the value of one variable goes up, the value of the other variable tends to go up as well in a linear fashion.
 
 Figure \@ref(fig:correlation1) gives examples of different correlation coefficient values for hypothetical numerical variables $x$ and $y$. We see that while for a correlation coefficient of -0.75 there is still a negative relationship between $x$ and $y$, it is not as strong as the negative relationship between $x$ and $y$ when the correlation coefficient is -1. 
 
@@ -419,7 +464,8 @@ For example, say we are interested in the 21st instructor in this dataset:
 index <- which(evals_ch5$bty_avg == 7.333 & evals_ch5$score == 4.9)
 
 
-score_model_data <- evals_ch5 %>% select(score, bty_avg) %>% 
+score_model_data <- evals_ch5 %>% 
+  select(score, bty_avg) %>% 
   mutate(score_hat = fitted(score_model),
          residual = residuals(score_model)) %>% 
   rownames_to_column("ID")
@@ -473,7 +519,8 @@ for not only the 21st instructor but for all `r nrow(evals_ch5)` instructors in 
 
 We could repeat the above calculations by hand 463 times, but that would be tedious and time consuming. Instead, let's use our data wrangling tools from Chapter \@ref(wrangling) and the functions `fitted()` and `residuals()` to create a data frame with these values. Similar to the `summary()` function, the `fitted()` and `residuals()` functions also take a model object as their input. `fitted()` calculates all the *fitted* $\hat{y}$ values by plugging in each observed $x$ value in the dataset into the regression equation, and `residuals()` similarly calculates all the residuals ($y - \hat{y}$) for each observation in the dataset. The following code will store these new $\hat{y}$ and residual variables, which we will name `score_hat` and `residual` respectively, along with their corresponding `score` and `bty_avg` values from the original data `evals_ch5`. 
 ```{r}
-score_model_data <- evals_ch5 %>% select(score, bty_avg) %>% 
+score_model_data <- evals_ch5 %>% 
+  select(score, bty_avg) %>% 
   mutate(score_hat = fitted(score_model),
          residual = residuals(score_model)) %>% 
   rownames_to_column("ID")
@@ -533,66 +580,148 @@ When the explanatory variable $x$ is categorical, the concept of a "best-fitting
 
 ### Exploratory data analysis {#model2EDA}
 
-Let's load the `gapminder` data and `filter()` for only observations in 2007. Next we `select()` only the variables we'll need along with `gdpPercap`, which is each country's gross domestic product per capita (GDP). GDP is a rough measure of that country's economic performance. (This will be used for the upcoming Learning Check). Lastly, we save this in a data frame with name `gapminder2007`:
+The data on the 142 countries can be found in the `gapminder` data frame included in the `gapminder` package. However, to keep things simple, let's `filter()` for only those observations/rows corresponding to the year 2007. Additionally, let's `select()` only the subset of the variables we'll consider in this chapter. We'll save this data in a new data frame called `gapminder2007`:
 
 ```{r, warning=FALSE, message=FALSE}
 library(gapminder)
 gapminder2007 <- gapminder %>%
-  filter(year == 2007) %>% 
-  select(country, continent, lifeExp, gdpPercap)
+  filter(year == 2007) %>%
+  select(country, lifeExp, continent, gdpPercap)
 ```
 
-You should look at the raw data values both by bringing up RStudio's spreadsheet viewer and the `glimpse()` function. In Table \@ref(tab:model2-data-preview) we only show 5 randomly selected countries out of `r nrow(gapminder2007)`:
-
-```{r, eval=FALSE}
-View(gapminder2007)
+```{r, echo=FALSE}
+# Hidden: internally compute mean and median life expectancy
+lifeExp_worldwide <- gapminder2007 %>%
+  summarize(median = median(lifeExp), mean = mean(lifeExp))
+mean_africa <- gapminder2007 %>%
+  filter(continent == "Africa") %>%
+  summarize(mean_africa = mean(lifeExp)) %>%
+  pull(mean_africa)
 ```
 
+Recall from Section \@ref(model1EDA) that there are three common steps in an exploratory data analysis:
 
+1. Most crucially: Looking at the raw data values.
+1. Computing summary statistics, like means, medians, and interquartile ranges.
+1. Creating data visualizations.
 
-```{r model2-data-preview, echo=FALSE}
-gapminder2007 %>%
-  sample_n(5) %>%
-  knitr::kable(
-    digits = 3,
-    caption = "Random sample of 5 countries",
-    booktabs = TRUE
-  ) %>% 
-  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-                latex_options = c("HOLD_position"))
-```
-
+Let's perform the first common step in an exploratory data analysis: looking at the raw data values. You can do this by using RStudio's spreadsheet viewer or by using the `glimpse()` command as introduced in Section \@ref(exploredataframes) on exploring data frames:
 
 ```{r}
 glimpse(gapminder2007)
 ```
 
-We see that the variable `continent` is indeed categorical, as it is encoded as `fct` which stands for "factor." This is R's way of storing categorical variables. Let's once again apply the `summary()` function to our two variables of interest: `continent` and `lifeExp`:
+Observe that `Observations: 142` indicates that there are 142 rows/observations in `gapminder2007`, where each row corresponds to one country. In other words, the *observational unit* is an individual country. Furthermore, observe that the variable `continent` is of type `<fct>`, which stands for _factor_, which is R's way of encoding categorical variables.
 
-```{r}
-gapminder2007 %>% 
-  select(continent, lifeExp) %>% 
-  summary()
+A full description of all the variables included in `gapminder` can be found by reading the associated help file (run `?gapminder` in the console). However, let's fully describe the `r ncol(gapminder2007)` variables we selected in `gapminder2007`:
+
+1. `country`: An identification text variable used to distinguish the 142 countries in the dataset.
+1. `lifeExp`: A numerical variable of that country's life expectancy at birth. This is the outcome variable $y$ of interest.
+1. `continent`: A categorical variable with five levels. Here "levels" corresponds to the possible categories: Africa, Asia, Americas, Europe, and Oceania. This is the explanatory variable $x$ of interest.
+1. `gdpPercap`: A numerical variable of that country's GDP per capita in US inflation-adjusted dollars that we'll use as another outcome variable $y$ in the Learning Check at the end of this subsection.
+
+Furthermore, let's look at a random sample of five out of the `r nrow(gapminder2007)` countries in Table \@ref(tab:model2-data-preview). Again, note due to the random nature of the sampling, you will likely end up with a different subset of 5 rows.
+
+```{r, eval=FALSE}
+gapminder2007 %>%
+  sample_n(size = 5)
+```
+```{r model2-data-preview, echo=FALSE}
+gapminder2007 %>%
+  sample_n(5) %>%
+  knitr::kable(
+    digits = 3,
+    caption = "Random sample of 5 out of 142 countries",
+    booktabs = TRUE
+  ) %>%
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("hold_position"))
 ```
 
-```{r, echo=FALSE}
-lifeExp_worldwide <- gapminder2007 %>%
-  summarize(median = median(lifeExp), mean = mean(lifeExp))
+Now that we've looked at the raw values in our `gapminder2007` data frame and got a sense of the data, let's move on to computing summary statistics. Let's once again apply the `skim()` function from the `skimr` package. Recall from our previous EDA that this function takes in a data frame, "skims" it, and returns commonly used summary statistics. Let's take our `gapminder2007` data frame, `select()` only the outcome and explanatory variables `lifeExp` and `continent`, and pipe them into the `skim()` function:
+
+```{r eval=FALSE}
+gapminder2007 %>%
+  select(lifeExp, continent) %>%
+  skim()
+```
+```
+Skim summary statistics
+ n obs: 142 
+ n variables: 2 
+── Variable type:factor ────────────────────────────────────────────────────────
+  variable missing complete   n n_unique                         top_counts ordered
+ continent       0      142 142        5 Afr: 52, Asi: 33, Eur: 30, Ame: 25   FALSE
+── Variable type:numeric ───────────────────────────────────────────────────────
+ variable missing complete   n  mean    sd    p0   p25   p50   p75 p100
+  lifeExp       0      142 142 67.01 12.07 39.61 57.16 71.94 76.41 82.6
 ```
 
+The `skim()` output now reports summaries for categorical variables (`Variable type:factor`) separately from the numerical variables (`Variable type:numeric`). For the categorical variable `continent`, it reports:
 
-Notice that the output for the categorical variable looks different, since we cannot compute numeric summaries such as `min`, `max`, or `mean` for a categorical variable. Instead, the output for `continent` shows us which factor levels (in this case continent names) are included in the varaible as well as the number of observations for each level. Here we can see that the factor variable `continent` has 5 levels (`Africa, Americas, Asia, Europe, Oceania`), and `Africa` is the continent with the most number of countries included in the dataset (52).
+- `missing`, `complete`, and `n`,  which are the number of missing, complete, and total number of values as before, respectively.
+- `n_unique`: The number of unique levels to this variable, corresponding to Africa, Asia, Americas, Europe, and Oceania. This refers to the how many countries are in the data for each continent.
+- `top_counts`: In this case the top four counts: `Africa` has 52 countries, `Asia` has 33, `Europe` has 30, and `Americas` has 25. Not displayed is `Oceania` with 2 countries.
+- `ordered`: This tells us whether the categorical variable is "ordinal": whether there is an encoded hierarchy (like low, medium, high). In this case, `continent` is not ordered.
 
-Given that the global median life expectancy is `r lifeExp_worldwide$median %>% round(2)`, half of the world's countries (71 countries) will have a life expectancy less than  `r lifeExp_worldwide$median %>% round(2)`. Further, half will have a life expectancy greater than this value. The mean life expectancy of `r lifeExp_worldwide$mean %>% round(2)` is lower however. Why are these two values different? Let's look at a histogram of `lifeExp` in Figure \@ref(fig:lifeExp2007hist) to see why.
+Turning our attention to the summary statistics of the numerical variable `lifeExp`, we observe that the global median life expectancy in 2007 was `r lifeExp_worldwide$median %>% round(2)`. Thus, half of the world's countries (71 countries) had a life expectancy less than `r lifeExp_worldwide$median %>% round(2)`. The mean life expectancy of `r lifeExp_worldwide$mean %>% round(2)` is lower however. Why is the mean life expectancy lower than the median?
 
-```{r lifeExp2007hist, echo=FALSE, warning=FALSE, fig.cap="Histogram of Life Expectancy in 2007"}
+We can answer this question by performing the last of the three common steps in an exploratory data analysis: creating data visualizations. Let's visualize the distribution of our outcome variable $y$ = `lifeExp` in Figure \@ref(fig:lifeExp2007hist).
+
+```{r lifeExp2007hist, echo=TRUE, warning=FALSE, fig.cap="Histogram of Life Expectancy in 2007."}
 ggplot(gapminder2007, aes(x = lifeExp)) +
   geom_histogram(binwidth = 5, color = "white") +
-  labs(x = "Life expectancy", y = "Number of countries", 
-       title = "Worldwide life expectancy")
+  labs(x = "Life expectancy", y = "Number of countries",
+       title = "Histogram of distribution of worldwide life expectancies")
 ```
 
-We see that this data is left-skewed: there are a few countries with very low life expectancy that are bringing down the mean life expectancy. However, the median is less sensitive to the effects of such outliers. Hence the median is greater than the mean in this case. Let's proceed by comparing median and mean life expectancy between continents by adding a `group_by(continent)` to the above code:
+We see that this data is *left-skewed*, also known as *negatively* \index{skew} skewed: there are a few countries with  low life expectancy that are bringing down the mean life expectancy. However, the median is less sensitive to the effects of such outliers; hence, the median is greater than the mean in this case.
+
+Remember, however, that we want to compare life expectancies both between continents and within continents. In other words, our visualizations need to incorporate some notion of the variable `continent`. We can do this easily with a faceted histogram. Recall from Section \@ref(facets) that facets allow us to split a visualization by the different values of another variable. We display the resulting visualization in Figure \@ref(fig:catxplot0b) by adding a \index{ggplot2!facet\_wrap()} `facet_wrap(~ continent, nrow = 2)` layer.
+
+```{r eval=FALSE} 
+ggplot(gapminder2007, aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5, color = "white") +
+  labs(x = "Life expectancy", y = "Number of countries",
+       title = "Histogram of distribution of worldwide life expectancies") +
+  facet_wrap(~ continent, nrow = 2)
+```
+
+```{r catxplot0b, echo=FALSE, warning=FALSE, fig.cap="Life expectancy in 2007."}
+faceted_life_exp <- ggplot(gapminder2007, aes(x = lifeExp)) +
+  geom_histogram(binwidth = 5, color = "white") +
+  labs(x = "Life expectancy", y = "Number of countries",
+       title = "Histogram of distribution of worldwide life expectancies") +
+  facet_wrap(~ continent, nrow = 2)
+# Make the text black and reduce darkness of the grey in the facet labels
+if(knitr::is_latex_output()) {
+  faceted_life_exp + 
+    theme(strip.text = element_text(colour = 'black'),
+          strip.background = element_rect(fill = "grey93")
+    )
+} else {
+  faceted_life_exp
+}
+```
+
+
+
+Observe that unfortunately the distribution of African life expectancies is much lower than the other continents, while in Europe life expectancies tend to be higher and furthermore do not vary as much. On the other hand, both Asia and Africa have the most variation in life expectancies. There is the least variation in Oceania, but keep in mind that there are only two countries in Oceania: Australia and New Zealand.
+
+Recall that an alternative method to visualize the distribution of a numerical variable split by a categorical variable is by using a side-by-side boxplot. We map the categorical variable `continent` to the $x$-axis and the different life expectancies within each continent on the $y$-axis in Figure \@ref(fig:catxplot1).
+
+```{r catxplot1, warning=FALSE, fig.cap="Life expectancy in 2007."}
+ggplot(gapminder2007, aes(x = continent, y = lifeExp)) +
+  geom_boxplot() +
+  labs(x = "Continent", y = "Life expectancy (years)",
+       title = "Life expectancy by continent")
+```
+
+Some people prefer comparing the distributions of a numerical variable between different levels of a categorical variable using a boxplot instead of a faceted histogram. This is because we can make quick comparisons between the categorical variable's levels with imaginary horizontal lines. For example, observe in Figure \@ref(fig:catxplot1) that we can quickly convince ourselves that Oceania has the highest median life expectancies by drawing an imaginary horizontal line at $y$ = 80. Furthermore, as we observed in the faceted histogram in Figure \@ref(fig:catxplot0b), Africa and Asia have the largest variation in life expectancy as evidenced by their large interquartile ranges (the heights of the boxes).
+
+It’s important to remember however that the solid lines in the middle of the boxes correspond to the medians (the middle value) rather than the mean (the average). So for example, if you look at Asia, the solid line denotes the median life expectancy of around 72 years. This tells us that half of all countries in Asia have a life expectancy below 72 years whereas half have a life expectancy above 72 years.
+
+Let's compute the median and mean life expectancy for each continent with a little more data wrangling and display the results in Table \@ref(tab:catxplot0).
 
 ```{r, eval=TRUE}
 lifeExp_by_continent <- gapminder2007 %>%
@@ -607,67 +736,50 @@ lifeExp_by_continent %>%
     booktabs = TRUE
   )
 ```
-```{r, echo=FALSE}
-median_africa <- lifeExp_by_continent %>%
-  filter(continent == "Africa") %>%
-  pull(median)
-mean_africa <- lifeExp_by_continent %>%
-  filter(continent == "Africa") %>%
-  pull(mean)
-n_countries <- gapminder2007 %>% nrow()
-n_countries_africa <- gapminder2007 %>% filter(continent == "Africa") %>% nrow()
+
+Observe the order of the second column `median` life expectancy: Africa is lowest, the Americas and Asia are next with similar medians, then Europe, then Oceania. This ordering corresponds to the ordering of the solid black lines inside the boxes in our side-by-side boxplot in Figure \@ref(fig:catxplot1). 
+
+Let's now turn our attention to the values in the third column `mean`. Using Africa's mean life expectancy of 54.8 as a *baseline for comparison*, let's start making relative comparisons to the life expectancies of the other four continents:
+
+1. The mean life expectancy of the Americas is 73.6 - 54.8 = 18.8 years higher.
+1. The mean life expectancy of Asia is 70.7 - 54.8 = 15.9 years higher.
+1. The mean life expectancy of Europe is 77.6 - 54.8 = 22.8 years higher.
+1. The mean life expectancy of Oceania is 80.7 - 54.8 = 25.9 years higher.
+
+Let's put these values in Table \@ref(tab:continent-mean-life-expectancies), which we'll revisit later on in this section.
+
+```{r continent-mean-life-expectancies, echo=FALSE}
+gapminder2007 %>%
+  group_by(continent) %>%
+  summarize(mean = mean(lifeExp)) %>%
+  mutate(`Difference versus Africa` = mean - mean_africa) %>%
+  knitr::kable(
+    digits = 3,
+    caption = "Mean life expectancy by continent and relative differences from mean for Africa.",
+    booktabs = TRUE
+  ) %>%
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("hold_position"))
 ```
 
-We see now that there are differences in life expectancy between the continents. For example let's focus on only medians. While the median life expectancy across all $n = `r n_countries`$ countries in 2007 was `r lifeExp_worldwide$median %>% round(3)`, the median life expectancy across the $n =`r n_countries_africa`$ countries in Africa was only `r median_africa`.
-
-Let's create a corresponding visualization. One way to compare the life expectancy of countries in different continents would be via a faceted histogram. Recall we saw back in the Data Visualization chapter, specifically Section \@ref(facets), that facets allow us to split a visualization by the different levels of a categorical variable or factor variable. In Figure \@ref(fig:catxplot0b), the variable we facet by is `continent`, which is categorical with five levels, each corresponding to the five continents of the world.
-
-```{r catxplot0b, warning=FALSE, fig.cap="Life expectancy in 2007"}
-ggplot(gapminder2007, aes(x = lifeExp)) +
-  geom_histogram(binwidth = 5, color = "white") +
-  labs(x = "Life expectancy", y = "Number of countries", 
-       title = "Life expectancy by continent") +
-  facet_wrap(~ continent, nrow = 2)
-```
-
-Another way would be via a `geom_boxplot` where we map the categorical variable `continent` to the $x$-axis and the different life expectancy within each continent on the $y$-axis; we do this in Figure \@ref(fig:catxplot1). 
-
-```{r catxplot1, warning=FALSE, fig.cap="Life expectancy in 2007"}
-ggplot(gapminder2007, aes(x = continent, y = lifeExp)) +
-  geom_boxplot() +
-  labs(x = "Continent", y = "Life expectancy (years)", 
-       title = "Life expectancy by continent") 
-```
-
-Some people prefer comparing a numerical variable between different levels of a categorical variable, in this case comparing life expectancy between different continents, using a boxplot over a faceted histogram as we can make quick comparisons with single horizontal lines. For example, we can see that even the country with the highest life expectancy in Africa is still lower than all countries in Oceania. 
-
-It’s important to remember however that the solid lines in the middle of the boxes correspond to the medians (i.e. the middle value) rather than the mean (the average). So, for example, if you look at Asia, the solid line denotes the median life expectancy of around 72 years, indicating to us that half of all countries in Asia have a life expectancy below 72 years whereas half of all countries in Asia have a life expectancy above 72 years. Furthermore, note that:   
-    
-* Africa and Asia have much more spread/variation in life expectancy as indicated by the interquartile range (the height of the boxes).
-* Oceania has almost no spread/variation, but this might in large part be due to the fact there are only two countries in Oceania: Australia and New Zealand. 
-
-Now, let's start making comparisons of life expectancy *between* continents. Let's use Africa as a *baseline for comparison*. Why Africa? Only because it happened to be first alphabetically, we could have just as appropriately used the Americas as the baseline for comparison. Using the "eyeball test" (just using our eyes to see if anything stands out), we make the following observations about differences in median life expectancy compared to the baseline of Africa:
-
-1. The median life expectancy of the Americas is roughly 20 years greater.
-1. The median life expectancy of Asia is roughly 20 years greater.
-1. The median life expectancy of Europe is roughly 25 years greater.
-1. The median life expectancy of Oceania is roughly 27.8 years greater.
-
-Let's remember these four differences vs Africa corresponding to the Americas, Asia, Europe, and Oceania: 20, 20, 25, 27.8.
 
 ```{block, type='learncheck', purl=FALSE}
+\vspace{-0.25in}
 **_Learning check_**
+\vspace{-0.25in}
 ```
 
 **`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** Conduct a new exploratory data analysis with the same explanatory variable $x$ being `continent` but with `gdpPercap` as the new outcome variable $y$. Remember, this involves three things:
 
-a) Looking at the raw values
-a) Computing summary statistics of the variables of interest.
-a) Creating informative visualizations
+1. Most crucially: Looking at the raw data values.
+1. Computing summary statistics, such as means, medians, and interquartile ranges.
+1. Creating data visualizations.
 
 What can you say about the differences in GDP per capita between continents based on this exploration?
 
 ```{block, type='learncheck', purl=FALSE}
+\vspace{-0.25in}
+\vspace{-0.25in}
 ```
 
 ### Linear regression {#model2table}
@@ -681,7 +793,7 @@ Before we fit our regression model, let's create a table similar to Table \@ref(
 
 Think back to your observations from the eyeball test of Figure \@ref(fig:catxplot1) at the end of the last subsection. The column "mean vs Africa" is the same idea of comparing a summary statistic to a baseline for comparison, in this case the countries of Africa, but using means instead of medians. 
 
-```{r continent-mean-life-expectancies, echo=FALSE}
+```{r continent-mean-life-expectancies-2, echo=FALSE}
 gapminder2007 %>%
   group_by(continent) %>%
   summarize(mean = mean(lifeExp)) %>%
@@ -820,7 +932,8 @@ Recall in Subsection \@ref(model1points) we defined the following three concepts
 Let's use similar code (from Subsection \@ref(model1points)) to obtain these values for the `lifeExp_model` fit to the `gapminder2007` dataset: 
 
 ```{r}
-lifeExp_model_data <- gapminder2007 %>% select(country, lifeExp, continent) %>% 
+lifeExp_model_data <- gapminder2007 %>% 
+  select(country, lifeExp, continent) %>% 
   mutate(lifeExp_hat = fitted(lifeExp_model),
          residual = residuals(lifeExp_model))
 ```
@@ -1021,11 +1134,14 @@ Let's use our data wrangling tools from Chapter \@ref(wrangling) to compute the 
 ```{r}
 # Fit regression model:
 score_model <- lm(score ~ bty_avg, data = evals_ch5)
+
 # Get regression points:
-score_model_data <- evals_ch5 %>% select(score, bty_avg) %>% 
+score_model_data <- evals_ch5 %>% 
+  select(score, bty_avg) %>% 
   mutate(score_hat = fitted(score_model),
          residual = residuals(score_model)) %>% 
   rownames_to_column("ID")
+
 # Compute sum of squared residuals
 score_model_data %>%
   mutate(squared_residuals = residual^2) %>%
@@ -1078,12 +1194,6 @@ Compute the sum of squared residuals by hand for each line and show that of thes
 
 
 As we suggested in Subsection \@ref(model1EDA), interpreting coefficients that are not close to the extreme values of -1, 0, and 1 can be somewhat subjective. To help develop your sense of correlation coefficients, we suggest you play the following 80's-style video game called "Guess the correlation" at http://guessthecorrelation.com/.
-
-
-```{r guess-the-correlation, echo=FALSE, fig.cap="Preview of \"Guess the Correlation\" Game.", purl=FALSE, out.width = "70%"}
-knitr::include_graphics("images/copyright/guess_the_correlation.png")
-```
-
 
 
 ### What's to come?
