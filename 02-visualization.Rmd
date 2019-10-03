@@ -710,7 +710,7 @@ Observe in Figure \@ref(fig:badbox) that this plot does not provide information 
 
 We can convert the numerical variable `month` into a categorical variable by using the `factor()` function. So after applying `factor(month)`, month goes from having numerical values 1, 2, ..., 12 to having labels "1", "2", ..., "12." 
 
-```{r monthtempbox, fig.cap="Month by temp boxplot", fig.height=3.7}
+```{r monthtempbox, fig.cap="Temp by month boxplot", fig.height=3.7}
 ggplot(data = weather, mapping = aes(x = factor(month), y = temp)) +
   geom_boxplot()
 ```
