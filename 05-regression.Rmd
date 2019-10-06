@@ -72,6 +72,7 @@ Let's now load all the packages needed for this chapter (this assumes you've alr
     + `readr` for importing spreadsheet data into R
     + As well as the more advanced `purrr`, `tibble`, `stringr`, and `forcats` packages
 1. The `skimr` [@R-skimr] package, which provides a simple-to-use function to quickly compute a wide array of commonly-used summary statistics. \index{summary statistics}
+1. The `gapminder` package, which provides excerpts of data available from [Gapminder.org](https://gapminder.org)
 
 If needed, read Section \@ref(packages) for information on how to install and load R packages.
 
