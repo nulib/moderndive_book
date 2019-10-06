@@ -575,7 +575,7 @@ To answer such questions, we'll study the `gapminder` dataset in the `gapminder`
 We'll use this data for linear regression again, but note that our explanatory variable $x$ is now categorical, and not numerical like when we covered simple linear regression in Section \@ref(model1). More precisely, we have:
 
 1. A numerical outcome variable $y$. In this case, life expectancy.
-1. A single categorical explanatory variable $x$, In this case, the continent the country is part of. 
+1. A single categorical explanatory variable $x$. In this case, the continent the country is part of. 
 
 When the explanatory variable $x$ is categorical, the concept of a "best-fitting" line is a little different than the one we saw previously in Section \@ref(model1) where the explanatory variable $x$ was numerical. We'll study these differences shortly in Subsection \@ref(model2table), but first we conduct our exploratory data analysis.
 
