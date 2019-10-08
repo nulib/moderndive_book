@@ -117,7 +117,7 @@ So while both approaches above would achieve the same goal, the latter is much m
 
 * The starting value `x` will be a data frame. For example: `flights`.
 * The sequence of functions, here `f()`, `g()`, and `h()`, will be a sequence of any number of the 6 data wrangling verb-named functions we listed in the introduction to this chapter. For example: `filter(carrier == "AS")`.
-* The result will the transformed/modified data frame that you want. For example: a data frame consisting of only the subset of rows in `flights` corresponding to Alaska Airlines flights.
+* The result will be the transformed/modified data frame that you want. For example: a data frame consisting of only the subset of rows in `flights` corresponding to Alaska Airlines flights.
 
 Much like when adding layers to a `ggplot()` using the `+` sign at the end of lines, you form a single *chain* of data wrangling operations by combining verb-named functions into a single sequence with pipe operators `%>%` at the end of lines. So continuing our example involving Alaska Airlines flights, we form a chain using the pipe operator `%>%` and save the resulting data frame in `alaska_flights`:
 
@@ -126,7 +126,7 @@ alaska_flights <- flights %>%
   filter(carrier == "AS")
 ```
 
-Keep in mind, there are many more advanced data wrangling functions than just the 6 listed in the introduction to this chapter; you'll see some examples of these near in Section \@ref(other-verbs). However, just with these 6 verb-named functions you'll be able to perform a broad array of data wrangling tasks for the rest of this book.
+Keep in mind, there are many more advanced data wrangling functions than just the 6 listed in the introduction to this chapter; you'll see some examples of these in Section \@ref(other-verbs). However, just with these 6 verb-named functions you'll be able to perform a broad array of data wrangling tasks for the rest of this book.
 
 
 
@@ -140,7 +140,7 @@ Keep in mind, there are many more advanced data wrangling functions than just th
 knitr::include_graphics("images/filter.png")
 ```
 
-The `filter()` function here works much like the "Filter" option in Microsoft Excel; it allows you to specify criteria about the values of a variables in your dataset and then filters out only those rows that match that criteria.  We begin by focusing only on flights from New York City to Portland, Oregon.  The `dest` code (or airport code) for Portland, Oregon is `"PDX"`. Run the following and look at the resulting spreadsheet to ensure that only flights heading to Portland are chosen here:
+The `filter()` function here works much like the "Filter" option in Microsoft Excel; it allows you to specify criteria about the values of a variable in your dataset and then filters out only those rows that match that criteria. We begin by focusing only on flights from New York City to Portland, Oregon.  The `dest` code (or airport code) for Portland, Oregon is `"PDX"`. Run the following and look at the resulting spreadsheet to ensure that only flights heading to Portland are chosen here:
 
 ```{r, eval=FALSE}
 portland_flights <- flights %>% 
