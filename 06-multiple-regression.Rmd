@@ -539,7 +539,9 @@ coefs %>%
 
 Recall our interpretation of the `Estimate` column. Since `Africa` was the "baseline for comparison" group, the `Intercept` term corresponds to the mean life expectancy for all countries in Africa of 54.8 years. The other four values of `Estimate` correspond to "offsets" relative to the baseline group. So, for example, the "offset" corresponding to the Americas is +18.8 as compared to the baseline for comparison group Africa. In other words, the average life expectancy for countries in the Americas is 18.8 years *higher*. Thus the mean life expectancy for all countries in the Americas is 54.8 + 18.8 = 73.6. The same interpretation holds for Asia, Europe, and Oceania.
 
-Going back to our multiple regression model for teaching `score` using `age` and `gender` in Figure \@ref(fig:numxcatxplot1), we generate the regression table using the same two-step approach from Chapter \@ref(regression): we first "fit" the model using the `lm()` "linear model" function and then we apply the `summary()` function. This time however, our model formula won't be of the form `y ~ x`, but rather of the form `y ~ x1 + x2 + x1 * x2`. In other words, we include a *main effect* for each of our two explanatory variables `x1` and `x2`, as well as an *interaction term* `x1 * x2`:
+Going back to our multiple regression model for teaching `score` using `age` and `gender` in Figure \@ref(fig:numxcatxplot1), we generate the regression table using the same two-step approach from Chapter \@ref(regression): we first "fit" the model using the `lm()` "linear model" function and then we apply the `summary()` function. This time however, our model formula won't be of the form `y ~ x`, but rather of the form `y ~ x1 + x2 + x1 * x2`. In other words, we include a *main effect* for each of our two explanatory variables `x1` and `x2`, as well as an *interaction term* `x1 * x2`. In terms of the general mathematical equation, an interaction model with two explanatory variables is of the form: 
+
+$$\widehat{y} = b_0 + b_1 \cdot x_1 + b_2 \cdot x_2 + b_{1,2} \cdot x_1 \cdot x_2$$
 
 ```{r, eval=FALSE}
 # Fit regression model:
@@ -559,15 +561,11 @@ summary(score_model_interaction)$coefficients %>%
                 latex_options = c("hold_position"))
 ```
 
-This interaction model is of the form:
-
-$$\widehat{y} = b_0 + b_1 \cdot x_1 + b_2 \cdot x_2 + b_{1,2} \cdot x_1 \cdot x_2$$
-
-Looking at the regression table output in Table \@ref(tab:regtable-interaction), we see there are four rows of values in the `Estimate` column that correspond to the 4 estimated components of the model: $b_0, \ b_1, \ b_2,$ and $b_{1,2}$. Note that we chose to use the notation $b_{1,2}$ to make it clear this is the coefficient for the interaction term between $x1$ and $x2$, but we could have easily decided to denote this as $b_3$ instead. While it is not immediately apparent, using these four values we can write out the equations of both lines in Figure \@ref(fig:numxcatxplot1).
+Looking at the regression table output in Table \@ref(tab:regtable-interaction), we see there are four rows of values in the `Estimate` column that correspond to the 4 estimated components of the model: $b_0, \ b_1, \ b_2,$ and $b_{1,2}$. Note that we chose to use the notation $b_{1,2}$ to make it clear this is the coefficient for the interaction term between $x_1$ and $x_2$, but we could have easily decided to denote this as $b_3$ instead. While it is not immediately apparent, using these four values we can write out the equations of both lines in Figure \@ref(fig:numxcatxplot1).
 
 First, since the word `female` comes alphabetically before `male`, female instructors are the "baseline for comparison" group. Therefore `Intercept` is the intercept *for only the female instructors*. This holds similarly for `age`. It is the slope for age *for only the female instructors*. Thus the `r if_else(knitr::is_latex_output(), "darker-colored", "red")` regression line in Figure \@ref(fig:numxcatxplot1) has an intercept of 4.883 and slope for age of -0.018. Remember that for this particular data, while the intercept has a mathematical interpretation, it has no *practical* interpretation since there can't be any instructors with age zero.
 
-What about the intercept and slope for age of the male instructors (i.e. the `r if_else(knitr::is_latex_output(), "lighter-colored", "blue")` line in Figure \@ref(fig:numxcatxplot1))? This is where our notion of "offsets" comes into play once again. The value for `gendermale` of -0.446 is not the intercept for the male instructors, but rather the *offset*\index{offset} in intercept for male instructors relative to female instructors. Therefore, the intercept for the male instructors is `intercept + gendermale` = 4.883 + (-0.446) = 4.883 - 0.446 = 4.437. 
+What about the intercept and slope for age of the male instructors (i.e. the `r if_else(knitr::is_latex_output(), "lighter-colored", "blue")` line in Figure \@ref(fig:numxcatxplot1))? This is where our notion of "offsets" comes into play once again. The value for `gendermale` of -0.446 is not the intercept for the male instructors, but rather the *offset*\index{offset} in intercept for male instructors relative to female instructors. Therefore, the intercept for the male instructors is `Intercept + gendermale` = 4.883 + (-0.446) = 4.883 - 0.446 = 4.437. 
 
 Similarly, `age:gendermale` = 0.014 is not the slope for age for the male instructors, but rather the *offset* in slope for the male instructors. Therefore, the slope for age for the male instructors is `age + age:gendermale` =  -0.018 + 0.014 = -0.004. Therefore the `r if_else(knitr::is_latex_output(), "lighter-colored", "blue")` regression line in Figure \@ref(fig:numxcatxplot1) has intercept 4.437 and slope for age of -0.004.
 
@@ -590,7 +588,7 @@ tibble(
 options(digits = 3)
 ```
 
-Since the slope for age for the female instructors was -0.018, it means that on average, a female instructor who is a year older would have a teaching score that is 0.018 units **lower**. For the male instructors however, the corresponding associated decrease was on average only 0.004 units. While both slopes for age were negative, the slope for age for the female instructors is *more negative*. This is consistent with our observation from Figure \@ref(fig:numxcatxplot1), that this model is suggesting that age impacts teaching scores for female instructors more than for male instructors.
+Since the slope for age for the female instructors was -0.018, it means that on average, a female instructor who is a year older would have a teaching score that is 0.018 units *lower*. For the male instructors however, the corresponding associated decrease was on average only 0.004 units. While both slopes for age were negative, the slope for age for the female instructors is *more negative*. This is consistent with our observation from Figure \@ref(fig:numxcatxplot1), that this model is suggesting that age impacts teaching scores for female instructors more than for male instructors.
 
 Let's now write the equation for our regression lines, which we can use to compute our fitted values $\widehat{y} = \widehat{\text{score}}$.
 
@@ -650,15 +648,7 @@ Another way of thinking about interaction effects on teaching scores is as follo
 
 ### Parallel slopes model {#model4table}
 
-When creating regression models with one numerical and one categorical explanatory variable, the simplest type of model we can use is known as a *parallel slopes* model.\index{parallel slopes model} Parallel slopes models allow for each level of the categorical explanatory variable to have different intercepts but *force* all lines to have the same slope. The resulting regression lines are thus parallel. Let's visualize the best-fitting parallel slopes model to our `evals_ch6` data.
-
-Unfortunately, the `ggplot2` package does not have a convenient way to plot a parallel slopes model. We therefore created our own special purpose function `gg_parallel_slopes()` and included it in the `moderndive` package:
-
-```{r eval=FALSE}
-gg_parallel_slopes(y = "score", num_x = "age", cat_x = "gender", 
-                   data = evals_ch6)
-```
-
+When creating regression models with one numerical and one categorical explanatory variable, we are not just limited to interaction models as we just saw. Another type of model we can use is known as a *parallel slopes* model.\index{parallel slopes model} Unlike interaction models where the regression lines can have different intercepts and different slopes, parallel slopes models still allow for different intercepts but *force* all lines to have the same slope. The resulting regression lines are thus parallel. Unfortunately, the `ggplot2` package does not have a convenient way to plot a parallel slopes model, so we just display it for you in Figure \@ref(fig:numxcatx-parallel) but leave the code for a more advanced data visualization class. 
 
 ```{r numxcatx-parallel, echo=FALSE, warning=FALSE, fig.cap="Parallel slopes model of relationship of score with age and gender."}
 par_slopes <- gg_parallel_slopes(y = "score", num_x = "age", cat_x = "gender", 
@@ -671,15 +661,11 @@ if(knitr::is_html_output()){
 }
 ```
 
-Note the arguments to this function: the outcome variable `y = "score"`, the numerical explanatory variable `num_x = "age"`, the categorical explanatory variable `cat_x = "gender"`, and the data frame that includes this `data = evals_ch6`. Be careful to include the quotation marks when specifying all variables. 
-
-Note that the `gg_parallel_slopes()` function is quite different than all the `ggplot()` code you saw in Chapter \@ref(viz). This is because the `ggplot2` package does not include a function for plotting parallel slopes models. Thus we had to write a new function for ourselves and include it in the `moderndive` package. If you're curious, you can see the code for this function on [GitHub](https://github.com/moderndive/moderndive/blob/master/R/ggplot_parallel_slopes.R).
-
-Observe in Figure \@ref(fig:numxcatx-parallel) that we have parallel lines corresponding to the female and male instructors respectively: here they have the same negative slope.  This is different from \@ref(fig:numxcatxplot1), which allowed `male` and `female` to have different slopes. The regression lines automatically generated by the usual `ggplot()` code reflects an *interaction* model (rather than a parallel slopes model), which we will discuss in Subsection \@ref(model4interactiontable). Figure \@ref(fig:numxcatx-parallel) is telling us that instructors who are older will tend to receive lower teaching scores than instructors who are younger. Furthermore, since the lines are parallel, the associated penalty for aging is assumed to be the same for both female and male instructors. 
+Observe in Figure \@ref(fig:numxcatx-parallel) that we have parallel lines corresponding to the female and male instructors respectively: here they have the same negative slope.  This is different from the interaction model displayed in Figure \@ref(fig:numxcatxplot1), which allowed `male` and `female` to have different slopes. Figure \@ref(fig:numxcatx-parallel) is telling us that instructors who are older will tend to receive lower teaching scores than instructors who are younger. Furthermore, since the lines are parallel, the associated penalty for aging is assumed to be the same for both female and male instructors. 
 
 However, observe also in Figure \@ref(fig:numxcatx-parallel) that these two lines have different intercepts as evidenced by the fact that the `r if_else(knitr::is_latex_output(), "lighter-colored", "blue")` line corresponding to the male instructors is higher than the `r if_else(knitr::is_latex_output(), "darker-colored", "red")` line corresponding to the female instructors. This is telling us that irrespective of age, female instructors tended to receive lower teaching scores than male instructors. 
 
-In order to obtain the precise numerical values of the two intercepts and the single common slope, we once again "fit" the model using the `lm()` "linear model" function and then apply the `summary()` function. Our model formula is again of the form `y ~ x1 + x2`, where `x1` and `x2` represent the two predictor variables, `age` and `gender`. 
+In order to obtain the precise numerical values of the two intercepts and the single common slope, we once again "fit" the model using the `lm()` "linear model" function and then apply the `summary()` function. Our model formula this time is of the form `y ~ x1 + x2`, where `x1` and `x2` represent the two predictor variables, `age` and `gender`, but we do not include the extra interaction term `x1 * x2`. 
 
 ```{r, eval=FALSE}
 # Fit regression model:
@@ -699,11 +685,11 @@ summary(score_model_parallel_slopes)$coefficients %>%
                 latex_options = c("hold_position"))
 ```
 
-Looking at the regression table output in Table \@ref(tab:regtable-parallel-slopes), we see there are three rows of values in the `Estimate` column. While it's not immediately apparent, using these four values we can write out the equations of both lines in Figure \@ref(fig:numxcatx-parallel). 
+Looking at the regression table output in Table \@ref(tab:regtable-parallel-slopes), we see there are three rows of values in the `Estimate` column. Similar to what we did in Subsection \@ref(#model4interactiontable), using these three values we can write out the equations of both lines in Figure \@ref(fig:numxcatx-parallel). 
 
-First, since the word `female` comes alphabetically before `male`, female instructors are the "baseline for comparison" group. Therefore, `Intercept` is the intercept *for only the female instructors*. Thus the red regression line in Figure \@ref(fig:numxcatx-parallel) has an intercept of 4.484. Remember that for this particular data, while the intercept has a mathematical interpretation, it has no *practical* interpretation since there can't be any instructors with age zero. 
+Again, since the word `female` comes alphabetically before `male`, female instructors are the "baseline for comparison" group. Therefore, `Intercept` is the intercept *for only the female instructors*. Thus the red regression line in Figure \@ref(fig:numxcatx-parallel) has an intercept of 4.484. 
 
-What about the intercept for male instructors (i.e. the blue line in Figure Figure \@ref(fig:numxcatx-parallel))? This is where our notion of "offsets" comes into play once again. The value for `gendermale` of 0.191 is not the intercept (or slope) for the male instructors, but rather the *offset* in intercept for male instructors relative to female instructors. Therefore, the intercept for male instructors is `Intercept + gendermale` = $4.484 + 0.191 = 4.67$.
+Remember, the value for `gendermale` of 0.191 is not the intercept for the male instructors, but rather the *offset* in intercept for male instructors relative to female instructors. Therefore, the intercept for male instructors is `Intercept + gendermale` = $4.484 + 0.191 = 4.67$.
 
 We have an `Intercept` term corresponding to the intercept for the "baseline for comparison" female instructor group and a `gendermale` term corresponding to the *offset* in intercept for the male instructors relative to female instructors. In other words, in Figure \@ref(fig:numxcatx-parallel) the `r if_else(knitr::is_latex_output(), "darker-colored", "red")` regression line corresponding to the female instructors has an intercept of 4.484 while the `r if_else(knitr::is_latex_output(), "lighter-colored", "blue")` regression line corresponding to the male instructors has an intercept of 4.484 + 0.191 = 4.675. Once again, since there aren't any instructors of age 0, the intercepts only have a mathematical interpretation but no practical one. 
 
