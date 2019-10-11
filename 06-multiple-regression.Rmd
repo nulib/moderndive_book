@@ -648,7 +648,19 @@ Another way of thinking about interaction effects on teaching scores is as follo
 
 ### Parallel slopes model {#model4table}
 
-When creating regression models with one numerical and one categorical explanatory variable, we are not just limited to interaction models as we just saw. Another type of model we can use is known as a *parallel slopes* model.\index{parallel slopes model} Unlike interaction models where the regression lines can have different intercepts and different slopes, parallel slopes models still allow for different intercepts but *force* all lines to have the same slope. The resulting regression lines are thus parallel. Unfortunately, the `ggplot2` package does not have a convenient way to plot a parallel slopes model, so we just display it for you in Figure \@ref(fig:numxcatx-parallel) but leave the code for a more advanced data visualization class. 
+When creating regression models with one numerical and one categorical explanatory variable, we are not just limited to interaction models as we just saw. Another type of model we can use is known as a *parallel slopes* model.\index{parallel slopes model} Unlike interaction models where the regression lines can have different intercepts and different slopes, parallel slopes models still allow for different intercepts but *force* all lines to have the same slope. The resulting regression lines are thus parallel. We can think of a parallel slopes model as a restricted case of the interaction model where we've forced $b_{1,2}$, the coefficient of the interaction term $x_{1} \cdot x_2$, to be zero. Therefore, the mathematical equation for a parallel slopes model with two explanatory variables is of the form:
+
+$$
+\begin{aligned}
+\widehat{y} = \widehat{\text{score}} &= b_0 + b_{1} \cdot x_1 + b_{2} \cdot x_2 + b_{1,2} \cdot x_1 \cdot x_2\\
+&= b_0 + b_{1} \cdot x_1 + b_{2} \cdot x_2 + 0 \cdot x_1 \cdot x_2\\
+&= b_0 + b_{1} \cdot x_1 + b_{2} \cdot x_2
+\end{aligned}
+$$
+
+
+
+Unfortunately, the `ggplot2` package does not have a convenient way to plot a parallel slopes model, so we just display it for you in Figure \@ref(fig:numxcatx-parallel) but leave the code for a more advanced data visualization class. 
 
 ```{r numxcatx-parallel, echo=FALSE, warning=FALSE, fig.cap="Parallel slopes model of relationship of score with age and gender."}
 par_slopes <- gg_parallel_slopes(y = "score", num_x = "age", cat_x = "gender", 
@@ -685,15 +697,13 @@ summary(score_model_parallel_slopes)$coefficients %>%
                 latex_options = c("hold_position"))
 ```
 
-Looking at the regression table output in Table \@ref(tab:regtable-parallel-slopes), we see there are three rows of values in the `Estimate` column. Similar to what we did in Subsection \@ref(#model4interactiontable), using these three values we can write out the equations of both lines in Figure \@ref(fig:numxcatx-parallel). 
+Looking at the regression table output in Table \@ref(tab:regtable-parallel-slopes), we see there are three rows of values in the `Estimate` column. Similar to what we did in Subsection \@ref(model4interactiontable), using these three values we can write out the equations of both lines in Figure \@ref(fig:numxcatx-parallel). 
 
 Again, since the word `female` comes alphabetically before `male`, female instructors are the "baseline for comparison" group. Therefore, `Intercept` is the intercept *for only the female instructors*. Thus the red regression line in Figure \@ref(fig:numxcatx-parallel) has an intercept of 4.484. 
 
-Remember, the value for `gendermale` of 0.191 is not the intercept for the male instructors, but rather the *offset* in intercept for male instructors relative to female instructors. Therefore, the intercept for male instructors is `Intercept + gendermale` = $4.484 + 0.191 = 4.67$.
+Remember, the value for `gendermale` of 0.191 is not the intercept for the male instructors, but rather the *offset* in intercept for male instructors relative to female instructors. Therefore, the intercept for male instructors is `Intercept + gendermale` = $4.484 + 0.191 = 4.675$. In other words, in Figure \@ref(fig:numxcatx-parallel) the `r if_else(knitr::is_latex_output(), "darker-colored", "red")` regression line corresponding to the female instructors has an intercept of 4.484 while the `r if_else(knitr::is_latex_output(), "lighter-colored", "blue")` regression line corresponding to the male instructors has an intercept of 4.675. Once again, since there aren't any instructors of age 0, the intercepts only have a mathematical interpretation but no practical one. 
 
-We have an `Intercept` term corresponding to the intercept for the "baseline for comparison" female instructor group and a `gendermale` term corresponding to the *offset* in intercept for the male instructors relative to female instructors. In other words, in Figure \@ref(fig:numxcatx-parallel) the `r if_else(knitr::is_latex_output(), "darker-colored", "red")` regression line corresponding to the female instructors has an intercept of 4.484 while the `r if_else(knitr::is_latex_output(), "lighter-colored", "blue")` regression line corresponding to the male instructors has an intercept of 4.484 + 0.191 = 4.675. Once again, since there aren't any instructors of age 0, the intercepts only have a mathematical interpretation but no practical one. 
-
-Unlike in Table \@ref(tab:regtable-interaction) however, we now only have a single slope for age of -0.009. This is because the model specifies that both the female and male instructors have a common slope for age. \index{regression!multiple linear!parallel slopes model} This is telling us that an instructor who is a year older than another instructor received a teaching score that is on average 0.018 units *lower*. This penalty for aging applies equally for both female and male instructors. 
+Unlike in Table \@ref(tab:regtable-interaction) however, we now only have a single slope for age of -0.009. This is because the model specifies that both the female and male instructors have a common slope for age.  \index{regression!multiple linear!parallel slopes model} This is telling us that an instructor who is a year older than another instructor received a teaching score that is on average 0.018 units *lower*. This penalty for aging applies equally for both female and male instructors. 
 
 Let's summarize these values in Table \@ref(tab:parallel-slopes-summary), noting the different intercepts but common slopes:
 
@@ -714,7 +724,9 @@ tibble(
 options(digits = 3)
 ```
 
-Let's now write the equation for our regression lines, which we can use to compute our fitted values $\widehat{y} = \widehat{\text{score}}$.
+Recall that the common slope occurs because we chose not to include the interaction term $\mbox{age} \cdot \mathbb{1}_{\mbox{is male}}$ in our model. This is equivalent to assuming $b_{age,male} = 0$ and therefore not allowing there to be an "offset" in slope for males.
+
+Let's now write the equation for our parallel slopes regression lines, which we can use to compute our fitted values $\widehat{y} = \widehat{\text{score}}$.
 
 $$
 \begin{aligned}
@@ -803,15 +815,23 @@ What are these two values of $\widehat{y}$ = $\widehat{\text{score}}$ precisely?
 
 So our fitted values would be: 4.883 - 0.018 $\cdot$ 36 = 4.25 and 4.437 - 0.004 $\cdot$ 59 = 4.20 respectively. 
 
-Now what if we want the fitted values not just for the instructors of these two courses, but for the instructors of all 463 courses included in the `evals_ch6` data frame? Doing this by hand would be long and tedious! This is where the `get_regression_points()` function from the `moderndive` package can help: it will quickly automate this for all 463 courses. We present a preview of just the first 10 rows out of 463 in Table \@ref(tab:model4-points-table).
+Now what if we want the fitted values not just for the instructors of these two courses, but for the instructors of all 463 courses included in the `evals_ch6` data frame? Doing this by hand would be long and tedious! This is where our data wrangling code from Subsection \@ref(model1points) can help: it will quickly automate this for all 463 courses. We present a preview of just the first 10 rows out of 463 in Table \@ref(tab:model4-points-table).
 
 ```{r, eval=FALSE}
-regression_points <- get_regression_points(score_model_interaction)
-regression_points
+score_model_interaction_data <- evals_ch6 %>% 
+  select(score, age, gender) %>% 
+  mutate(score_hat = fitted(score_model_interaction),
+         residual = residuals(score_model_interaction)) %>% 
+  rownames_to_column("ID")
+score_model_interaction_data
 ```
 ```{r model4-points-table, echo=FALSE}
-regression_points <- get_regression_points(score_model_interaction)
-regression_points %>%
+score_model_interaction_data <- evals_ch6 %>% 
+  select(score, age, gender) %>% 
+  mutate(score_hat = fitted(score_model_interaction),
+         residual = residuals(score_model_interaction)) %>% 
+  rownames_to_column("ID")
+score_model_interaction_data %>%
   slice(1:10) %>%
   knitr::kable(
     digits = 3,
@@ -822,7 +842,7 @@ regression_points %>%
                 latex_options = c("hold_position"))
 ```
 
-In fact, it turns out that the female instructor of age 36 taught the first four courses, while the male instructor taught the next 3. The resulting $\widehat{y}$ = $\widehat{\text{score}}$ fitted values are in the `score_hat` column. Furthermore, the `get_regression_points()` function also returns the residuals $y-\widehat{y}$.  Notice for example the first and fourth courses the female instructor of age 36 taught had positive residuals, indicating that the actual teaching score they received from students was less than their fitted score of 4.25. On the other hand, the second and third course this instructor taught had negative residuals, indicating that the actual teaching score they received from students was more than their fitted score of 4.25. 
+In fact, it turns out that the female instructor of age 36 taught the first four courses, while the male instructor taught the next 3. The resulting $\widehat{y}$ = $\widehat{\text{score}}$ fitted values are in the `score_hat` column. The residuals $y-\widehat{y}$ are displayed in the `residuals` column.  Notice for example the first and fourth courses the female instructor of age 36 taught had positive residuals, indicating that the actual teaching score they received from students was less than their fitted score of 4.25. On the other hand, the second and third course this instructor taught had negative residuals, indicating that the actual teaching score they received from students was more than their fitted score of 4.25. 
 
 ```{block, type='learncheck', purl=FALSE}
 \vspace{-0.25in}
@@ -830,7 +850,7 @@ In fact, it turns out that the female instructor of age 36 taught the first four
 \vspace{-0.25in}
 ```
 
-**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** Compute the observed values, fitted values, and residuals not for the interaction model as we just did, but rather for the parallel slopes model we saved in `score_model_interaction`.
+**`r paste0("(LC", chap, ".", (lc <- lc + 1), ")")`** Compute the observed values, fitted values, and residuals not for the interaction model as we just did, but rather for the parallel slopes model we saved in `score_model_parallel_slopes`.
 
 ```{block, type='learncheck', purl=FALSE}
 \vspace{-0.25in}
@@ -853,7 +873,7 @@ In fact, it turns out that the female instructor of age 36 taught the first four
 
 ### Model selection {#model-selection}
 
-When do we use an interaction model versus a parallel slopes model? Recall in Sections \@ref(model4interactiontable) and \@ref(model4table) we fit both interaction and parallel slopes models for the outcome variable $y$ (teaching score) using a numerical explanatory variable $x_1$ (age) and a categorical explanatory variable $x_2$ (gender). Note that gender for this example is still, unfortunately, recorded as a binary variable in the data. We compared these models in Figure \@ref(fig:numxcatx-comparison), which we display again now. 
+When do we use an interaction model versus a parallel slopes model? Recall in Sections \@ref(model4interactiontable) and \@ref(model4table) we fit both interaction and parallel slopes models for the outcome variable $y$ (teaching score) using a numerical explanatory variable $x_1$ (age) and a categorical explanatory variable $x_2$ (gender). We compared these models in Figure \@ref(fig:numxcatx-comparison), which we display again now. 
 
 ```{r recall-parallel-vs-interaction, fig.width=8, echo=FALSE, fig.cap="Previously seen comparison of interaction and parallel slopes models."}
 if(knitr::is_html_output()){
@@ -890,24 +910,7 @@ Let's model the numerical outcome variable $y$, average SAT math score for that 
 1. A numerical explanatory variable $x_1$, the percentage of that high school's student body that are economically disadvantaged and
 1. A categorical explanatory variable $x_2$, the school size as measured by enrollment: small (13-341 students), medium (342-541 students), and large (542-4264 students).
 
-Let's create visualizations of both the interaction and parallel slopes model once again and display the output in Figure \@ref(fig:numxcatx-comparison-2). Recall from Subsection \@ref(model4table) that the `gg_parallel_slopes()` function is a special purpose function included in the `moderndive` package, since the `ggplot2` package does not include a function for plotting parallel slopes models.
-
-```{r, eval=FALSE}
-# Interaction model
-ggplot(MA_schools, 
-       aes(x = perc_disadvan, y = average_sat_math, color = size)) +
-  geom_point(alpha = 0.25) +
-  geom_smooth(method = "lm", se = FALSE ) +
-  labs(x = "Percent economically disadvantaged", y = "Math SAT Score", 
-       color = "School size", title = "Interaction model")
-# Parallel slopes model
-gg_parallel_slopes(y = "average_sat_math", num_x = "perc_disadvan", 
-                   cat_x = "size", data = MA_schools, alpha = 0.25) + 
-  labs(x = "Percent economically disadvantaged", 
-       y = "Math SAT Score", 
-       color = "School size", 
-       title = "Parallel slopes model") 
-```
+Figure \@ref(fig:numxcatx-comparison-2) visualizes both the interaction and parallel slopes models. 
 ```{r numxcatx-comparison-2, fig.width=8, echo=FALSE, warning=FALSE, fig.cap="Comparison of interaction and parallel slopes models for MA schools."}
 p1 <- ggplot(MA_schools, 
              aes(x = perc_disadvan, y = average_sat_math, color = size)) +
@@ -928,19 +931,19 @@ if(knitr::is_html_output()){
 }
 ```
 
-Look closely at the left-hand plot of Figure \@ref(fig:numxcatx-comparison-2) corresponding to an interaction model. While the slopes are indeed different, they do not differ *by much*. In other words, they are near identical. Now compare the left-hand plot with the right-hand plot corresponding to a parallel slopes model. The two models don't appear all that different. Therefore in this case, it can be argued that the additional complexity of the interaction model is *not warranted*. Thus following Occam's Razor, we should prefer the "simpler" parallel slopes model. 
+Look closely at the left-hand plot of Figure \@ref(fig:numxcatx-comparison-2) corresponding to an interaction model. While the slopes are indeed different, they do not differ *by much*. In other words, they are nearly identical. Now compare the left-hand plot with the right-hand plot corresponding to a parallel slopes model. The two models don't appear all that different. Therefore in this case, it can be argued that the additional complexity of the interaction model is *not warranted*. Thus following Occam's Razor, we should prefer the "simpler" parallel slopes model. 
 
 Let's explicitly define what "simpler" means in this case. Let's compare the regression tables for the interaction and parallel slopes models in Tables \@ref(tab:model2-interaction) and \@ref(tab:model2-parallel-slopes). 
 
 ```{r, eval=FALSE}
 model_2_interaction <- lm(average_sat_math ~ perc_disadvan * size, 
                           data = MA_schools)
-get_regression_table(model_2_interaction)
+summary(model_2_interaction)$coefficients
 ```
 ```{r model2-interaction, echo=FALSE}
 model_2_interaction <- lm(average_sat_math ~ perc_disadvan * size, 
                           data = MA_schools)
-get_regression_table(model_2_interaction) %>% 
+summary(model_2_interaction)$coefficients %>% 
   knitr::kable(
     digits = 3,
     caption = "Interaction model regression table", 
@@ -952,12 +955,12 @@ get_regression_table(model_2_interaction) %>%
 ```{r, eval=FALSE}
 model_2_parallel_slopes <- lm(average_sat_math ~ perc_disadvan + size, 
                               data = MA_schools)
-get_regression_table(model_2_parallel_slopes)
+summary(model_2_parallel_slopes)$coefficients
 ```
 ```{r model2-parallel-slopes, echo=FALSE}
 model_2_parallel_slopes <- lm(average_sat_math ~ perc_disadvan + size, 
                               data = MA_schools)
-get_regression_table(model_2_parallel_slopes) %>% 
+summary(model_2_parallel_slopes)$coefficients %>% 
   knitr::kable(
     digits = 3,
     caption = "Parallel slopes regression table", 
@@ -1105,16 +1108,6 @@ In this example of Simpson's Paradox, the credit limit is a *confounding variabl
 
 ### What's to come?
 
-Congratulations! We've completed the "Data modeling with moderndive" portion of this book. We're ready to proceed to the next part of this book: "Statistical inference with infer." Statistical inference is the science of inferring about some unknown quantity using sampling. 
+Congratulations! We've completed the "Data modeling" portion of this book. We're ready to proceed to the next part of the book: "Statistical Theory." These chapters will lay the foundation for key ideas in statistics such as randomization (Chapter \@ref(causality)), populations and samples (Chapter \@ref(populations)), and sampling distributions (Chapter \@ref(sampling)). 
 
-For example, among the most well-known examples of sampling involves *polls*. Because asking an entire population about their opinions would be a long and arduous task, pollsters often take a smaller sample that is hopefully representative of the population. Based on the results of this sample, pollsters hope to make claims about the entire population. 
-
-Once we've covered Chapters \@ref(sampling) on sampling, \@ref(confidence-intervals) on confidence intervals, and \@ref(hypothesis-testing) on hypothesis testing, we'll revisit the regression models we studied in Chapter \@ref(regression) and \@ref(multiple-regression) in Chapter \@ref(inference-for-regression) on inference for regression. So far we've only studied the `estimate` column of all our regression tables. The next four chapters focus on what the remaining columns mean: the standard error (`std_error`), the test `statistic`, the `p_value`, and the lower and upper bounds of confidence intervals (`lower_ci` and `upper_ci`). 
-
-Furthermore in Chapter \@ref(inference-for-regression), we'll revisit the concept of residuals $y - \widehat{y}$ and discuss their importance when interpreting the results of a regression model. We'll perform what is known as a *residual analysis* of the `residual` variable of all `get_regression_points()` outputs. Residual analyses allow you to verify what are known as the *conditions for inference for regression*. On to Chapter \@ref(sampling) on sampling!
-
-```{r echo=FALSE, fig.cap="ModernDive flowchart - On to Part III!", fig.align='center', purl = FALSE}
-knitr::include_graphics("images/flowcharts/flowchart/flowchart.006.png")
-```
-
-
+In Parts I and II of the book, we've been focusing only on exploratory data analysis and exploring relationships that exist *in our observed dataset*. Once we've established some of the statistical theory in Part III, we will be able to move beyond exploratory data analysis and into "statistical inference" in Part IV, where we will learn how (and when it is appropirate) to make inferences about statistical relationships *in a population beyond our dataset*.
