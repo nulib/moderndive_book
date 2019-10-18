@@ -394,7 +394,7 @@ debt_model_data %>%
                 latex_options = c("hold_position"))
 ```
 
-Let's interpret these results for the third card holder. Our regression model tells us that for a person with a `credit_limit` of \$7,075 and an `income` of \$104,600, we would expect them to have credit card `debt` of \$580, on average. We calculated this number by plugging into our regression equation: 
+Let's interpret these results for the third card holder. Our regression model tells us that for a person with a `credit_limit` of \$7,075 and an `income` of \$104,600, we would expect them to have credit card `debt` of \$683, on average. We calculated this number by plugging into our regression equation: 
 
 $$
 \begin{aligned}
