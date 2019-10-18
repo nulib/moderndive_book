@@ -178,7 +178,7 @@ image_link <- function(path,
 ```{block, type='learncheck', purl=FALSE}
 **Please note that this is a "development version" of this book for the new design of STAT 202. Meaning this is a work in progress being edited and updated as we go.**
 
-We would appreicate any feedback on typos and errors.
+We would appreciate any feedback on typos and errors.
 ```
 
 
