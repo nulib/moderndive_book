@@ -473,7 +473,6 @@ bowl %>%
 ```
 Here we see that $\hat{\pi}=$ `r mean(virtual_prop_red$prop_red)`, which is a good approximation to the true proportion of red balls in the bowl ($\pi =$ `r sum(bowl$color == "red")/dim(bowl)[1]`). This is because the sample proportion $\hat{\pi} = \frac{\# \  of \ successes}{\# \ of \ trials}$ is an unbiased estimator of the population proportion $\pi$. 
 
-
 The difficulty with introducing this idea of bias in an introductory course is that most statistics used at this level (e.g., proportions, means, regression coefficients) are unbiased. Examples of biased statistics are more common in more complex models. One example, however, that illustrates this bias concept is that of sample variance estimator.
 
 Recall that we have used *standard deviation* as a summary statistic for how spread out data is. **Variance** is simply standard deviation *squared*, and thus it is also a measure of spread. The sample standard deviation is usually denoted by the letter $s$, and sample variance by $s^2$.  These are estimators for the population standard deviation (denoted $\sigma$) and the population variance (denoted $\sigma^2$). We estimate the sample variance using 

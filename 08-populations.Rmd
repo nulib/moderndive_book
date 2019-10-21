@@ -20,9 +20,14 @@ options(scipen = 99, digits = 3)
 # Set random number generator see value for replicable pseudorandomness. Why 76?
 # https://www.youtube.com/watch?v=xjJ7FheCkCU
 set.seed(76)
+
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(readr)
 ```
 
-In this chapter we will continue our discussion of statistical theory, by learning about **samples** and **populations**. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand insights and trends in the sample but instead to make inferences from such insights and trends observed to trends in a larger population. This chapter provides a broad overview of the concepts of samples and populations and the links between them. In Chapters \@ref(sampling) we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions. 
+In this chapter we will continue our discussion of statistical theory, by learning about **samples** and **populations**. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand insights and trends in the sample but instead to make inferences from such insights and trends observed to trends in a larger population. This chapter provides a broad overview of the concepts of samples and populations and the links between them. In Chapter \@ref(sampling) we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions. 
 
 ---
 
@@ -52,6 +57,30 @@ In order to understand the relationship between samples and populations, we begi
 The first two of these definitions makes clear that the data you have in hand (sample) is being used to make inferences to a larger set of data you don't have (population). Definitions 3 and 4 refine these further, focusing on the specific numbers you wish you knew (population parameter) and the ones you are able to calculate using your data (estimate / sample statistic). Definitions 5 and 6 refer to how a sample is related to a population --- either they are the same (census) or the mechanism through which they are related needs to be clear (random sampling). 
 
 The goal is to use data in the sample to make **inferences** to a value in the population. The act of "inferring" is to deduce or conclude (information) from evidence and reasoning. **Statistical inference** is the theory, methods, and practice of forming judgments about the parameters of a population and the reliability of statistical relationships, typically on the basis of random sampling (Wikipedia). In other words, statistical inference is the act of inference via sampling. 
+
+```{r parameters-table, echo=FALSE, message=FALSE}
+if(!file.exists("rds/ch8_parameters.rds")){
+  ch8_parameters <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1SMKwojwYNKe51lrOut7xgnzvB1aZXsF9402EA02f2hnF98pvL6aY5cwkSvZmWojmpQmPrp48ubdY/pub?output=csv" %>% 
+    read_csv(na = "")
+    write_rds(ch8_parameters, "rds/ch8_parameters.rds")
+} else {
+  ch8_parameters <- read_rds("rds/ch8_parameters.rds")
+}
+
+ch8_parameters %>% 
+  kable(
+    caption = "Population Parameters and Sample Statistics", 
+    booktabs = TRUE,
+    escape = FALSE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("HOLD_position")) %>%
+  column_spec(1, width = "0.5in") %>% 
+  column_spec(2, width = "0.5in") %>%
+  column_spec(3, width = "0.7in") %>%
+  column_spec(4, width = "1.1in") %>% 
+  footnote(symbol = c("$s_y$ and $s_x$ are the sample standard deviations for $y$ and $x$ respectively"), escape = F)
+```
 
 
 ---
