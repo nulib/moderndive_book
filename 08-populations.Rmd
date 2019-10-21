@@ -20,9 +20,14 @@ options(scipen = 99, digits = 3)
 # Set random number generator see value for replicable pseudorandomness. Why 76?
 # https://www.youtube.com/watch?v=xjJ7FheCkCU
 set.seed(76)
+
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(readr)
 ```
 
-In this chapter we kick off the third segment of this book, statistical inference, by learning about **samples** and **populations**. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand insights and trends in the sample but instead to make inferences from such insights and trends observed to trends in a larger population. This chapter provides a broad overview of the concepts of samples and populations and the links between them. In Chapters 9 and 10 we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions, respectively. As mentioned before, the concepts throughout this text all build into a culmination allowing you to "think with data."
+In this chapter we will continue our discussion of statistical theory, by learning about **samples** and **populations**. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand insights and trends in the sample but instead to make inferences from such insights and trends observed to trends in a larger population. This chapter provides a broad overview of the concepts of samples and populations and the links between them. In Chapter \@ref(sampling) we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions. 
 
 ---
 
@@ -37,13 +42,13 @@ Why not use population data instead? While a **census** of every person (or unit
 
 In order to understand the relationship between samples and populations, we begin by providing some vocabulary and notation that we will use throughout the remainder of the book. 
 
-1. **Population**: A population is a collection of individuals or units about which we are interested. We mathematically denote the population's size using upper-case $N$. 
+1. **Population**: A population is a collection of individuals or units about which we are interested. We mathematically denote the population's size (i.e. the total number of individuals or units) using upper-case $N$. 
 
 2. **Sample**: A sample is a collection of individuals or units from a population. These are the individuals or units about which we have data. We mathematically denote the sample's size, the number of people or units we have data on, using lower-case $n$. 
 
 3. **Population parameter**: A population parameter is a numerical value that summarizes the population. *In almost all cases the population parameter is unknown, but we wish to know it.* Population parameters are typically denoted mathematically using Greek letters. For example, you may want to know the population mean, which is typically written as $\mu$ (pronounced "mu"). Or, you might want to know the population proportion, which is typically written as $\pi$ (pronounced "pi"). Population size, $N$, is a case where we do not follow the Greek letter convention to denote a population parameter.
 
-4. **Sample statistic / estimate **: A sample statistic is a numerical value that summarizes the sample and can be used to estimate an unknown population parameter. It is common for a sample statistic to sometimes be called an estimate or point estimate. These are sometimes denoted mathematically using Roman letters (that correspond to Greek letters) or via inclusion of a "hat" above the population parameter (called hat-notation). For example, the population proportion $\pi$ can be estimated using a sample proportion which is denoted with $\hat{\pi}$ or $p$. The population mean $\mu$ can be estimated using the sample mean which is denoted $\hat{\mu}$ or $\overline{x}$. Obviously $\overline{x}$ doesn't follow either the Greek letter or hat-notation conventions, but it is the standard notation for the sample mean. 
+4. **Sample statistic / estimate **: A sample statistic is a numerical value that summarizes the sample and can be used to estimate an unknown population parameter. It is common for a sample statistic to sometimes be called an estimate or **point estimate**. These are sometimes denoted mathematically using Roman letters (that correspond to Greek letters) or via inclusion of a "hat" above the population parameter (called hat-notation). For example, the population proportion $\pi$ can be estimated using a sample proportion which is denoted with $\hat{\pi}$ or $p$. The population mean $\mu$ can be estimated using the sample mean which is denoted $\hat{\mu}$ or $\overline{x}$. Obviously $\overline{x}$ doesn't follow either the Greek letter or hat-notation conventions, but it is the standard notation for the sample mean. 
 
 5. **Census**: A census is an exhaustive collection of a measurement on all $N$ individuals or units in the population in order to compute the exact value of a population parameter for the given measure.
 
@@ -52,6 +57,30 @@ In order to understand the relationship between samples and populations, we begi
 The first two of these definitions makes clear that the data you have in hand (sample) is being used to make inferences to a larger set of data you don't have (population). Definitions 3 and 4 refine these further, focusing on the specific numbers you wish you knew (population parameter) and the ones you are able to calculate using your data (estimate / sample statistic). Definitions 5 and 6 refer to how a sample is related to a population --- either they are the same (census) or the mechanism through which they are related needs to be clear (random sampling). 
 
 The goal is to use data in the sample to make **inferences** to a value in the population. The act of "inferring" is to deduce or conclude (information) from evidence and reasoning. **Statistical inference** is the theory, methods, and practice of forming judgments about the parameters of a population and the reliability of statistical relationships, typically on the basis of random sampling (Wikipedia). In other words, statistical inference is the act of inference via sampling. 
+
+```{r parameters-table, echo=FALSE, message=FALSE}
+if(!file.exists("rds/ch8_parameters.rds")){
+  ch8_parameters <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1SMKwojwYNKe51lrOut7xgnzvB1aZXsF9402EA02f2hnF98pvL6aY5cwkSvZmWojmpQmPrp48ubdY/pub?output=csv" %>% 
+    read_csv(na = "")
+    write_rds(ch8_parameters, "rds/ch8_parameters.rds")
+} else {
+  ch8_parameters <- read_rds("rds/ch8_parameters.rds")
+}
+
+ch8_parameters %>% 
+  kable(
+    caption = "Population Parameters and Sample Statistics", 
+    booktabs = TRUE,
+    escape = FALSE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("HOLD_position")) %>%
+  column_spec(1, width = "0.5in") %>% 
+  column_spec(2, width = "0.5in") %>%
+  column_spec(3, width = "0.7in") %>%
+  column_spec(4, width = "1.1in") %>% 
+  footnote(symbol = c("$s_y$ and $s_x$ are the sample standard deviations for $y$ and $x$ respectively"), escape = F)
+```
 
 
 ---
@@ -67,7 +96,7 @@ Recall that a population is a collection of individuals or observations that you
 
 In each case, the definition of the population includes clear inclusion / exclusion criteria. These help to clarify where inferences are appropriate to be made and where they are not.
 
-In order to select a sample from a population, a **population frame** must be created. This frame includes a list of all possible individuals or observations within the population. Sometimes this frame is difficult to make - and the result is that the population frame may not be exactly the same as the population. For example, for the above populations, population frames might be:
+In order to select a sample from a population, a **population frame** must be created. A population frame includes a list of all possible individuals or observations within the population. Sometimes this frame is difficult to make - and the result is that the population frame may not be exactly the same as the population. For example, for the above populations, population frames might be:
 
 * A list of phone numbers registered to individuals in the United States. (Once contacted, only those that are citizens 18 and older would be able to be included.)
 * A list of public elementary *schools* (not students), available for the prior year in the Texas public education state longitudinal data system. 
