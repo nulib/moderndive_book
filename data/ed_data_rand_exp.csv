@@ -1,0 +1,336 @@
+FEMALE,MINORITY,MOM_ED,DAD_ED,SES_CONT,MATH_pre,T,MATH_post
+0,0,Some college,Vocational/technical program,-0.27,18.68,1,48.53495309066514
+1,0,Vocational/technical program,Some college,-0.03,30.58,0,50.87135800490914
+1,0,Some college,Bachelor's degree,0.48,31.57,0,51.861358004909135
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.03,31.41,0,51.70135800490914
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.66,24.24,1,54.09495309066514
+0,0,Master's degree,Master's degree,1.53,49.75,1,79.60495309066515
+1,0,HS diploma or equivalent,Some college,0.2,27.1,0,47.39135800490914
+0,0,Some college,HS diploma or equivalent,0.07,27.35,0,47.64135800490914
+1,1,HS diploma or equivalent,Some college,-0.32,25.14,1,54.99495309066515
+0,0,Bachelor's degree,Bachelor's degree,0.96,41.88,1,71.73495309066514
+1,0,Some college,Master's degree,0.65,72.91,1,102.76495309066514
+1,0,HS diploma or equivalent,Vocational/technical program,-0.18,28.46,0,48.751358004909136
+1,0,Bachelor's degree,Master's degree,0.96,90.63,0,110.92135800490914
+1,0,Bachelor's degree,Bachelor's degree,1.3,35.53,0,55.82135800490914
+0,1,Bachelor's degree,Bachelor's degree,0.71,40.84,0,61.131358004909146
+1,0,HS diploma or equivalent,Some college,0.17,43.99,0,64.28135800490914
+0,0,Bachelor's degree,Master's degree,1.22,39.63,0,59.92135800490914
+1,1,HS diploma or equivalent,Some college,-0.2,40.68,1,70.53495309066514
+0,0,Some college,Bachelor's degree,0.45,30.49,0,50.78135800490914
+1,0,Some college,Some college,0.32,29.97,1,59.82495309066515
+0,1,Some college,Bachelor's degree,0.5,40.68,0,60.971358004909135
+1,0,Bachelor's degree,Bachelor's degree,1.05,37.23,0,57.52135800490913
+1,0,Bachelor's degree,Bachelor's degree,0.25,32.89,1,62.74495309066515
+1,0,Bachelor's degree,Bachelor's degree,1.27,62.61,1,92.46495309066515
+0,1,Bachelor's degree,Some college,0.8,31.76,1,61.614953090665146
+0,0,Master's degree,Master's degree,1.55,37.57,0,57.861358004909135
+1,1,8th grade or below,8th grade or below,-1.1,24.1,0,44.39135800490914
+0,1,Master's degree,HS diploma or equivalent,0.64,45.16,1,75.01495309066514
+1,1,Some college,HS diploma or equivalent,-0.38,32.12,0,52.41135800490913
+0,0,Some college,HS diploma or equivalent,-0.28,26.48,1,56.334953090665145
+0,0,Bachelor's degree,Master's degree,1.25,24.06,0,44.35135800490914
+1,0,Master's degree,Bachelor's degree,1.57,49.56,1,79.41495309066515
+1,1,Bachelor's degree,Bachelor's degree,0.58,34.03,0,54.32135800490914
+1,0,HS diploma or equivalent,Bachelor's degree,0,52.38,0,72.67135800490914
+1,1,HS diploma or equivalent,HS diploma or equivalent,-0.33,33.02,1,62.874953090665144
+1,1,Master's degree,Dctorate degree or professional degree,2.19,50.91,1,80.76495309066514
+0,1,9th - 12th grade,9th - 12th grade,-0.78,39.78,0,60.07135800490914
+1,0,Bachelor's degree,Bachelor's degree,0.9,30.79,1,60.64495309066514
+1,1,Some college,HS diploma or equivalent,0.24,41.18,0,61.471358004909135
+1,0,Vocational/technical program,Bachelor's degree,0.67,49.29,0,69.58135800490913
+0,0,Bachelor's degree,Dctorate degree or professional degree,1.6,41.13,1,70.98495309066514
+1,0,Some college,Some college,0.15,35.56,1,65.41495309066515
+1,0,HS diploma or equivalent,Some college,-0.15,36.05,0,56.34135800490914
+0,0,Bachelor's degree,Bachelor's degree,0.42,72.45,1,102.30495309066515
+0,0,Some college,Some college,0.31,43.96,1,73.81495309066514
+1,0,Master's degree,Bachelor's degree,1.27,53.45,0,73.74135800490915
+0,0,HS diploma or equivalent,Vocational/technical program,-0.24,27.89,1,57.74495309066515
+1,0,Some college,HS diploma or equivalent,-0.03,27.57,1,57.42495309066514
+1,0,Master's degree,HS diploma or equivalent,1.08,41.93,0,62.221358004909135
+0,1,Some college,Some college,0.11,34.78,0,55.07135800490914
+1,0,Dctorate degree or professional degree,Master's degree,1.5,83.48,0,103.77135800490915
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.51,22.56,0,42.85135800490914
+1,0,HS diploma or equivalent,Bachelor's degree,0.04,50.58,1,80.43495309066515
+1,1,HS diploma or equivalent,Vocational/technical program,-0.29,23.2,0,43.49135800490914
+1,0,Bachelor's degree,Dctorate degree or professional degree,1.91,55.29,1,85.14495309066514
+1,0,Master's degree,Bachelor's degree,1.11,60.18,1,90.03495309066514
+0,0,HS diploma or equivalent,9th - 12th grade,-0.26,47,0,67.29135800490914
+1,0,Bachelor's degree,Graduate or professional school but no degree,1.1,42.59,1,72.44495309066515
+0,0,Some college,Bachelor's degree,0.47,39.56,0,59.851358004909144
+0,1,Some college,Some college,-0.15,26.13,0,46.42135800490914
+0,0,Some college,Some college,0.08,40.3,0,60.59135800490914
+0,0,HS diploma or equivalent,HS diploma or equivalent,-0.31,26.56,0,46.85135800490914
+1,1,Some college,Some college,-0.32,29.56,0,49.85135800490914
+0,0,HS diploma or equivalent,Vocational/technical program,-0.33,37.38,1,67.23495309066514
+0,0,Bachelor's degree,Bachelor's degree,0.54,24.02,0,44.31135800490914
+1,0,HS diploma or equivalent,Some college,-0.18,35.3,0,55.59135800490914
+1,0,HS diploma or equivalent,Vocational/technical program,-0.39,35.93,0,56.221358004909135
+1,0,HS diploma or equivalent,Bachelor's degree,0.24,39.57,0,59.861358004909135
+1,1,Dctorate degree or professional degree,Dctorate degree or professional degree,2.27,65.12,0,85.41135800490915
+1,1,Master's degree,Dctorate degree or professional degree,1.93,50.5,1,80.35495309066515
+0,1,Some college,Master's degree,0.73,68.27,1,98.12495309066514
+0,0,Some college,Bachelor's degree,0.84,22.32,1,52.17495309066514
+1,0,Some college,Some college,0.86,34.48,1,64.33495309066514
+1,1,Some college,HS diploma or equivalent,-0.13,26.3,0,46.59135800490914
+1,0,Bachelor's degree,Bachelor's degree,0.26,56.27,1,86.12495309066514
+0,0,Some college,Bachelor's degree,0.54,33.37,0,53.66135800490913
+0,0,Bachelor's degree,Some college,1.19,38.76,1,68.61495309066514
+1,0,Vocational/technical program,Bachelor's degree,0.7,27.41,1,57.264953090665145
+1,0,Graduate or professional school but no degree,Some college,1.15,30.01,0,50.30135800490914
+0,1,Bachelor's degree,Some college,0.08,29.04,0,49.331358004909134
+1,0,Some college,Some college,0.26,30.64,0,50.93135800490914
+1,0,Master's degree,Master's degree,1.69,67.65,0,87.94135800490915
+1,0,Master's degree,Bachelor's degree,1.21,43.09,0,63.381358004909146
+1,0,Dctorate degree or professional degree,Dctorate degree or professional degree,2.56,37.98,1,67.83495309066514
+0,1,Some college,Some college,-0.07,31.82,0,52.111358004909135
+0,0,Some college,Bachelor's degree,0.18,36.88,1,66.73495309066514
+1,0,Bachelor's degree,HS diploma or equivalent,-0.06,50.36,1,80.21495309066515
+0,1,Bachelor's degree,Bachelor's degree,1.06,31.46,1,61.31495309066514
+0,0,HS diploma or equivalent,HS diploma or equivalent,-0.39,51.65,0,71.94135800490913
+1,0,HS diploma or equivalent,Some college,0.16,36.35,1,66.20495309066514
+1,1,Graduate or professional school but no degree,Some college,0.69,38.64,1,68.49495309066515
+1,0,Vocational/technical program,Bachelor's degree,0.46,40.68,1,70.53495309066514
+0,0,Master's degree,Master's degree,1.61,54.34,0,74.63135800490915
+1,0,Some college,Some college,0.4,40.69,0,60.98135800490914
+1,0,Master's degree,Bachelor's degree,0.88,36.56,1,66.41495309066515
+1,0,HS diploma or equivalent,Vocational/technical program,0.38,42.06,1,71.91495309066515
+1,0,Bachelor's degree,HS diploma or equivalent,0.25,43.72,1,73.57495309066515
+1,1,HS diploma or equivalent,8th grade or below,-0.38,38.56,0,58.851358004909144
+0,1,Bachelor's degree,Dctorate degree or professional degree,1.91,43.03,1,72.88495309066515
+0,0,Some college,HS diploma or equivalent,-0.1,33.41,1,63.264953090665145
+1,0,Some college,Some college,0.48,52.14,0,72.43135800490914
+0,0,HS diploma or equivalent,HS diploma or equivalent,-0.31,17.3,1,47.154953090665146
+1,1,9th - 12th grade,9th - 12th grade,-0.85,19.81,0,40.10135800490914
+0,1,8th grade or below,Some college,-0.58,41.68,0,61.971358004909135
+0,0,Some college,HS diploma or equivalent,-0.29,32.3,1,62.154953090665146
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.39,52.6,1,82.45495309066514
+1,0,Master's degree,HS diploma or equivalent,0.57,56.98,1,86.83495309066514
+0,1,HS diploma or equivalent,Master's degree,1.18,42.45,1,72.30495309066515
+1,0,Bachelor's degree,HS diploma or equivalent,0.29,49.69,1,79.54495309066515
+1,1,8th grade or below,8th grade or below,-1.05,32.46,1,62.31495309066514
+1,1,Some college,Some college,0.24,23.84,1,53.694953090665145
+1,0,Bachelor's degree,Master's degree,1.32,46.59,0,66.88135800490915
+1,1,Some college,Master's degree,1.05,29.21,1,59.06495309066514
+0,0,HS diploma or equivalent,Dctorate degree or professional degree,1.13,38.54,1,68.39495309066514
+0,0,HS diploma or equivalent,Some college,-0.09,40.05,0,60.34135800490914
+1,0,Some college,Bachelor's degree,1.06,101.09,1,130.94495309066514
+1,1,Bachelor's degree,Some college,0.49,37.2,0,57.491358004909145
+1,1,Some college,Dctorate degree or professional degree,1.41,46.15,0,66.44135800490913
+1,0,9th - 12th grade,Some college,0.03,34.76,1,64.61495309066514
+1,0,Master's degree,Master's degree,1.71,31.72,0,52.01135800490914
+0,0,HS diploma or equivalent,HS diploma or equivalent,-0.51,34.68,1,64.53495309066514
+0,0,HS diploma or equivalent,8th grade or below,-0.74,42.07,1,71.92495309066514
+0,0,HS diploma or equivalent,9th - 12th grade,-0.68,23.81,0,44.10135800490914
+1,0,Bachelor's degree,Some college,0.48,46.47,1,76.32495309066515
+1,0,Bachelor's degree,Some college,0.64,63.73,1,93.58495309066514
+1,1,Bachelor's degree,Bachelor's degree,1.41,47.99,0,68.28135800490914
+1,0,Bachelor's degree,Bachelor's degree,0.59,53.96,1,83.81495309066514
+0,1,Vocational/technical program,Vocational/technical program,0.09,42.76,0,63.05135800490913
+0,0,Master's degree,Dctorate degree or professional degree,1.96,53.24,0,73.53135800490914
+1,0,Vocational/technical program,9th - 12th grade,-0.42,43.81,0,64.10135800490914
+0,0,Some college,HS diploma or equivalent,-0.18,49.92,0,70.21135800490914
+0,0,Some college,Some college,-0.09,43.91,0,64.20135800490914
+0,0,Graduate or professional school but no degree,Bachelor's degree,1.21,40.75,1,70.60495309066515
+1,0,Some college,Some college,0,45.38,0,65.67135800490914
+0,0,Bachelor's degree,Some college,0.68,36.62,1,66.47495309066514
+1,0,Some college,HS diploma or equivalent,-0.22,42.82,1,72.67495309066514
+1,1,HS diploma or equivalent,Vocational/technical program,-0.43,33.39,1,63.24495309066515
+0,0,Bachelor's degree,Bachelor's degree,0.27,44.58,0,64.87135800490914
+0,1,HS diploma or equivalent,HS diploma or equivalent,-0.49,21.18,1,51.03495309066514
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.15,33.32,1,63.17495309066514
+0,0,Some college,Some college,0.1,32.72,1,62.57495309066515
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.61,36.96,0,57.251358004909136
+0,0,HS diploma or equivalent,HS diploma or equivalent,-0.44,33.39,1,63.24495309066515
+1,0,Bachelor's degree,Some college,0.08,38.72,1,68.57495309066515
+1,0,Some college,HS diploma or equivalent,-0.21,48.78,0,69.07135800490914
+0,0,Bachelor's degree,Bachelor's degree,0.74,40.83,0,61.12135800490914
+1,0,Some college,Some college,0.34,36.03,1,65.88495309066515
+0,0,Some college,Some college,0.36,25.84,1,55.694953090665145
+0,0,Some college,Vocational/technical program,-0.05,30.64,1,60.49495309066515
+1,0,HS diploma or equivalent,9th - 12th grade,-0.6,29.35,1,59.20495309066514
+0,0,Bachelor's degree,Bachelor's degree,0.38,33.74,0,54.03135800490914
+1,1,HS diploma or equivalent,HS diploma or equivalent,-0.56,38.04,1,67.89495309066514
+1,0,Some college,HS diploma or equivalent,-0.23,45.7,0,65.99135800490915
+1,0,Bachelor's degree,Bachelor's degree,0.33,34.7,1,64.55495309066515
+0,0,Bachelor's degree,Bachelor's degree,0.31,44.84,0,65.13135800490915
+1,0,Bachelor's degree,Master's degree,1.14,54.6,1,84.45495309066514
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.58,38.32,0,58.611358004909135
+1,1,HS diploma or equivalent,HS diploma or equivalent,-0.46,48.01,1,77.86495309066514
+0,1,Some college,9th - 12th grade,-0.47,18.95,0,39.24135800490914
+1,1,HS diploma or equivalent,HS diploma or equivalent,-0.61,28.02,1,57.874953090665144
+0,0,Some college,Some college,0.1,46.3,1,76.15495309066515
+1,1,Some college,Some college,0.57,51.6,1,81.45495309066514
+0,0,Some college,Some college,-0.33,53.2,1,83.05495309066515
+0,0,Some college,HS diploma or equivalent,0.04,46.62,0,66.91135800490913
+1,0,Bachelor's degree,Bachelor's degree,0.75,57.12,1,86.97495309066514
+1,0,Some college,9th - 12th grade,-0.42,35.45,1,65.30495309066515
+1,0,HS diploma or equivalent,Vocational/technical program,-0.27,38.43,0,58.721358004909135
+0,0,Some college,HS diploma or equivalent,-0.22,47.03,1,76.88495309066515
+1,0,9th - 12th grade,HS diploma or equivalent,-0.57,33.72,1,63.57495309066515
+1,0,Bachelor's degree,Bachelor's degree,1.27,26.86,0,47.15135800490914
+0,0,Bachelor's degree,Master's degree,1.22,38.03,0,58.32135800490914
+1,0,Bachelor's degree,Graduate or professional school but no degree,1.28,52.52,0,72.81135800490914
+0,0,Master's degree,Master's degree,1.66,62.43,1,92.28495309066514
+0,1,HS diploma or equivalent,HS diploma or equivalent,-0.5,27.22,1,57.07495309066515
+1,1,HS diploma or equivalent,HS diploma or equivalent,-0.51,26.69,0,46.98135800490914
+0,0,Some college,Bachelor's degree,0.35,22.99,0,43.28135800490914
+1,0,Bachelor's degree,Bachelor's degree,0.77,48.72,0,69.01135800490914
+0,0,Bachelor's degree,Master's degree,0.91,51.77,1,81.62495309066514
+0,0,9th - 12th grade,HS diploma or equivalent,-0.61,37.74,0,58.03135800490914
+1,0,Some college,Bachelor's degree,0.94,33.15,0,53.441358004909134
+0,1,HS diploma or equivalent,HS diploma or equivalent,-0.54,32,0,52.29135800490914
+0,0,Master's degree,HS diploma or equivalent,0.38,53.6,1,83.45495309066514
+0,1,Some college,9th - 12th grade,-0.32,38.21,1,68.06495309066514
+0,1,Bachelor's degree,Bachelor's degree,1.11,31.28,0,51.57135800490914
+1,0,Some college,Bachelor's degree,0.48,27.78,1,57.63495309066515
+0,0,Some college,Bachelor's degree,0.48,42.41,0,62.70135800490914
+0,0,Vocational/technical program,Vocational/technical program,0.28,34.64,1,64.49495309066515
+0,0,HS diploma or equivalent,HS diploma or equivalent,-0.48,56.14,0,76.43135800490914
+0,1,Some college,HS diploma or equivalent,-0.26,23,1,52.85495309066515
+0,1,Some college,Some college,0.24,30.94,1,60.794953090665146
+0,0,HS diploma or equivalent,Vocational/technical program,0.45,32.4,0,52.691358004909134
+0,0,Master's degree,Bachelor's degree,0.93,47.94,1,77.79495309066515
+0,0,HS diploma or equivalent,Some college,-0.15,50.12,1,79.97495309066514
+1,0,Vocational/technical program,HS diploma or equivalent,-0.39,52.72,1,82.57495309066515
+1,0,Some college,Some college,0.05,33.18,0,53.471358004909135
+0,0,HS diploma or equivalent,Some college,0.65,62.69,0,82.98135800490914
+1,0,Bachelor's degree,Bachelor's degree,0.21,39.34,0,59.631358004909146
+0,0,Some college,HS diploma or equivalent,-0.41,50.61,0,70.90135800490914
+1,0,Bachelor's degree,HS diploma or equivalent,0.12,36.03,0,56.32135800490914
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.18,26.42,0,46.711358004909144
+0,0,8th grade or below,8th grade or below,-0.99,21.14,1,50.99495309066515
+0,1,HS diploma or equivalent,HS diploma or equivalent,-0.49,34.84,0,55.131358004909146
+1,0,HS diploma or equivalent,Vocational/technical program,0.07,30.27,0,50.56135800490914
+0,0,Bachelor's degree,Some college,1.03,36.9,0,57.191358004909134
+1,0,Some college,Vocational/technical program,0.23,47.14,1,76.99495309066515
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.34,26.84,0,47.13135800490914
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.43,25.27,0,45.56135800490914
+1,1,Bachelor's degree,Some college,0.48,32.04,1,61.89495309066514
+1,0,Bachelor's degree,Dctorate degree or professional degree,1.32,36.98,1,66.83495309066514
+1,1,Bachelor's degree,Dctorate degree or professional degree,2.04,45.05,1,74.90495309066515
+1,0,Some college,HS diploma or equivalent,-0.13,45.17,1,75.02495309066515
+1,0,Bachelor's degree,Dctorate degree or professional degree,1.37,44.01,0,64.30135800490913
+0,1,HS diploma or equivalent,HS diploma or equivalent,-1.01,31.94,1,61.794953090665146
+1,1,HS diploma or equivalent,HS diploma or equivalent,-0.52,22.6,0,42.89135800490914
+1,1,Graduate or professional school but no degree,Some college,0.85,32.88,0,53.17135800490914
+0,0,HS diploma or equivalent,Bachelor's degree,0.5,53.56,1,83.41495309066515
+1,0,Bachelor's degree,HS diploma or equivalent,0.4,33.09,1,62.94495309066515
+0,0,HS diploma or equivalent,Vocational/technical program,0.42,29,1,58.85495309066515
+1,1,Some college,9th - 12th grade,-0.49,70.46,1,100.31495309066514
+1,1,Some college,HS diploma or equivalent,-0.25,28.95,1,58.804953090665144
+0,1,Vocational/technical program,HS diploma or equivalent,-0.29,27.82,0,48.111358004909135
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.39,57.6,0,77.89135800490914
+0,0,Bachelor's degree,Bachelor's degree,1.18,46,0,66.29135800490914
+0,0,Bachelor's degree,HS diploma or equivalent,0.58,46.5,1,76.35495309066515
+0,1,HS diploma or equivalent,HS diploma or equivalent,-0.48,41.3,0,61.59135800490914
+0,0,HS diploma or equivalent,HS diploma or equivalent,-0.35,41.16,1,71.01495309066514
+0,0,Some college,Bachelor's degree,0.78,43.27,0,63.56135800490914
+1,1,Some college,Bachelor's degree,0.66,24.1,0,44.39135800490914
+1,1,Vocational/technical program,9th - 12th grade,-0.5,31.34,0,51.63135800490914
+1,1,HS diploma or equivalent,HS diploma or equivalent,-0.48,36.17,0,56.461358004909144
+1,0,HS diploma or equivalent,HS diploma or equivalent,0.43,63.35,0,83.64135800490914
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.33,32.87,1,62.72495309066514
+0,0,Bachelor's degree,Bachelor's degree,0.55,43.56,1,73.41495309066515
+0,0,Bachelor's degree,Master's degree,1.17,40.56,0,60.851358004909144
+0,1,Some college,HS diploma or equivalent,-0.24,35.36,0,55.65135800490914
+0,1,Bachelor's degree,Dctorate degree or professional degree,2.15,51.33,1,81.18495309066515
+0,1,Some college,Some college,0.11,30.58,0,50.87135800490914
+1,1,HS diploma or equivalent,9th - 12th grade,-0.68,37.08,1,66.93495309066515
+1,1,HS diploma or equivalent,HS diploma or equivalent,-0.5,31.32,1,61.17495309066514
+1,0,HS diploma or equivalent,Some college,-0.33,34.01,1,63.86495309066514
+0,0,Vocational/technical program,Graduate or professional school but no degree,0.66,40.96,1,70.81495309066514
+0,1,Bachelor's degree,HS diploma or equivalent,0.03,44.79,1,74.64495309066514
+0,0,Bachelor's degree,Bachelor's degree,1.22,44.97,1,74.82495309066515
+1,0,Vocational/technical program,9th - 12th grade,-0.4,50.19,0,70.48135800490914
+1,0,Bachelor's degree,Some college,0.38,31.39,0,51.68135800490914
+1,1,9th - 12th grade,9th - 12th grade,-0.89,20.62,0,40.91135800490914
+1,0,Master's degree,Some college,0.53,46.3,0,66.59135800490914
+0,0,Some college,Bachelor's degree,0.18,36.07,1,65.92495309066514
+0,0,9th - 12th grade,HS diploma or equivalent,-0.64,20.04,1,49.89495309066514
+1,0,Some college,Some college,0.16,42.27,0,62.56135800490914
+0,0,Bachelor's degree,Some college,0.97,27.75,1,57.60495309066515
+0,1,Some college,Some college,-0.15,28.64,1,58.49495309066515
+0,1,Bachelor's degree,HS diploma or equivalent,0.61,41.62,0,61.91135800490913
+1,1,8th grade or below,Some college,-0.45,44.43,1,74.28495309066514
+1,0,Bachelor's degree,Bachelor's degree,0.27,49.64,1,79.49495309066515
+1,1,Some college,HS diploma or equivalent,0.22,25.13,1,54.984953090665144
+1,0,Some college,Some college,0.1,27.87,0,48.16135800490914
+0,1,Dctorate degree or professional degree,Dctorate degree or professional degree,1.34,37.17,1,67.02495309066515
+0,1,Vocational/technical program,9th - 12th grade,0.05,28.14,0,48.43135800490914
+1,1,Bachelor's degree,8th grade or below,-0.51,27.96,0,48.251358004909136
+1,0,Dctorate degree or professional degree,Dctorate degree or professional degree,2.28,39.14,0,59.43135800490914
+0,0,Some college,Dctorate degree or professional degree,1.82,39.4,0,59.691358004909134
+1,1,Bachelor's degree,Bachelor's degree,0.64,45.01,1,74.86495309066514
+1,1,9th - 12th grade,9th - 12th grade,-0.68,27.57,0,47.861358004909135
+0,1,8th grade or below,8th grade or below,-1.25,37.69,1,67.54495309066515
+0,0,Master's degree,Dctorate degree or professional degree,2.33,48.74,0,69.03135800490914
+0,1,Dctorate degree or professional degree,Dctorate degree or professional degree,1.53,44.66,0,64.95135800490914
+0,1,9th - 12th grade,9th - 12th grade,-0.92,29.17,1,59.02495309066515
+1,1,HS diploma or equivalent,HS diploma or equivalent,-0.33,36.66,1,66.51495309066514
+1,1,Bachelor's degree,Bachelor's degree,1.14,32.8,0,53.09135800490914
+1,1,HS diploma or equivalent,9th - 12th grade,-0.81,22.38,1,52.234953090665144
+1,0,Bachelor's degree,Bachelor's degree,1.16,70.34,0,90.63135800490915
+0,1,Dctorate degree or professional degree,Dctorate degree or professional degree,2.42,47.08,0,67.37135800490914
+1,0,Bachelor's degree,HS diploma or equivalent,0.37,32.2,1,62.05495309066515
+0,1,HS diploma or equivalent,9th - 12th grade,-0.58,22.71,0,43.001358004909136
+0,1,8th grade or below,8th grade or below,-1.16,25.6,1,55.45495309066514
+0,1,HS diploma or equivalent,HS diploma or equivalent,-0.46,18.1,1,47.95495309066514
+0,1,9th - 12th grade,9th - 12th grade,-0.84,21.93,0,42.221358004909135
+1,1,Some college,Some college,0.27,47.63,0,67.92135800490914
+1,0,Dctorate degree or professional degree,Master's degree,1.53,47.18,1,77.03495309066514
+1,1,Some college,HS diploma or equivalent,-0.22,43.31,0,63.601358004909144
+0,0,Some college,Some college,0.09,35.19,0,55.48135800490914
+1,0,Some college,HS diploma or equivalent,0.02,27.65,0,47.941358004909134
+1,1,Some college,Bachelor's degree,0.22,31.63,0,51.92135800490914
+1,0,Vocational/technical program,Bachelor's degree,0.34,50.5,0,70.79135800490914
+1,1,Bachelor's degree,Some college,0.46,29.53,1,59.38495309066515
+0,1,HS diploma or equivalent,HS diploma or equivalent,-0.09,25.8,0,46.09135800490914
+1,1,Some college,Some college,0.12,44.09,0,64.38135800490915
+1,1,Some college,Bachelor's degree,0.09,43.93,1,73.78495309066514
+0,0,Some college,HS diploma or equivalent,-0.2,39.23,0,59.52135800490913
+1,0,Some college,Some college,0.24,70.77,0,91.06135800490914
+0,0,Master's degree,Some college,1.42,49.64,1,79.49495309066515
+1,0,Bachelor's degree,Bachelor's degree,1.06,35.48,1,65.33495309066514
+1,0,Some college,Some college,0.39,28.26,1,58.114953090665146
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.32,39.09,1,68.94495309066515
+0,0,Bachelor's degree,Dctorate degree or professional degree,1.99,44.26,0,64.55135800490913
+0,0,Some college,HS diploma or equivalent,0.26,43.71,0,64.00135800490914
+0,0,Some college,Some college,0.7,56.23,1,86.08495309066514
+1,0,Some college,Master's degree,0.9,47.79,1,77.64495309066514
+1,1,Vocational/technical program,HS diploma or equivalent,0.02,57.62,0,77.91135800490913
+1,0,9th - 12th grade,9th - 12th grade,-0.84,26.59,0,46.88135800490914
+1,0,Bachelor's degree,Bachelor's degree,0.64,40.21,1,70.06495309066514
+0,0,Master's degree,Dctorate degree or professional degree,2.33,53.46,1,83.31495309066514
+0,1,HS diploma or equivalent,HS diploma or equivalent,-0.49,28.12,1,57.974953090665146
+0,0,HS diploma or equivalent,HS diploma or equivalent,-0.43,31.85,0,52.14135800490914
+0,0,Bachelor's degree,Some college,0.68,43.2,0,63.491358004909145
+0,1,Some college,Some college,0.29,34.84,0,55.131358004909146
+1,0,Bachelor's degree,Bachelor's degree,0.65,44.67,1,74.52495309066515
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.51,39.86,1,69.71495309066515
+0,0,9th - 12th grade,HS diploma or equivalent,-0.56,30.37,0,50.66135800490914
+0,0,HS diploma or equivalent,9th - 12th grade,-0.61,35.89,1,65.74495309066515
+1,0,HS diploma or equivalent,Bachelor's degree,0.34,38.31,1,68.16495309066515
+1,0,Some college,HS diploma or equivalent,0.13,34.52,0,54.81135800490914
+0,1,Master's degree,Master's degree,1.56,48.74,0,69.03135800490914
+0,0,HS diploma or equivalent,Vocational/technical program,-0.21,57.14,1,86.99495309066515
+0,0,Some college,HS diploma or equivalent,-0.2,35.51,0,55.80135800490913
+0,1,Some college,HS diploma or equivalent,0.3,46.07,0,66.36135800490914
+0,0,HS diploma or equivalent,HS diploma or equivalent,-0.32,27.51,1,57.364953090665146
+1,0,Master's degree,Bachelor's degree,1.43,49.06,1,78.91495309066515
+0,0,HS diploma or equivalent,HS diploma or equivalent,-0.38,35.72,0,56.01135800490914
+0,0,Master's degree,Bachelor's degree,1.28,35.33,1,65.18495309066515
+1,0,Bachelor's degree,Bachelor's degree,0.91,50.91,0,71.20135800490914
+1,0,Some college,9th - 12th grade,-0.21,31.72,0,52.01135800490914
+1,0,Vocational/technical program,Some college,0.25,33.4,1,63.25495309066514
+0,0,9th - 12th grade,HS diploma or equivalent,-0.6,29.83,0,50.12135800490914
+1,0,Some college,Some college,0.34,33.31,1,63.16495309066515
+1,1,8th grade or below,8th grade or below,-0.68,22.58,1,52.43495309066515
+1,0,Master's degree,Some college,0.86,36.38,1,66.23495309066514
+1,0,HS diploma or equivalent,HS diploma or equivalent,-0.48,47.08,0,67.37135800490914
+1,0,Some college,Bachelor's degree,0.63,57.22,1,87.07495309066515
+1,0,Bachelor's degree,HS diploma or equivalent,-0.15,38.13,1,67.98495309066514
+1,0,Bachelor's degree,Bachelor's degree,0.75,31.71,1,61.56495309066514
+0,0,Bachelor's degree,Bachelor's degree,0.88,41.26,0,61.55135800490913
+0,0,Some college,HS diploma or equivalent,-0.1,26.84,0,47.13135800490914
+0,0,Some college,Some college,0.18,66.29,0,86.58135800490915

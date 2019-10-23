@@ -115,7 +115,7 @@ coin_flips3 %>%
   mutate(percent = n/sum(n))
 ```
 
-Often times when running a randomized experiment in practice, you want to ensure that exactly half of your participants end up in the treatment group. In this case, you don't want to flip a coin for each participant, because just by chance, you could end up with 63% of people in the treatment group, for example. Instead, you can imagine each participant having an ID number, which is then randomly sorted or shuffled. You could then assign the first half of ID numbers to the treatment group, for example. R has many ways of mimicing this type of process as well. For example, in Section \@ref(ed-data), we will use the function `complete_ra` from the `randomizr` package to randomly assign half of our dataset to a treatment group and half to a control group. 
+Often times when running a randomized experiment in practice, you want to ensure that exactly half of your participants end up in the treatment group. In this case, you don't want to flip a coin for each participant, because just by chance, you could end up with 63% of people in the treatment group, for example. Instead, you can imagine each participant having an ID number, which is then randomly sorted or shuffled. You could then assign the first half of the randomly sorted ID numbers to the treatment group, for example. R has many ways of mimicing this type of process as well, such as the `randomizr` package.
 
 ## Omitted variables {#omitted-variables}
 
@@ -143,7 +143,7 @@ This means that before the treatment is given, on average the two groups (T and 
 
 ### Randomization Example {#ed-data}
 
-Let’s see the magic of randomization in action. First, we'll load in a dataset called `ed_data`. This data originally came from the Early Childhood Longitudinal Study (ECLS) program but has been subsetted for this example. Let's take a look at the data.
+Let’s see the magic of randomization in action. First, we'll load in a dataset called `ed_data`. This data originally came from the Early Childhood Longitudinal Study (ECLS) program but has been adapted for this example. Let's take a look at the data.
 
 ```{r eclsK, echo=FALSE, message=FALSE}
 if(!file.exists("rds/eclsK.rds")){
@@ -160,31 +160,7 @@ ed_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTE0OPjv8
 
 glimpse(ed_data)
 ```
-It includes information on 335 Kindergarten students: indicator variables for whether they are female or minority students, information on their parents' highest level of education, a continuous measure of the their socio-economic status (SES), and their reading and math scores. For our purposes, we will assume that these are all **pre-treatment variables** that are measured on students at the beginning of the year, before we conduct our (hypothetical) randomized experiment.
-
-In order to randomly assign each of these students to treatment or control, we can use the `complete_ra()` function in the `randomizr` package. The first argument `N` specifies the total number of cases to be randomized, which in this example is `r dim(ed_data)[1]`, the number of Kindergarteners in our dataset. The default is to randomly assign into two equal size groups, which is what we want, so we do not have to specify anything else. 
-
-```{r, echo = FALSE}
-set.seed(999)
-```
-
-```{r}
-# The dim() function returns the number of 
-# rows and columns in a data frame 
-# (i.e. it's dimensions).
-# Here we set N to equal the number of rows
-N <- dim(ed_data)[1] 
-ed_data_rand_exp <- ed_data %>% 
-  mutate(T = complete_ra(N = N))
-```
-
-We can then take a look at the variable `T` in our new `ed_data_rand_exp` data and see that 167 students were assigned a value of 1, which we will define to be the treatment group and 168 were assigned a value of 0, which we will define to be the control group. 
-
-```{r}
-ed_data_rand_exp %>% 
-  group_by(T) %>% 
-  count()
-```
+It includes information on 335 Kindergarten students: indicator variables for whether they are female or minority students, information on their parents' highest level of education, a continuous measure of the their socio-economic status (SES), and their reading and math scores. For our purposes, we will assume that - with the expection of `MATH_post` - these are all **pre-treatment variables** that are measured on students at the beginning of the year, before we conduct our (hypothetical) randomized experiment. `MATH_post` are math scores that are collected at the end of the school year, after students in the treatment group have received the new curriculum.
 
 Remember that because the treatment assignment was **random**, we don't expect a student's treatment status to be correlated with any of their other pre-treatment characteristics. In other words, students in the treatment and control groups should look approximately the same *on average*. Looking at the means of all the numeric variables by treatment group, we can see that this is true in our example. Note how the `summarise_if` function is working here; if a variable in the dataset is numeric, then it is summarized by calculating its `mean`.  
 ```{r}
@@ -197,13 +173,6 @@ Both the treatment and control groups appear to be approximately the same on ave
 In our hypothetical randomized experiment, after randomizing students into the treatment and control groups, we would then implement some educational intervention. For example, perhaps students in the treatment group recieve some new specialized curriculum, and the students in the control group receive the "business-as-usual" curriculum. We would then measure student reading and math scores again at the end of the year, and if we observed that the treatment group was scoring higher (or lower) on average than the control group, we could attribute that difference entirely to the new curriculum. We would not have to worry about other omitted variables being the cause of the difference in test scores, because randomization ensured that the two groups were equivalent on average on *all* pre-treatment characteristics, both observed and unobserved. 
 
 In comparison, in an observational study, the two groups are not equivalent on these pre-treatment variables. In the same example above, let us imagine where instead of being randomly assigned to treatment, instead students with lower SES are assigned to the new specialized curriculum (T = 1), and those with higher SES are assigned to the business as usual curriculum (T = 0). To accomplish this in R, let's create a second version of our `ed_data`, which we will call `ed_data_obs`, and use the `arrange()` function to sort the dataset by `SES_CONT`. We can then assign the 167 students with the lowest SES (who are now in the first 167 rows) a value of 1 for the treatment group and the 168 students with the highest SES to a value of 0 for the control group.
-
-```{r}
-# Note the function `rep()` replicates a value a specified number of times 
-ed_data_obs <- ed_data %>% 
-  arrange(SES_CONT) %>%
-  mutate(T = c(rep(1, 167), rep(0, 168)))
-```
 
 In this case, the table of comparisons between the two groups looks quite different:  
 ```{r}
@@ -226,24 +195,6 @@ As we learned in Chapter \@ref(multiple-regression), we can now interpret the co
 
 Importantly, the relationship between T and Y, adjusting for Z can be similar or different than the relationship between T and Y alone. In advance, you simply cannot know one from the other.
 
-In our `ed_data` example above, let's assume that on average, all students will increase their test scores by about 20 points throughout the year, but those recieving the treatment increase their scores by an additional 10 points on average. That is, let's assume the treatment effect is $\beta_1 = 10$. Note, we would NOT know this in real life - this is what we are trying to estimate- but we can mimic this scenario in R for demonstration purposes.  
-
-In most scenarios, the treatment will not raise everyone's score by exactly the same amount, nor will every student increase their scores by exactly the same amount over the course of the year. Students may increase their scores by 20 points *on average*, but there will likely be some random "noise" involved. That is, some students will increase their scores by slightly more than 20 and others by slightly less than 20, just by chance. We can use another one of R's random generating functions to mimic this random noise. 
-
-Let's create a new variable `MATH_post` that corresponds to the (hypothetical) post-treatment math scores in our randomized experiment. For the students in the treatment group, we will add approximately 30 points on average to their pre-treatment math score using the function `rnorm(n = 1, mean = 30, sd = 1)`. The function `rnorm` generates a random variable from the normal distribution (which we will discuss in Chapter \@ref(sampling)) with a specified mean and standard deviation. For the students in the control group, we will add an average of 20 points to their pre-treatment math scores. Again, it is important to note this is for demonstration purposes only- in real life, we only observe the test scores, but we never observe the random process that generated them. 
-```{r, echo = FALSE}
-set.seed(73)
-```
-
-```{r}
-ed_data_rand_exp <- ed_data_rand_exp %>% 
-  mutate(MATH_post = 
-           case_when(T == 1 ~ MATH + rnorm(1, 30, 1), 
-                     T == 0 ~ MATH + rnorm(1, 20, 1)))
-```
-
-Here we used a new function `case_when()` inside the `mutate()` function. As its name suggests, `case_when()` mutates cases (i.e. rows) when they meet a specified criteria (e.g. `T == 1`) and assigns them a new value, which is specified after the tilde `~`. So, when students were part of the (randomly assigned) treatment group, we generated their post-test math score (`MATH_post`) by taking their pre-test score (`MATH`) and adding an average of 30 points. 
-
 We can verify that this did result in the treatment group scoring approximately 10 points higher than the control group (since all students gain an average of 20 points during the year).
 
 ```{r}
@@ -259,13 +210,8 @@ fit <- lm(MATH_post ~ T, data = ed_data_rand_exp)
 fit
 ```
 
-Let's also create a set of (hypothetical) post-treatment test scores in our `ed_data_obs` data set as well for the non-randomized experiment case, and look at two regression models estimating the effect of treatment on math scores, with and without controlling for SES. 
+Let's also look at post-treatment test scores in our `ed_data_obs` data set as well for the non-randomized experiment case, and look at two regression models estimating the effect of treatment on math scores, with and without controlling for SES. 
 ```{r}
-ed_data_obs <- ed_data_obs %>% 
-  mutate(MATH_post = 
-           case_when(T == 1 ~ MATH + rnorm(1, 30, 1), 
-                     T == 0 ~ MATH + rnorm(1, 20, 1)))
-
 fit1_obs <- lm(MATH_post ~ T, data = ed_data_obs)
 summary(fit1_obs)$coefficients
 
