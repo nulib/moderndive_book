@@ -145,27 +145,30 @@ This means that before the treatment is given, on average the two groups (T and 
 
 Let’s see the magic of randomization in action. First, we'll load in a dataset called `ed_data`. This data originally came from the Early Childhood Longitudinal Study (ECLS) program but has been adapted for this example. Let's take a look at the data.
 ```{r eclsK, echo=FALSE, message=FALSE}
-if(!file.exists("data/ed_data_rand_exp.csv")){
-  ed_data_rand_exp <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZUqCh_ROL0eGZ97qszaThMLaL79g7AXi5xdLMILHHjs3iEVrKCv5TPapBXFE1w07BKMW8R7sVu71B/pub?gid=40509529&single=true&output=csv" %>%
+if(!file.exists("data/ed_data.csv")){
+  ed_data <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRJbOGxTyRvSwYijZEz87DnWXdwyxRTNlC3teg4FyqZ7IFyeg2f9ksVJXxODawJast8egjO_IG5K2hO/pub?gid=2078077477&single=true&output=csv" %>%
     read_csv(na = "")
-    write_csv(ed_data_rand_exp, "data/ed_data_rand_exp.csv")
+    write_csv(ed_data, "data/ed_data.csv")
 } else {
-  ed_data_rand_exp <- read_csv("data/ed_data_rand_exp.csv")
+  ed_data <- read_csv("data/ed_data.csv")
 }
 ```
 
 ```{r, message = FALSE}
-ed_data_rand_exp <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRZUqCh_ROL0eGZ97qszaThMLaL79g7AXi5xdLMILHHjs3iEVrKCv5TPapBXFE1w07BKMW8R7sVu71B/pub?gid=40509529&single=true&output=csv")
+ed_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRJbOGxTyRvSwYijZEz87DnWXdwyxRTNlC3teg4FyqZ7IFyeg2f9ksVJXxODawJast8egjO_IG5K2hO/pub?gid=2078077477&single=true&output=csv")
 
-glimpse(ed_data_rand_exp)
+glimpse(ed_data)
 ```
-It includes information on 335 Kindergarten students: indicator variables for whether they are female or minority students, information on their parents' highest level of education, a continuous measure of the their socio-economic status (SES), and their reading and math scores. For our purposes, we will assume that - with the expection of `MATH_post` - these are all **pre-treatment variables** that are measured on students at the beginning of the year, before we conduct our (hypothetical) randomized experiment. `MATH_post` are math scores that are collected at the end of the school year, after students in the treatment group have received the new curriculum.
+It includes information on 335 Kindergarten students: indicator variables for whether they are female or minority students, information on their parents' highest level of education, a continuous measure of the their socio-economic status (SES), and their reading and math scores. For our purposes, we will assume that these are all **pre-treatment variables** that are measured on students at the beginning of the year, before we conduct our (hypothetical) randomized experiment. 
+
+Imagine that we have a promising new curriculum for teaching math to Kindergarteners, and we want to know whether or not the curriculum is effective. We can conduct a randomized experiment to test this. We randomly assign half of the students to the treatment group, where they will receive the new curriculum, and the other half of students to the control group where they will receive the "business as usual" curriculum. We can accomplish this in R using the `complete_ra()` function in the `randomizr` package. 
 
 Remember that because the treatment assignment was **random**, we don't expect a student's treatment status to be correlated with any of their other pre-treatment characteristics. In other words, students in the treatment and control groups should look approximately the same *on average*. Looking at the means of all the numeric variables by treatment group, we can see that this is true in our example. Note how the `summarise_if` function is working here; if a variable in the dataset is numeric, then it is summarized by calculating its `mean`.  
 ```{r}
-ed_data_rand_exp %>% 
-  group_by(T) %>% 
-  summarise_if(is.numeric, mean)
+ed_data %>% 
+  group_by(Trt_rand) %>% 
+  summarise_if(is.numeric, mean) %>% 
+  select(-c(ID, Trt_non_rand))
 ```
 Both the treatment and control groups appear to be approximately the same on average on the observed characteristics of gender, minority status, SES, and pre-treatment reading and math scores. Note that since `FEMALE` is coded as 0 - 1, the "mean" is simply the proportion of students in the dataset that are female. The same is true for `MINORITY`.
 
@@ -173,27 +176,12 @@ In our hypothetical randomized experiment, after randomizing students into the t
 
 In comparison, in an observational study, the two groups are not equivalent on these pre-treatment variables. In the same example above, let us imagine where instead of being randomly assigned to treatment, instead students with lower SES are assigned to the new specialized curriculum (T = 1), and those with higher SES are assigned to the business as usual curriculum (T = 0). To accomplish this in R, let's create a second version of our `ed_data`, which we will call `ed_data_obs`, and use the `arrange()` function to sort the dataset by `SES_CONT`. We can then assign the 167 students with the lowest SES (who are now in the first 167 rows) a value of 1 for the treatment group and the 168 students with the highest SES to a value of 0 for the control group.
 
-```{r eclsK-obs, echo=FALSE, message=FALSE}
-if(!file.exists("data/ed_data_rand_exp.csv")){
-  ed_data_obs <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQr12mpR6bcQsVyKX9diAH8Ix7zq0cgy6QJEz7QVp_fFDK7hc6yZHWU0CuJWAXvSPoiWEAfavMHzwWx/pub?gid=2089779433&single=true&output=csv" %>%
-    read_csv(na = "")
-    write_csv(ed_data_obs, "data/ed_data_obs.csv")
-} else {
-  ed_data_obs <- read_csv("data/ed_data_obs.csv")
-}
-```
-
-```{r, message = FALSE}
-ed_data_obs <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQr12mpR6bcQsVyKX9diAH8Ix7zq0cgy6QJEz7QVp_fFDK7hc6yZHWU0CuJWAXvSPoiWEAfavMHzwWx/pub?gid=2089779433&single=true&output=csv")
-
-glimpse(ed_data_obs)
-```
-
 In this case, the table of comparisons between the two groups looks quite different:  
 ```{r}
-ed_data_obs %>% 
-  group_by(T) %>% 
-  summarise_if(is.numeric, mean)
+ed_data %>% 
+  group_by(Trt_non_rand) %>% 
+  summarise_if(is.numeric, mean) %>% 
+  select(-c(ID, Trt_rand))
 ```
 There are somewhat large differences between the treatment and control group on several pre-treatment variables (e.g. % minority, and reading and math scores). Notice that the two groups still appear to be balanced in terms of gender. This is because gender is in general not associated with SES. However, minority status and test scores are both correlated with SES, so assigning treatment based on SES (instead of via a random process) results in an imbalance on those other pre-treatment variables. Therefore, if we observed differences in test scores at the end of the year, it would be difficult to disambiguate whether the differences were caused by the intervention or due to some of these other pre-treatment differences.
 
@@ -212,36 +200,71 @@ Importantly, the relationship between T and Y, adjusting for Z can be similar or
 
 We can verify that this did result in the treatment group scoring approximately 10 points higher than the control group (since all students gain an average of 20 points during the year).
 
+
+```{r scores-rand, echo=FALSE, message=FALSE}
+if(!file.exists("data/scores_rand_exp.csv")){
+  scores_rand_exp <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMVxtjUVz55lZR-JPgjWRJbxO45WGhTOfP2nXxh2RSGDRgDgmfJcLUSz3k4UZfe2R_kunyj3aezhwv/pub?gid=2115421031&single=true&output=csv" %>%
+    read_csv(na = "")
+    write_csv(scores_rand_exp, "data/scores_rand_exp.csv")
+} else {
+  scores_rand_exp <- read_csv("data/scores_rand_exp.csv")
+}
+```
+
+```{r, message = FALSE}
+scores_rand_exp <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSMVxtjUVz55lZR-JPgjWRJbxO45WGhTOfP2nXxh2RSGDRgDgmfJcLUSz3k4UZfe2R_kunyj3aezhwv/pub?gid=2115421031&single=true&output=csv")
+
+glimpse(scores_rand_exp)
+```
+
 ```{r}
-ed_data_rand_exp %>% 
-  group_by(T) %>% 
-  summarise(post_avg = mean(MATH_post))
+ed_data <- left_join(ed_data, scores_rand_exp)
+ed_data %>% 
+  group_by(Trt_rand) %>% 
+  summarise(post_trt_rand_avg = mean(MATH_post_trt_rand))
 ```
 
 Remember that in a randomized experiment, we calculate the treatment effect by simply taking the difference in the group averages (i.e. $\bar{y}_T - \bar{y}_C$), so here our estimated treatment effect is $69.8 - 59.3 = 10.5$. Recall that we said this could be estimated using the simple linear regression model $\hat{y} = b_0 + b_1T$. We can fit this model in R to verify that our estimated treatment effect is $b_1 = 10.5$.
 
 ```{r}
-fit <- lm(MATH_post ~ T, data = ed_data_rand_exp)
+fit <- lm(MATH_post_trt_rand ~ Trt_rand, data = ed_data)
 fit
 ```
 
 Let's also look at post-treatment test scores in our `ed_data_obs` data set as well for the non-randomized experiment case, and look at two regression models estimating the effect of treatment on math scores, with and without controlling for SES. 
-```{r}
-fit1_obs <- lm(MATH_post ~ T, data = ed_data_obs)
-summary(fit1_obs)$coefficients
 
-fit2_obs <- lm(MATH_post ~ T + SES_CONT, data = ed_data_obs)
-summary(fit2_obs)$coefficients
+```{r scores-non-rand, echo=FALSE, message=FALSE}
+if(!file.exists("data/scores_non_rand_exp.csv")){
+  scores_non_rand_exp <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vT3NhXRiKpfX4h6uAcPin3gpUhILaLOfPK8KMen1_mujayYOKXME16vC8NikKM6PK8IFaN_jAc6TzD6/pub?gid=111711059&single=true&output=csv" %>%
+    read_csv(na = "")
+    write_csv(scores_non_rand_exp, "data/scores_non_rand_exp.csv")
+} else {
+  scores_non_rand_exp <- read_csv("data/scores_non_rand_exp.csv")
+}
 ```
 
-The two models give quite different indications of how effective the treatment is. In the first model, the estimate of the treatment effect is `r summary(fit1_obs)$coefficients[2,1]`, but in the second model once we control for SES, the estimate is `r summary(fit2_obs)$coefficients[2,1]`. This is because here treatment status is confounded with SES. 
+```{r, message = FALSE}
+scores_non_rand_exp <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vT3NhXRiKpfX4h6uAcPin3gpUhILaLOfPK8KMen1_mujayYOKXME16vC8NikKM6PK8IFaN_jAc6TzD6/pub?gid=111711059&single=true&output=csv")
+
+glimpse(scores_non_rand_exp)
+```
+```{r}
+ed_data <- left_join(ed_data, scores_non_rand_exp)
+fit1_non_rand <- lm(MATH_post_trt_non_rand ~ Trt_non_rand, data = ed_data)
+summary(fit1_non_rand)$coefficients
+
+fit2_non_rand <- lm(MATH_post_trt_non_rand ~ Trt_non_rand + SES_CONT, data = ed_data)
+summary(fit2_non_rand)$coefficients
+```
+
+The two models give quite different indications of how effective the treatment is. In the first model, the estimate of the treatment effect is `r summary(fit1_non_rand)$coefficients[2,1]`, but in the second model once we control for SES, the estimate is `r summary(fit2_non_rand)$coefficients[2,1]`. This is because here treatment status is confounded with SES. 
 
 Importantly, in the randomized experiment case, controlling for confounders using a multiple regression model is **not** necessary - again, because of the randomization. Let's look at the same two models using the data from the experimental case (i.e. using `ed_data_rand_exp`). 
 ```{r}
-fit1_rand_exp <- lm(MATH_post ~ T, data = ed_data_rand_exp)
+fit1_rand_exp <- lm(MATH_post_trt_rand ~ Trt_rand, data = ed_data)
 summary(fit1_rand_exp)$coefficients
 
-fit2_rand_exp <- lm(MATH_post ~ T + SES_CONT, data = ed_data_rand_exp)
+fit2_rand_exp <- lm(MATH_post_trt_rand ~ Trt_rand + SES_CONT, data = ed_data)
 summary(fit2_rand_exp)$coefficients
 ```
 We can see that both models give estimates of the treatment effect that are roughly same (`r summary(fit1_rand_exp)$coefficients[2,1]` and `r summary(fit2_rand_exp)$coefficients[2,1]`), regardless of whether or not we control for SES. This is because randomization ensured that the treatment and control group were balanced on all pre-treatment characteristics - including SES, so there is no need to control for them in a multiple regression model. 
