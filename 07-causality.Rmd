@@ -29,7 +29,7 @@ Let’s load all the packages needed for this chapter (this assumes you’ve alr
 
 ```{r, message = FALSE, warning = FALSE}
 library(tidyverse)
-library(randomizr)
+library(skimr)
 ```
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
@@ -82,7 +82,7 @@ For this simple regression model, $b_1 = \bar{y}_T - \bar{y}_C$ is the observed 
 
 ### Random processes in R
 
-There are several functions in R that mimic random processes. You have already seen one example in Chapters \@ref(regression) and \@ref(multiple-regression) when we used `sample_n` to randomly select a specifized number of rows from a dataset. The function `rbernoulli()` is another example, which allows us to mimic the results of a series of random coin flips. The first argument `n` specifies the number of trials (in this case, coin flips), and `p` specifies the probability of success for each trial. In our coin flip example, we can define success to be when the coin lands on heads. If we're using a fair coin then `p = 0.5`. 
+There are several functions in R that mimic random processes. You have already seen one example in Chapters \@ref(regression) and \@ref(multiple-regression) when we used `sample_n` to randomly select a specifized number of rows from a dataset. The function `rbernoulli()` is another example, which allows us to mimic the results of a series of random coin flips. The first argument in the `rbernoulli()` function, `n`, specifies the number of trials (in this case, coin flips), and the argument `p` specifies the probability of "success"" for each trial. In our coin flip example, we can define "success" to be when the coin lands on heads. If we're using a fair coin then the probability it lands on heads is 50%, so `p = 0.5`. 
 
 Sometimes a random process can give results that don't *look* random. For example, even though any given coin flip has a 50% chance of landing on heads, it's possible to observe many tails in a row, just due to chance. In the example below, 10 coin flips resulted in only 3 heads, and the first 6 flips were tails. Note that TRUE corresponds to the notion of "success", so here TRUE = heads and FALSE = tails. 
 ```{r, echo = FALSE}
@@ -115,7 +115,7 @@ coin_flips3 %>%
   mutate(percent = n/sum(n))
 ```
 
-Often times when running a randomized experiment in practice, you want to ensure that exactly half of your participants end up in the treatment group. In this case, you don't want to flip a coin for each participant, because just by chance, you could end up with 63% of people in the treatment group, for example. Instead, you can imagine each participant having an ID number, which is then randomly sorted or shuffled. You could then assign the first half of the randomly sorted ID numbers to the treatment group, for example. R has many ways of mimicing this type of process as well, such as the `randomizr` package.
+Often times when running a randomized experiment in practice, you want to ensure that exactly half of your participants end up in the treatment group. In this case, you don't want to flip a coin for each participant, because just by chance, you could end up with 63% of people in the treatment group, for example. Instead, you can imagine each participant having an ID number, which is then randomly sorted or shuffled. You could then assign the first half of the randomly sorted ID numbers to the treatment group, for example. R has many ways of mimicing this type of random assignment process as well, such as the `randomizr` package.
 
 ## Omitted variables {#omitted-variables}
 
@@ -143,10 +143,10 @@ This means that before the treatment is given, on average the two groups (T and 
 
 ### Randomization Example {#ed-data}
 
-Let’s see the magic of randomization in action. First, we'll load in a dataset called `ed_data`. This data originally came from the Early Childhood Longitudinal Study (ECLS) program but has been adapted for this example. Let's take a look at the data.
+Let’s see the magic of randomization in action. Imagine that we have a promising new curriculum for teaching math to Kindergarteners, and we want to know whether or not the curriculum is effective. Let's explore how a randomized experiment would help us test this. First, we'll load in a dataset called `ed_data`. This data originally came from the Early Childhood Longitudinal Study (ECLS) program but has been adapted for this example. Let's take a look at the data.
 ```{r eclsK, echo=FALSE, message=FALSE}
 if(!file.exists("data/ed_data.csv")){
-  ed_data <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRJbOGxTyRvSwYijZEz87DnWXdwyxRTNlC3teg4FyqZ7IFyeg2f9ksVJXxODawJast8egjO_IG5K2hO/pub?gid=2078077477&single=true&output=csv" %>%
+  ed_data <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQ9AvbzZ2DBIRmh5h_NJLpC_b4u8-bwTeeMxwSbGX22eBkKDt7JWMqnuBpAVad6-OXteFcjBY4dGqf/pub?gid=300215043&single=true&output=csv" %>%
     read_csv(na = "")
     write_csv(ed_data, "data/ed_data.csv")
 } else {
@@ -155,15 +155,20 @@ if(!file.exists("data/ed_data.csv")){
 ```
 
 ```{r, message = FALSE}
-ed_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRJbOGxTyRvSwYijZEz87DnWXdwyxRTNlC3teg4FyqZ7IFyeg2f9ksVJXxODawJast8egjO_IG5K2hO/pub?gid=2078077477&single=true&output=csv")
+ed_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTQ9AvbzZ2DBIRmh5h_NJLpC_b4u8-bwTeeMxwSbGX22eBkKDt7JWMqnuBpAVad6-OXteFcjBY4dGqf/pub?gid=300215043&single=true&output=csv")
 
 glimpse(ed_data)
 ```
-It includes information on 335 Kindergarten students: indicator variables for whether they are female or minority students, information on their parents' highest level of education, a continuous measure of the their socio-economic status (SES), and their reading and math scores. For our purposes, we will assume that these are all **pre-treatment variables** that are measured on students at the beginning of the year, before we conduct our (hypothetical) randomized experiment. 
+It includes information on 335 Kindergarten students: indicator variables for whether they are female or minority students, information on their parents' highest level of education, a continuous measure of the their socio-economic status (SES), and their reading and math scores. For our purposes, we will assume that these are all **pre-treatment variables** that are measured on students at the beginning of the year, before we conduct our (hypothetical) randomized experiment. We also have included two variables `Trt_rand` and `Trt_non_rand` for demonstration purposes, which we will describe below.
 
-Imagine that we have a promising new curriculum for teaching math to Kindergarteners, and we want to know whether or not the curriculum is effective. We can conduct a randomized experiment to test this. We randomly assign half of the students to the treatment group, where they will receive the new curriculum, and the other half of students to the control group where they will receive the "business as usual" curriculum. We can accomplish this in R using the `complete_ra()` function in the `randomizr` package. 
+In order to conduct our randomized experiment, we could randomly assign half of the Kindergarteners to the treatment group to recieve the new curriculum, and the other half of the students to the control group to recieve the "business as usual" curriculum. `Trt_rand` is the result of this *random assignment*, and is an indicator variable for whether the student is in the treatment group (`Trt_rand == 1`) or the control group (`Trt_rand == 0`). By inspecting this variable, we can see that 167 students were assigned to treatment and 168 were assigned to control.
 
-Remember that because the treatment assignment was **random**, we don't expect a student's treatment status to be correlated with any of their other pre-treatment characteristics. In other words, students in the treatment and control groups should look approximately the same *on average*. Looking at the means of all the numeric variables by treatment group, we can see that this is true in our example. Note how the `summarise_if` function is working here; if a variable in the dataset is numeric, then it is summarized by calculating its `mean`.  
+```{r}
+ed_data %>% 
+  count(Trt_rand)
+```
+
+Remember that because this treatment assignment was **random**, we don't expect a student's treatment status to be correlated with any of their other pre-treatment characteristics. In other words, students in the treatment and control groups should look approximately the same *on average*. Looking at the means of all the numeric variables by treatment group, we can see that this is true in our example. Note how the `summarise_if` function is working here; if a variable in the dataset is numeric, then it is summarized by calculating its `mean`.  
 ```{r}
 ed_data %>% 
   group_by(Trt_rand) %>% 
@@ -172,9 +177,9 @@ ed_data %>%
 ```
 Both the treatment and control groups appear to be approximately the same on average on the observed characteristics of gender, minority status, SES, and pre-treatment reading and math scores. Note that since `FEMALE` is coded as 0 - 1, the "mean" is simply the proportion of students in the dataset that are female. The same is true for `MINORITY`.
 
-In our hypothetical randomized experiment, after randomizing students into the treatment and control groups, we would then implement some educational intervention. For example, perhaps students in the treatment group recieve some new specialized curriculum, and the students in the control group receive the "business-as-usual" curriculum. We would then measure student reading and math scores again at the end of the year, and if we observed that the treatment group was scoring higher (or lower) on average than the control group, we could attribute that difference entirely to the new curriculum. We would not have to worry about other omitted variables being the cause of the difference in test scores, because randomization ensured that the two groups were equivalent on average on *all* pre-treatment characteristics, both observed and unobserved. 
+In our hypothetical randomized experiment, after randomizing students into the treatment and control groups, we would then implement the appropriate (new or business as usual) math curriculum throughout the school year. We would then measure student math scores again at the end of the year, and if we observed that the treatment group was scoring higher (or lower) on average than the control group, we could attribute that difference entirely to the new curriculum. We would not have to worry about other omitted variables being the cause of the difference in test scores, because randomization ensured that the two groups were equivalent on average on *all* pre-treatment characteristics, both observed and unobserved. 
 
-In comparison, in an observational study, the two groups are not equivalent on these pre-treatment variables. In the same example above, let us imagine where instead of being randomly assigned to treatment, instead students with lower SES are assigned to the new specialized curriculum (T = 1), and those with higher SES are assigned to the business as usual curriculum (T = 0). To accomplish this in R, let's create a second version of our `ed_data`, which we will call `ed_data_obs`, and use the `arrange()` function to sort the dataset by `SES_CONT`. We can then assign the 167 students with the lowest SES (who are now in the first 167 rows) a value of 1 for the treatment group and the 168 students with the highest SES to a value of 0 for the control group.
+In comparison, in an observational study, the two groups are not equivalent on these pre-treatment variables. In the same example above, let us imagine where instead of being randomly assigned to treatment, instead students with lower SES are assigned to the new specialized curriculum (`Trt_non_rand = 1`), and those with higher SES are assigned to the business as usual curriculum (`Trt_non_rand = 0`). The indicator variable `Trt_non_rand` is the result of this non-random treatment group assignment process.
 
 In this case, the table of comparisons between the two groups looks quite different:  
 ```{r}
@@ -183,7 +188,75 @@ ed_data %>%
   summarise_if(is.numeric, mean) %>% 
   select(-c(ID, Trt_rand))
 ```
-There are somewhat large differences between the treatment and control group on several pre-treatment variables (e.g. % minority, and reading and math scores). Notice that the two groups still appear to be balanced in terms of gender. This is because gender is in general not associated with SES. However, minority status and test scores are both correlated with SES, so assigning treatment based on SES (instead of via a random process) results in an imbalance on those other pre-treatment variables. Therefore, if we observed differences in test scores at the end of the year, it would be difficult to disambiguate whether the differences were caused by the intervention or due to some of these other pre-treatment differences.
+There are somewhat large differences between the treatment and control group on several pre-treatment variables in addition to SES (e.g. % minority, and reading and math scores). Notice that the two groups still appear to be balanced in terms of gender. This is because gender is in general not associated with SES. However, minority status and test scores are both correlated with SES, so assigning treatment based on SES (instead of via a random process) results in an imbalance on those other pre-treatment variables. Therefore, if we observed differences in test scores at the end of the year, it would be difficult to disambiguate whether the differences were caused by the intervention or due to some of these other pre-treatment differences.
+
+### Estimating the treatment effect
+
+Imagine that the truth about this new curriculum is that it raises student math scores by 10 points, on average. We can use R to mimic this process and randomly generate post-test scores that raise the treatment group's math scores by 10 points on average, but leave the control group math scores largely unchanged. Note that we will never know the true treatment effect in real life - the treatment effect is what we're trying to estimate; this is for demonstration purposes only.
+
+The code for how we generated these random post-test scores in below, but don't worry about understanding exactly how it works. Just note that in both the `Trt_rand` and `Trt_non_rand` case, we are creating post-treatment math scores that increase a student's score by 10 points on average, if they received the new curriculum.
+
+```{r echo=FALSE, message=FALSE}
+set.seed(73)
+```
+
+```{r, message = FALSE}
+ed_data <- ed_data %>% 
+  mutate(MATH_post_trt_rand = 
+           case_when(Trt_rand == 1 ~ MATH_pre + rnorm(1, 10, 2), 
+                     Trt_rand == 0 ~ MATH_pre + rnorm(1, 0, 2)),
+         MATH_post_trt_non_rand = 
+           case_when(Trt_non_rand == 1 ~ MATH_pre + rnorm(1, 10, 2), 
+                     Trt_non_rand == 0 ~ MATH_pre + rnorm(1, 0, 2)))
+```
+By looking at the first 10 rows of this data in Table \@ref(tab:post-scores), we can convince ourselves that both the `MATH_post_trt_rand` and `MATH_post_trt_non_rand` scores reflect this truth that the treatment raises test scores by 10 points, on average. For example, we see that for student 1, they were assigned to the treatment group in both scenarios and their test scores increased from about 18 to about 28. Student 2, however, was only assigned to treatment in the second scenario, and their test scores increased from about 31 to 41, but in the first scenario since they did not receive the treatment, their score stayed at about 31. Remember that here we are showing two hypothetical scenarios that could have occurred for these students - one if they were part of a randomized experiment and one where they were part of an observational study - but in real life, the study would only be conducted one way on the students and not both. 
+
+```{r, eval = FALSE}
+ed_data %>% 
+  select(ID, MATH_pre, Trt_rand, 
+         MATH_post_trt_rand, Trt_non_rand, 
+         MATH_post_trt_non_rand) %>% 
+  filter(ID <= 10)
+```
+
+```{r post-scores, echo = FALSE}
+ed_data %>% 
+  select(ID, MATH_pre, Trt_rand, 
+         MATH_post_trt_rand, Trt_non_rand, 
+         MATH_post_trt_non_rand) %>% 
+  filter(ID <= 10) %>% 
+  knitr::kable(
+    digits = 3,
+    caption = "Math scores for first 10 students, under random and non-random treatment assignment scenarios",
+    booktabs = TRUE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("hold_position"))
+```
+
+Let's examine how students in each group performed on the post-treatment math assessment on average in the first scenario where they were randomly assigned (i.e. using `Trt_rand` and `MATH_post_trt_rand`).  
+```{r}
+ed_data %>% 
+  group_by(Trt_rand) %>% 
+  summarise(post_trt_rand_avg = mean(MATH_post_trt_rand))
+```
+
+Remember that in a randomized experiment, we calculate the treatment effect by simply taking the difference in the group averages (i.e. $\bar{y}_T - \bar{y}_C$), so here our estimated treatment effect is $49.6 - 39.6 = 10.0$. Recall that we said this could be estimated using the simple linear regression model $\hat{y} = b_0 + b_1T$. We can fit this model in R to verify that our estimated treatment effect is $b_1 = 10.0$.
+
+```{r}
+fit <- lm(MATH_post_trt_rand ~ Trt_rand, data = ed_data)
+fit
+```
+
+Let's also look the post-treatment test scores by group for the non-randomized experiment case. 
+```{r}
+ed_data %>% 
+  group_by(Trt_non_rand) %>% 
+  summarise(post_trt_non_rand_avg = mean(MATH_post_trt_non_rand))
+fit1_non_rand <- lm(MATH_post_trt_non_rand ~ Trt_non_rand, data = ed_data)
+summary(fit1_non_rand)$coefficients
+```
+Note that even though the treatment raised student scores by 10 points on average, in the observational case it looks like the treatment effect is *much* smaller. This is because treatment was confounded with SES and other pre-treatment variables. 
 
 ## If you know Z, what about multiple regression?
 
@@ -198,68 +271,23 @@ As we learned in Chapter \@ref(multiple-regression), we can now interpret the co
 
 Importantly, the relationship between T and Y, adjusting for Z can be similar or different than the relationship between T and Y alone. In advance, you simply cannot know one from the other.
 
-We can verify that this did result in the treatment group scoring approximately 10 points higher than the control group (since all students gain an average of 20 points during the year).
-
-
-```{r scores-rand, echo=FALSE, message=FALSE}
-if(!file.exists("data/scores_rand_exp.csv")){
-  scores_rand_exp <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMVxtjUVz55lZR-JPgjWRJbxO45WGhTOfP2nXxh2RSGDRgDgmfJcLUSz3k4UZfe2R_kunyj3aezhwv/pub?gid=2115421031&single=true&output=csv" %>%
-    read_csv(na = "")
-    write_csv(scores_rand_exp, "data/scores_rand_exp.csv")
-} else {
-  scores_rand_exp <- read_csv("data/scores_rand_exp.csv")
-}
-```
-
-```{r, message = FALSE}
-scores_rand_exp <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSMVxtjUVz55lZR-JPgjWRJbxO45WGhTOfP2nXxh2RSGDRgDgmfJcLUSz3k4UZfe2R_kunyj3aezhwv/pub?gid=2115421031&single=true&output=csv")
-
-glimpse(scores_rand_exp)
-```
-
-```{r}
-ed_data <- left_join(ed_data, scores_rand_exp)
-ed_data %>% 
-  group_by(Trt_rand) %>% 
-  summarise(post_trt_rand_avg = mean(MATH_post_trt_rand))
-```
-
-Remember that in a randomized experiment, we calculate the treatment effect by simply taking the difference in the group averages (i.e. $\bar{y}_T - \bar{y}_C$), so here our estimated treatment effect is $69.8 - 59.3 = 10.5$. Recall that we said this could be estimated using the simple linear regression model $\hat{y} = b_0 + b_1T$. We can fit this model in R to verify that our estimated treatment effect is $b_1 = 10.5$.
-
-```{r}
-fit <- lm(MATH_post_trt_rand ~ Trt_rand, data = ed_data)
-fit
-```
-
-Let's also look at post-treatment test scores in our `ed_data_obs` data set as well for the non-randomized experiment case, and look at two regression models estimating the effect of treatment on math scores, with and without controlling for SES. 
-
-```{r scores-non-rand, echo=FALSE, message=FALSE}
-if(!file.exists("data/scores_non_rand_exp.csv")){
-  scores_non_rand_exp <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vT3NhXRiKpfX4h6uAcPin3gpUhILaLOfPK8KMen1_mujayYOKXME16vC8NikKM6PK8IFaN_jAc6TzD6/pub?gid=111711059&single=true&output=csv" %>%
-    read_csv(na = "")
-    write_csv(scores_non_rand_exp, "data/scores_non_rand_exp.csv")
-} else {
-  scores_non_rand_exp <- read_csv("data/scores_non_rand_exp.csv")
-}
-```
-
-```{r, message = FALSE}
-scores_non_rand_exp <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vT3NhXRiKpfX4h6uAcPin3gpUhILaLOfPK8KMen1_mujayYOKXME16vC8NikKM6PK8IFaN_jAc6TzD6/pub?gid=111711059&single=true&output=csv")
-
-glimpse(scores_non_rand_exp)
-```
-```{r}
-ed_data <- left_join(ed_data, scores_non_rand_exp)
+Let's again look at our model `fit1_non_rand` that looked at the relationship between treatment and math scores, and compare it to a model that adjusts for the confounding variable SES. 
+```{r, eval = FALSE}
 fit1_non_rand <- lm(MATH_post_trt_non_rand ~ Trt_non_rand, data = ed_data)
 summary(fit1_non_rand)$coefficients
-
 fit2_non_rand <- lm(MATH_post_trt_non_rand ~ Trt_non_rand + SES_CONT, data = ed_data)
 summary(fit2_non_rand)$coefficients
 ```
+```{r, echo = FALSE}
+fit1_non_rand <- lm(MATH_post_trt_non_rand ~ Trt_non_rand, data = ed_data)
+summary(fit1_non_rand)$coefficients
+fit2_non_rand <- lm(MATH_post_trt_non_rand ~ Trt_non_rand + SES_CONT, data = ed_data)
+round(summary(fit2_non_rand)$coefficients, 2)
+```
 
-The two models give quite different indications of how effective the treatment is. In the first model, the estimate of the treatment effect is `r summary(fit1_non_rand)$coefficients[2,1]`, but in the second model once we control for SES, the estimate is `r summary(fit2_non_rand)$coefficients[2,1]`. This is because here treatment status is confounded with SES. 
+The two models give quite different indications of how effective the treatment is. In the first model, the estimate of the treatment effect is `r summary(fit1_non_rand)$coefficients[2,1]`, but in the second model once we control for SES, the estimate is `r summary(fit2_non_rand)$coefficients[2,1]`. Again, this is because in our non-random assignment scenario, treatment status was confounded with SES. 
 
-Importantly, in the randomized experiment case, controlling for confounders using a multiple regression model is **not** necessary - again, because of the randomization. Let's look at the same two models using the data from the experimental case (i.e. using `ed_data_rand_exp`). 
+Importantly, in the randomized experiment case, controlling for confounders using a multiple regression model is **not** necessary - again, because of the randomization. Let's look at the same two models using the data from the experimental case (i.e. using `Trt_rand` and `MATH_post_trt_rand`). 
 ```{r}
 fit1_rand_exp <- lm(MATH_post_trt_rand ~ Trt_rand, data = ed_data)
 summary(fit1_rand_exp)$coefficients
@@ -271,7 +299,7 @@ We can see that both models give estimates of the treatment effect that are roug
 
 ## What if you don’t know Z?
 
-In the observational case, if you *know* the process through which people are assigned to or select treatment then the above multiple regression approach can get you pretty close to the causal effect of the treatment on the outcomes. This is what happened in our `fit2_obs` model above where we knew treatment was determined by SES, and so we controlled for it in our model. 
+In the observational case, if you *know* the process through which people are assigned to or select treatment then the above multiple regression approach can get you pretty close to the causal effect of the treatment on the outcomes. This is what happened in our `fit2_non_rand` model above where we knew treatment was determined by SES, and so we controlled for it in our model. 
 
 But this is **rarely** the case. In most studies, selection of treatment is **not based on a single variable**. That is, before treatment occurs, those that will ultimately receive the treatment and those that do not might differ in a myriad of ways. For example, students that play instruments may not only come from families with more resources and have higher motivation, but may also play fewer sports, already be great readers, have a natural proclivity for music, or come from a musical family. As an analyst, it is typically very difficult – if not impossible – to know how and why some people selected a treatment and others did not. 
 

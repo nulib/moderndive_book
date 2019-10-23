@@ -52,17 +52,17 @@ In order to understand the relationship between samples and populations, we begi
 
 5. **Census**: A census is an exhaustive collection of a measurement on all $N$ individuals or units in the population in order to compute the exact value of a population parameter for the given measure.
 
-6. **Random sampling**: Random sampling is the act of using a random procedure to select individuals or units from a population that we will collect measurements on. Random sampling is extremely useful when we don't have the means to perform a census. Here "random" means that every individual or unit in the population has a chance of being selected and that the process of selection is uncorrelated with the data itself. For example, a random procedure might involve rolling dice, selecting slips of paper out of a hat, or using a random number generator. Importantly, procedures that involve selecting the sample based upon observed characteristics (e.g., age, gender) are not random. 
+6. **Random sampling**: Random sampling is the act of using a random procedure to select individuals or units from a population that we will collect measurements on. Random sampling is extremely useful when we don't have the means to perform a census. Here "random" means that every individual or unit in the population has a chance of being selected and that the process of selection is uncorrelated with the data itself. For example, a random procedure might involve rolling dice, selecting slips of paper out of a hat, or using a random number generator. 
 
 The first two of these definitions makes clear that the data you have in hand (sample) is being used to make inferences to a larger set of data you don't have (population). Definitions 3 and 4 refine these further, focusing on the specific numbers you wish you knew (population parameter) and the ones you are able to calculate using your data (estimate / sample statistic). Definitions 5 and 6 refer to how a sample is related to a population --- either they are the same (census) or the mechanism through which they are related needs to be clear (random sampling). 
 
 The goal is to use data in the sample to make **inferences** to a value in the population. The act of "inferring" is to deduce or conclude (information) from evidence and reasoning. **Statistical inference** is the theory, methods, and practice of forming judgments about the parameters of a population and the reliability of statistical relationships, typically on the basis of random sampling (Wikipedia). In other words, statistical inference is the act of inference via sampling. 
 
-Table \@ref(tab:parameters-table) gives some common population parameters we might be interested in and their corresponding estimators that we use to calculate estimates from our sample data. Note that we have used many of these estimators in Parts I and II of the book when we calculated summary statistics to describe our data (e.g. mean, correlation, regression coefficients). The next few chapters will help establish the statistical theory and conditions under which we can use these estimators to infer things about their corresponding population parameters.
+Table \@ref(tab:parameters-table) gives some common population parameters we might be interested in and their corresponding estimators that we use to calculate estimates from our sample data. Note that we have used many of these estimators in Parts I and II of the book when we calculated summary statistics to describe our data (e.g. mean, standard deviation, correlation, regression coefficients). The next few chapters will help establish the statistical theory and conditions under which we can use these estimators to infer things about their corresponding population parameters.
 
 ```{r parameters-table, echo=FALSE, message=FALSE}
 if(!file.exists("rds/ch8_parameters.rds")){
-  ch8_parameters <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1SMKwojwYNKe51lrOut7xgnzvB1aZXsF9402EA02f2hnF98pvL6aY5cwkSvZmWojmpQmPrp48ubdY/pub?output=csv" %>% 
+  ch8_parameters <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1SMKwojwYNKe51lrOut7xgnzvB1aZXsF9402EA02f2hnF98pvL6aY5cwkSvZmWojmpQmPrp48ubdY/pub?gid=0&single=true&output=csv" %>% 
     read_csv(na = "")
     write_rds(ch8_parameters, "rds/ch8_parameters.rds")
 } else {
@@ -70,6 +70,7 @@ if(!file.exists("rds/ch8_parameters.rds")){
 }
 
 ch8_parameters %>% 
+  select(-`Formula for Estimator`) %>% 
   kable(
     caption = "Population Parameters and Sample Statistics", 
     booktabs = TRUE,
@@ -80,8 +81,8 @@ ch8_parameters %>%
   column_spec(1, width = "0.5in") %>% 
   column_spec(2, width = "0.5in") %>%
   column_spec(3, width = "0.7in") %>%
-  column_spec(4, width = "1.1in") %>% 
-  footnote(symbol = c("$s_y$ and $s_x$ are the sample standard deviations for $y$ and $x$ respectively"), escape = F)
+  column_spec(4, width = "1.5in") %>% 
+  column_spec(4, width = "1.5in")
 ```
 
 
@@ -128,6 +129,10 @@ Finally, note that in the examples and data we use in this book and course, we f
 
 ---
 
+## CDC Example {#cdc-samp-pop}
+
+Let's return to the CDC dataset, which you have seen before. 
+
 ## Samples & Populations {#samples}
 
 As an analyst, you will often encounter samples of data that come from unspecified or unclear populations. For example, you:
@@ -149,3 +154,6 @@ Finally, keep in mind that **no study generalizes everywhere**. It is your job a
 * Report clearly how the data was generated. Was it from on online survey? Report this. Was it from a lab study advertised in a college? Report this. 
 
 ---
+
+## Causality vs. Generalizability
+
