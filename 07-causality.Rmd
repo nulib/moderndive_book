@@ -144,21 +144,20 @@ This means that before the treatment is given, on average the two groups (T and 
 ### Randomization Example {#ed-data}
 
 Let’s see the magic of randomization in action. First, we'll load in a dataset called `ed_data`. This data originally came from the Early Childhood Longitudinal Study (ECLS) program but has been adapted for this example. Let's take a look at the data.
-
 ```{r eclsK, echo=FALSE, message=FALSE}
-if(!file.exists("rds/eclsK.rds")){
-  ed_data <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTE0OPjv8F4YhV1f_YGXVA5fT7kt3CN9qqamQNZV5uLOTvBHDSW7uxn5PL9_JeA/pub?gid=833804186&single=true&output=csv" %>%
+if(!file.exists("data/ed_data_rand_exp.csv")){
+  ed_data_rand_exp <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZUqCh_ROL0eGZ97qszaThMLaL79g7AXi5xdLMILHHjs3iEVrKCv5TPapBXFE1w07BKMW8R7sVu71B/pub?gid=40509529&single=true&output=csv" %>%
     read_csv(na = "")
-    write_rds(ed_data, "rds/eclsK.rds")
+    write_csv(ed_data_rand_exp, "data/ed_data_rand_exp.csv")
 } else {
-  ed_data <- read_rds("rds/eclsK.rds")
+  ed_data_rand_exp <- read_csv("data/ed_data_rand_exp.csv")
 }
 ```
 
 ```{r, message = FALSE}
-ed_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTE0OPjv8F4YhV1f_YGXVA5fT7kt3CN9qqamQNZV5uLOTvBHDSW7uxn5PL9_JeA/pub?gid=833804186&single=true&output=csv")
+ed_data_rand_exp <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRZUqCh_ROL0eGZ97qszaThMLaL79g7AXi5xdLMILHHjs3iEVrKCv5TPapBXFE1w07BKMW8R7sVu71B/pub?gid=40509529&single=true&output=csv")
 
-glimpse(ed_data)
+glimpse(ed_data_rand_exp)
 ```
 It includes information on 335 Kindergarten students: indicator variables for whether they are female or minority students, information on their parents' highest level of education, a continuous measure of the their socio-economic status (SES), and their reading and math scores. For our purposes, we will assume that - with the expection of `MATH_post` - these are all **pre-treatment variables** that are measured on students at the beginning of the year, before we conduct our (hypothetical) randomized experiment. `MATH_post` are math scores that are collected at the end of the school year, after students in the treatment group have received the new curriculum.
 
@@ -173,6 +172,22 @@ Both the treatment and control groups appear to be approximately the same on ave
 In our hypothetical randomized experiment, after randomizing students into the treatment and control groups, we would then implement some educational intervention. For example, perhaps students in the treatment group recieve some new specialized curriculum, and the students in the control group receive the "business-as-usual" curriculum. We would then measure student reading and math scores again at the end of the year, and if we observed that the treatment group was scoring higher (or lower) on average than the control group, we could attribute that difference entirely to the new curriculum. We would not have to worry about other omitted variables being the cause of the difference in test scores, because randomization ensured that the two groups were equivalent on average on *all* pre-treatment characteristics, both observed and unobserved. 
 
 In comparison, in an observational study, the two groups are not equivalent on these pre-treatment variables. In the same example above, let us imagine where instead of being randomly assigned to treatment, instead students with lower SES are assigned to the new specialized curriculum (T = 1), and those with higher SES are assigned to the business as usual curriculum (T = 0). To accomplish this in R, let's create a second version of our `ed_data`, which we will call `ed_data_obs`, and use the `arrange()` function to sort the dataset by `SES_CONT`. We can then assign the 167 students with the lowest SES (who are now in the first 167 rows) a value of 1 for the treatment group and the 168 students with the highest SES to a value of 0 for the control group.
+
+```{r eclsK-obs, echo=FALSE, message=FALSE}
+if(!file.exists("data/ed_data_rand_exp.csv")){
+  ed_data_obs <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQr12mpR6bcQsVyKX9diAH8Ix7zq0cgy6QJEz7QVp_fFDK7hc6yZHWU0CuJWAXvSPoiWEAfavMHzwWx/pub?gid=2089779433&single=true&output=csv" %>%
+    read_csv(na = "")
+    write_csv(ed_data_obs, "data/ed_data_obs.csv")
+} else {
+  ed_data_obs <- read_csv("data/ed_data_obs.csv")
+}
+```
+
+```{r, message = FALSE}
+ed_data_obs <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQr12mpR6bcQsVyKX9diAH8Ix7zq0cgy6QJEz7QVp_fFDK7hc6yZHWU0CuJWAXvSPoiWEAfavMHzwWx/pub?gid=2089779433&single=true&output=csv")
+
+glimpse(ed_data_obs)
+```
 
 In this case, the table of comparisons between the two groups looks quite different:  
 ```{r}
