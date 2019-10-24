@@ -20,18 +20,32 @@ options(scipen = 99, digits = 3)
 # Set random number generator see value for replicable pseudorandomness. Why 76?
 # https://www.youtube.com/watch?v=xjJ7FheCkCU
 set.seed(76)
-
-library(tidyverse)
-library(knitr)
-library(kableExtra)
-library(readr)
 ```
 
 In this chapter we will continue our discussion of statistical theory, by learning about **samples** and **populations**. Until now, this book has focused on how to analyze data in a sample. In many instances, your goal is not to understand insights and trends in the sample but instead to make inferences from such insights and trends observed to trends in a larger population. This chapter provides a broad overview of the concepts of samples and populations and the links between them. In Chapter \@ref(sampling) we will provide a more theoretical connection between these two based on the theory of repeated samples and properties of sampling distributions. 
 
 ---
 
+### Needed packages {-}
 
+Let's load all the packages needed for this chapter (this assumes you've already installed them). If needed, read Section \@ref(packages) for information on how to install and load R packages. 
+
+```{r, eval=FALSE}
+library(tidyverse)
+library(skimr)
+library(ggplot2movies)
+```
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(skimr)
+library(ggplot2movies)
+
+##needed internally
+library(knitr)
+library(kableExtra)
+library(readr)
+```
 ## Terminology & Notation {#terminology}
 
 In Parts I and II of this book, you were provided with sample data, methods for exploring this data visually, and methods for summarizing trends in this data. These methods are what we call **descriptive statistics**, as they are focused on describing the observed sample.
@@ -60,7 +74,7 @@ The goal is to use data in the sample to make **inferences** to a value in the p
 
 Table \@ref(tab:parameters-table) gives some common population parameters we might be interested in and their corresponding estimators that we use to calculate estimates from our sample data. Note that we have used many of these estimators in Parts I and II of the book when we calculated summary statistics to describe our data (e.g. mean, standard deviation, correlation, regression coefficients). The next few chapters will help establish the statistical theory and conditions under which we can use these estimators to infer things about their corresponding population parameters.
 
-```{r parameters-table, echo=FALSE, message=FALSE}
+```{r echo=FALSE, message=FALSE}
 if(!file.exists("rds/ch8_parameters.rds")){
   ch8_parameters <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1SMKwojwYNKe51lrOut7xgnzvB1aZXsF9402EA02f2hnF98pvL6aY5cwkSvZmWojmpQmPrp48ubdY/pub?gid=0&single=true&output=csv" %>% 
     read_csv(na = "")
@@ -68,7 +82,8 @@ if(!file.exists("rds/ch8_parameters.rds")){
 } else {
   ch8_parameters <- read_rds("rds/ch8_parameters.rds")
 }
-
+```
+```{r parameters-table, echo=FALSE, message=FALSE}
 ch8_parameters %>% 
   select(-`Formula for Estimator`) %>% 
   kable(
@@ -129,9 +144,33 @@ Finally, note that in the examples and data we use in this book and course, we f
 
 ---
 
-## CDC Example {#cdc-samp-pop}
+## Movies Example {#imdb}
 
-Let's return to the CDC dataset, which you have seen before. 
+Perhaps we are interested in studying films from the 20th century. For example, say we want to answer the question: "Did the percentage of movies that pass the Bechdel Test increase throughout the 20th century?" The Bechdel Test is a measure of the representation of women in fiction. For a movie to pass the Bechdel Test it must meet three criteria:
+
+1. The movie must have at least two [named] women in it...
+2. who talk to each other...
+3. about something besides a man.
+
+Determining whether a film meets this criteria requires you to watch and pay attention to the dialogue in its entirety. It's not hard to imagine why doing this for the whole population of movies is not feasible, because there are tens of thousands of them. You must take a *sample*. But how do you choose your sample in such a way that you can be confident that your results will generalize to the whole population of movies? 
+
+Let's discuss how we might go about developing a sampling plan to tackle this question, using the terminology from Sections \@ref(terminology) and \@ref(sample_selection).
+
+Our **population** of interest here is all movies released between the years 1900 and 1999. We must develop a **population frame** that includes a list of all movies in this population. Thankfully, IMDb has a fairly robust database of movies, and that data is available in a dataset called `movies` in the `ggplot2movies` package. Let's take a look at this data. It includes `r dim(movies)[2]` variables with information on `r dim(movies)[1]` movies and their ratings by users on IMDb. For now, we'll look at a smaller subset of just 4 of these variables: the title of the movie, the year it was released, its length in minutes, and its average rating on IMDb (out of 10 stars).
+
+```{r}
+movies_small <- movies %>% 
+  select(title, year, length, rating) 
+skim(movies_small)
+```
+
+We can see that this dataset contains information on movies released from `r min(movies$year)` to `r max(movies$year)`. More information about this dataset can be found in this [documentation](https://cran.r-project.org/web/packages/ggplot2movies/ggplot2movies.pdf), which indicates that "movies were selected for inclusion if they had a known length and had been rated by at least one imdb user."
+
+
+
+```{r}
+
+```
 
 ## Samples & Populations {#samples}
 
