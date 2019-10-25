@@ -45,6 +45,10 @@ library(ggplot2movies)
 library(knitr)
 library(kableExtra)
 library(readr)
+
+# setting skim() print options
+# suppresses in-line graphics or spark graphics
+skim_with(numeric = list(hist = NULL))
 ```
 ## Terminology & Notation {#terminology}
 
@@ -58,7 +62,7 @@ In order to understand the relationship between samples and populations, we begi
 
 1. **Population**: A population is a collection of individuals or units about which we are interested. We mathematically denote the population's size (i.e. the total number of individuals or units) using upper-case $N$. 
 
-2. **Sample**: A sample is a collection of individuals or units from a population. These are the individuals or units about which we have data. We mathematically denote the sample's size, the number of people or units we have data on, using lower-case $n$. 
+2. **Sample**: A sample is a collection of individuals or units from a population. These are the individuals or units about which we have (or will collect) data. We mathematically denote the sample's size, the number of people or units we have (or will collect) data on, using lower-case $n$. 
 
 3. **Population parameter**: A population parameter is a numerical value that summarizes the population. *In almost all cases the population parameter is unknown, but we wish to know it.* Population parameters are typically denoted mathematically using Greek letters. For example, you may want to know the population mean, which is typically written as $\mu$ (pronounced "mu"). Or, you might want to know the population proportion, which is typically written as $\pi$ (pronounced "pi"). Population size, $N$, is a case where we do not follow the Greek letter convention to denote a population parameter.
 
@@ -103,7 +107,7 @@ ch8_parameters %>%
 
 ---
 
-## Populations & Sampling {#sample_selection}
+## Populations & Sampling {#sample-selection}
 
 Recall that a population is a collection of individuals or observations that you would like to make inferences about. Some examples of populations are:
 
@@ -146,7 +150,9 @@ Finally, note that in the examples and data we use in this book and course, we f
 
 ## Movies Example {#imdb}
 
-Perhaps we are interested in studying films from the 20th century. For example, say we want to answer the question: "Did the percentage of movies that pass the Bechdel Test increase throughout the 20th century?" The Bechdel Test is a measure of the representation of women in fiction. For a movie to pass the Bechdel Test it must meet three criteria:
+### Research question
+
+Perhaps we are interested in studying films from the 20th century. For example, say we want to answer the question: "What percentage of movies from the 20th century pass the Bechdel Test?" The Bechdel Test is a measure of the representation of women in fiction. For a movie to pass the Bechdel Test it must meet three criteria:
 
 1. The movie must have at least two [named] women in it...
 2. who talk to each other...
@@ -154,25 +160,187 @@ Perhaps we are interested in studying films from the 20th century. For example, 
 
 Determining whether a film meets this criteria requires you to watch and pay attention to the dialogue in its entirety. It's not hard to imagine why doing this for the whole population of movies is not feasible, because there are tens of thousands of them. You must take a *sample*. But how do you choose your sample in such a way that you can be confident that your results will generalize to the whole population of movies? 
 
-Let's discuss how we might go about developing a sampling plan to tackle this question, using the terminology from Sections \@ref(terminology) and \@ref(sample_selection).
+Let's discuss how we might go about developing a sampling plan to tackle this question, using the terminology from Sections \@ref(terminology) and \@ref(sample-selection).
 
-Our **population** of interest here is all movies released between the years 1900 and 1999. We must develop a **population frame** that includes a list of all movies in this population. Thankfully, IMDb has a fairly robust database of movies, and that data is available in a dataset called `movies` in the `ggplot2movies` package. Let's take a look at this data. It includes `r dim(movies)[2]` variables with information on `r dim(movies)[1]` movies and their ratings by users on IMDb. For now, we'll look at a smaller subset of just 4 of these variables: the title of the movie, the year it was released, its length in minutes, and its average rating on IMDb (out of 10 stars).
+### Population of interest
 
-```{r}
-movies_small <- movies %>% 
-  select(title, year, length, rating) 
-skim(movies_small)
+Our research question specifies that we are interested in the results of the Bechdel test for movies in the 20th century. Note that the earliest movies were all silent films, and dialogue in movies did not become the norm until the 1930s. This means that movies prior to the 1930s are irrelevant in terms of the Bechdel test. Therefore, we can define our **population** of interest to be all movies released between 1930 and 1999. The **population parameter** we are interested in is $\pi$, the proportion of movies in this population that pass the Bechdel test. 
+
+### Development of population frame
+
+We must develop a **population frame** that includes a list of all movies in our population of interest. Thankfully, the IMDb database functions as a **census** of movies, and that data is available in a dataset called `movies` in the `ggplot2movies` package. It includes `r dim(movies)[2]` variables with information on `r dim(movies)[1]` movies and their ratings by users on IMDb. For now, we'll look at a smaller subset of just 4 of these variables: the title of the movie, the year it was released, its length in minutes, and its average rating on IMDb (out of 10 stars). The full dataset contains information on movies released from `r min(movies$year)` to `r max(movies$year)`, so we should filter only the rows for the years relevant to our population of interest. Let's take a look at this data. 
+
+```{r, eval = FALSE}
+movies_30_99 <- movies %>% 
+  select(title, year, length, rating) %>% 
+  filter(year >= 1930 & year <= 1999)
+skim(movies_30_99)
 ```
 
-We can see that this dataset contains information on movies released from `r min(movies$year)` to `r max(movies$year)`. More information about this dataset can be found in this [documentation](https://cran.r-project.org/web/packages/ggplot2movies/ggplot2movies.pdf), which indicates that "movies were selected for inclusion if they had a known length and had been rated by at least one imdb user."
-
-
-
-```{r}
-
+```{r, echo = FALSE}
+movies_30_99 <- movies %>% 
+  select(title, year, length, rating) %>% 
+  filter(year >= 1930 & year <= 1999)
 ```
 
-## Samples & Populations {#samples}
+```
+Skim summary statistics
+ n obs: 46522 
+ n variables: 4 
+
+── Variable type:character ────────────────────────────────────────────────────────────────────────────
+ variable missing complete     n min max empty n_unique
+    title       0    46522 46522   1 110     0    44761
+
+── Variable type:integer ──────────────────────────────────────────────────────────────────────────────
+ variable missing complete     n    mean    sd   p0  p25  p50  p75 p100
+   length       0    46522 46522   84.38 44.72    1   76   90  100 5220
+     year       0    46522 46522 1971.94 20.73 1930 1955 1975 1991 1999
+
+── Variable type:numeric ──────────────────────────────────────────────────────────────────────────────
+ variable missing complete     n mean   sd p0 p25 p50 p75 p100
+   rating       0    46522 46522 5.84 1.53  1 4.9   6 6.9  9.9
+```
+
+How well does this population frame match our population of interest? Should we be concerned about *undercoverage* here? The [documentation](https://cran.r-project.org/web/packages/ggplot2movies/ggplot2movies.pdf) for the `ggplot2movies` package indicates that "movies were selected for inclusion if they had a known length and had been rated by at least one imdb user." This means that any movies that don't meet these critera will not appear in our population frame and therefore have no chance of ending up in our sample. We can acknowledge this potential source of undercoverage, but movies excluded by these criteria are not likely to be of interest for our question anyway, so we don't need to be too concerned in this scenario.
+
+When we skimmed the data, we saw that one movie is as short as `r min(movies_30_99$length)` minute and one is as long as `r max(movies_30_99$length)` minutes. Perhaps we feel like this list includes films that we would not classify as "standard movies," so in order to eliminate some of these extremes, we decide to narrow our population of interest to any films that are at least 1 hour in length, but at most 3.5 hours in length.  
+
+```{r, eval = FALSE}
+movies_30_99 <- movies_30_99 %>% 
+  filter(length >= 60 & length <= 210)
+
+skim(movies_30_99)
+```
+
+```{r, echo = FALSE}
+movies_30_99 <- movies_30_99 %>% 
+  filter(length >= 60 & length <= 210)
+N <- count(movies_30_99)
+```
+
+```
+Skim summary statistics
+ n obs: 39123 
+ n variables: 4 
+
+── Variable type:character ────────────────────────────────────────────────────────────────────────────
+ variable missing complete     n min max empty n_unique
+    title       0    39123 39123   1 105     0    37740
+
+── Variable type:integer ──────────────────────────────────────────────────────────────────────────────
+ variable missing complete     n    mean    sd   p0  p25  p50  p75 p100
+   length       0    39123 39123   95.33 18.51   60   85   93  103  210
+     year       0    39123 39123 1973.4  19.7  1930 1958 1977 1991 1999
+
+── Variable type:numeric ──────────────────────────────────────────────────────────────────────────────
+ variable missing complete     n mean   sd p0 p25 p50 p75 p100
+   rating       0    39123 39123 5.75 1.51  1 4.8 5.9 6.8  9.9
+```
+
+This is an example of how data in a population frame can actually help you to think more critically about your population of interest. Seeing the range of movies that are included in the frame prompted us to realize we were interested in something more specific than just "all movies," and therefore we can refine our definition and create additional inclusion criteria. Note that as a researcher or analyst sometimes you have to make decisions about your data that seem somewhat arbitrary, but so long as you document each decision and are explicit and transparent about your inclusion criteria, you (and others) will be able to determine with clarity what kinds of generalizations can be made from your eventual results.
+
+Let's list all of our inclusion criteria. Our population frame includes movies that:
+
+1. are included in the IMDb database
+2. were released between 1930 and 1999
+3. have a known length between 60 and 210 minutes
+4. were rated by at least one IMDb user
+
+This results in a population of size $N =$ `r N` movies. 
+
+### Sampling plan
+
+Now that we've solidified our population of interest and our population frame, we can establish a sampling plan for how to take a random sample from this population. Perhaps we decide it is feasible for our research team to watch and record data on 500 movies, so we decide to draw a sample of $n = 500$. We will demonstrate 3 different random sampling plans, but note that in real life you will make a decision about the most appropriate and feasible plan and only draw one random sample.
+
+**Simple random sampling**
+
+Let's start by drawing a simple random sample, where each of the `r N` movies have an equal probability of ending up in our sample. We can accomplish this in R using the `sample_n()` function.
+
+```{r, echo = FALSE}
+set.seed(437)
+```
+
+```{r}
+movies_SRS <- movies_30_99 %>% 
+  sample_n(500)
+glimpse(movies_SRS)
+```
+
+**Stratified sampling with unequal probability**
+
+Perhaps we expect movies within a particular decade to be more similar to each other than to movies in other decades. In this case, we could take a *stratified sample* (instead of a simple random sample), where the population is partitioned into sub-groups (i.e. strata) by decade, and a random sample is taken within each decade. In order to accomplish this in R, let's first create a new decade variable and then use `group_by()` in combination with `sample_n()` to take an independent random sample for each decade. Note that since there are 7 decades, we can sample 71 movies from each decade in order to end up with approximately 500 movies total in our sample ($7 * 71 = 497$)
+
+```{r}
+movies_30_99 <- movies_30_99 %>% 
+  mutate(decade = floor(year / 10) * 10) 
+
+movies_strata <- movies_30_99 %>% 
+  group_by(decade) %>% 
+  sample_n(71)
+
+glimpse(movies_strata)
+```
+
+Note that because there were not an equal number of movies per decade in the population, sampling a fixed number of movies per decade (e.g. 71) is actually an example of sampling with *unequal probabilities*. For example, since there were only 2863 movies in the 1930s, each movie from this decade had a $71 / 2863 * 100 =$ `r 71 / 2863 * 100`% chance of being selected, but movies from the 1990s only had a $71 / 10788 * 100 =$ `r 71 / 10788 * 100`% chance of being selected. Table \@ref(tab:strata-probs) shows the selection probabilities for each strata.
+
+```{r, eval = FALSE}
+movies_30_99 %>% 
+  count(decade) %>% 
+  mutate(prob = 71 / n)
+```
+
+```{r strata-probs, echo = FALSE}
+movies_30_99 %>% 
+  count(decade) %>% 
+  mutate(prob = 71 / n) %>% 
+  kable(
+    caption = "Selection probability by decade", 
+    booktabs = TRUE,
+    escape = FALSE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("HOLD_position"))
+```
+
+**Stratified sampling with equal probability**
+
+We could instead decide to draw a stratified sample with equal probabilities. Since overall we want a sample with $n = 500$, and we have a population of size $N =$ `r N`, we can choose to sample $500 / 39123 *100 = 1.28\%$ of the movies from each strata. Using the function `sample_frac()` instead of `sample_n()` allows us to do this. 
+
+```{r}
+movies_strata_equal <- movies_30_99 %>% 
+  group_by(decade) %>% 
+  mutate(N_strata = n()) %>% #needed for later calculations
+  sample_frac(0.0128)
+```
+
+Table \@ref(tab:strata-probs-equal) shows the number of movies that were sampled per strata, `n_strata`. These numbers are proportional to the total number of movies in that decade in the population `N_strata`. This results in each movie in the population having equal probability of selection into the sample. 
+```{r, eval = FALSE}
+movies_strata_equal %>% 
+  group_by(decade) %>% 
+  summarise(n_strata = n(), N_strata = unique(N_strata), 
+            prob = n_strata / N_strata)
+```
+
+```{r strata-probs-equal, echo = FALSE}
+movies_strata_equal %>% 
+  group_by(decade) %>% 
+  summarise(n_strata = n(), N_strata = unique(N_strata), 
+            prob = n_strata / N_strata) %>% 
+  kable(
+    caption = "Stratified sampling with equal probabilities (i.e. proportional to stratum size)", 
+    booktabs = TRUE,
+    escape = FALSE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("HOLD_position"))
+```
+
+Once we have our sample of $n$ movies, we could then begin data collection. For each movie, we would record whether or not it passed the Bechdel test. We would then calculate our **point estimate** $\hat{\pi}$, the proportion of movies *in our sample* that pass the Bechdel test, which serves as our estimate of the population proportion $\pi$. Recall that we mentioned in Section \@ref(sample-selection) that using a more complicated sampling method, such as stratified sampling, also requires a more complicated formula for computing point estimates. In the simple random sampling case, however, we calculate the sample proportion in exactly the way you would expect: $\hat{\pi} = \frac{x}{n}$, where $x$ is the number of movies in the sample passing the test, and $n$ is the sample size. 
+
+In the next few chapters we will discuss how much uncertainty we would expect there to be in our estimate $\hat{\pi}$ due to the fact that we are only observing a sample and not the whole population. 
+
+## Samples from Unclear Populations {#samples}
 
 As an analyst, you will often encounter samples of data that come from unspecified or unclear populations. For example, you:
 
@@ -196,3 +364,27 @@ Finally, keep in mind that **no study generalizes everywhere**. It is your job a
 
 ## Causality vs. Generalizability
 
+In Chapter \@ref(causality) we talked about the process of *random assignment* (e.g. in randomized experiments), and in this chapter we talked about the process of *random sampling*. These two types of randomization processes are at the core of inferential statistics: 
+
+* Random assignment allows us to make *causal* claims 
+* Random sampling allows us to make *generalizable* claims 
+
+The ideal experiment would have both *random assignment* and *random sampling* so that you could have a *casual* conclusion that is *generalizable* to the whole population. Figure \@ref(fig:RA-RS) shows a 2 X 2 table of the possible experiment and observational study types and the conclusions that can be drawn from each.
+
+```{r RA-RS, echo=FALSE, fig.cap="Random Assignment vs. Random Sampling", out.width='110%', fig.align='center'}
+knitr::include_graphics("images/RA_vs_RS.png")
+```
+
+Let's give an example of each. 
+
+* **Random assignment + random sampling**
+    + You take a random sample of students at your university to participate in your study on exercise and stress. You randomly assign half of the participants to a prescribed workout regimen of 30 minutes of cardio per day. You collect data on the stress levels in all participants via surveys and biomarkers such as cortisol. Your results can validly conclude that any differences in stress between the two groups were *caused* by the excersize regimen because it was randomly assigned, and those conclusions can be *generalized* to the whole student body because it was a random sample. 
+* **Random assignment only**
+    + You advertise your study on campus and ask volunteers to participate. Once you have recruited enough participants, you randomly assign half of them to the exercise treatment. Your results can validly conclude that the effects of exercise on stress are *causal* because you used random assignment, but you cannot generalize beyond your sample because you did not use random sampling. There could be characteristics about those that volunteered to particpate that influence how effective the treatment is likely to be as compared to those who chose not to participate.
+* **Random sampling only**
+    + You take a random sample of students at the university to participate in your study. You collect data on their exercise habits and their stress. If your data indicates a negative relationship between exercise and stress (i.e. as exercise increases, stress decreases), you can conclude that relationship is *generalizable* to the whole student body, but you cannot claim that increased exercise *caused* reduced stress. There could be confounding characteristics about students who choose to exercise more that also reduce their stress (e.g. better sleep or nutrition habits). 
+* **Neither random assignment nor random sampling**
+    + You advertise your study on campus and ask volunteers to participate. You collect data on their exercise habits and their stress. If your data indicates a negative relationship between exercise and stress, you can only validly conclude that the relationship is *associational* and true for *your sample only*. There may differences between people in your sample who choose to exercise and those who do not, as well as differences between people who volunteered to participate in your study and those who did not.
+    
+So far we have just told you that random sampling allows you to make *generalizable* claims from your sample to a population. In Chapter \@ref(sampling) we will introduce and demonstrate the statistical theory for *why* this is true. 
+  
