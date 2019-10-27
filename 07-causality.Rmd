@@ -27,12 +27,13 @@ In this chapter we kick off the third segment of this book: statistical theory. 
 
 Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). If needed, read Section \@ref(packages) for information on how to install and load R packages.
 
-```{r, message = FALSE, warning = FALSE}
+```{r, eval = FALSE}
 library(tidyverse)
-library(skimr)
 ```
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
+library(tidyverse)
+
 # Packages needed internally, but not in text.
 library(readr)
 library(knitr)
@@ -194,7 +195,7 @@ There are somewhat large differences between the treatment and control group on 
 
 Imagine that the truth about this new curriculum is that it raises student math scores by 10 points, on average. We can use R to mimic this process and randomly generate post-test scores that raise the treatment group's math scores by 10 points on average, but leave the control group math scores largely unchanged. Note that we will never know the true treatment effect in real life - the treatment effect is what we're trying to estimate; this is for demonstration purposes only.
 
-The code for how we generated these random post-test scores in below, but don't worry about understanding exactly how it works. Just note that in both the `Trt_rand` and `Trt_non_rand` case, we are creating post-treatment math scores that increase a student's score by 10 points on average, if they received the new curriculum.
+We use another random process function in R, `rnorm()` to generate these random post-test scores. Don't worry about understanding exactly how the code below works, just note that in both the `Trt_rand` and `Trt_non_rand` case, we are creating post-treatment math scores that increase a student's score by 10 points on average, if they received the new curriculum.
 
 ```{r echo=FALSE, message=FALSE}
 set.seed(73)
@@ -248,7 +249,7 @@ fit <- lm(MATH_post_trt_rand ~ Trt_rand, data = ed_data)
 fit
 ```
 
-Let's also look the post-treatment test scores by group for the non-randomized experiment case. 
+Let's also look at the post-treatment test scores by group for the non-randomized experiment case. 
 ```{r}
 ed_data %>% 
   group_by(Trt_non_rand) %>% 
@@ -256,7 +257,7 @@ ed_data %>%
 fit1_non_rand <- lm(MATH_post_trt_non_rand ~ Trt_non_rand, data = ed_data)
 summary(fit1_non_rand)$coefficients
 ```
-Note that even though the treatment raised student scores by 10 points on average, in the observational case it looks like the treatment effect is *much* smaller. This is because treatment was confounded with SES and other pre-treatment variables. 
+Note that even though the treatment raised student scores by 10 points on average, in the observational case we estimate the treatment effect is *much* smaller. This is because treatment was confounded with SES and other pre-treatment variables, so we could not obtain an accurate estimate of the treatment effect.
 
 ## If you know Z, what about multiple regression?
 
@@ -295,7 +296,7 @@ summary(fit1_rand_exp)$coefficients
 fit2_rand_exp <- lm(MATH_post_trt_rand ~ Trt_rand + SES_CONT, data = ed_data)
 summary(fit2_rand_exp)$coefficients
 ```
-We can see that both models give estimates of the treatment effect that are roughly same (`r summary(fit1_rand_exp)$coefficients[2,1]` and `r summary(fit2_rand_exp)$coefficients[2,1]`), regardless of whether or not we control for SES. This is because randomization ensured that the treatment and control group were balanced on all pre-treatment characteristics - including SES, so there is no need to control for them in a multiple regression model. 
+We can see that both models give estimates of the treatment effect that are roughly the same (`r summary(fit1_rand_exp)$coefficients[2,1]` and `r summary(fit2_rand_exp)$coefficients[2,1]`), regardless of whether or not we control for SES. This is because randomization ensured that the treatment and control group were balanced on all pre-treatment characteristics - including SES, so there is no need to control for them in a multiple regression model. 
 
 ## What if you don’t know Z?
 
