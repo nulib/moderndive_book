@@ -842,7 +842,7 @@ score_model_interaction_data %>%
                 latex_options = c("hold_position"))
 ```
 
-In fact, it turns out that the female instructor of age 36 taught the first four courses, while the male instructor taught the next 3. The resulting $\widehat{y}$ = $\widehat{\text{score}}$ fitted values are in the `score_hat` column. The residuals $y-\widehat{y}$ are displayed in the `residuals` column.  Notice for example the first and fourth courses the female instructor of age 36 taught had positive residuals, indicating that the actual teaching score they received from students was less than their fitted score of 4.25. On the other hand, the second and third course this instructor taught had negative residuals, indicating that the actual teaching score they received from students was more than their fitted score of 4.25. 
+In fact, it turns out that the female instructor of age 36 taught the first four courses, while the male instructor taught the next 3. The resulting $\widehat{y}$ = $\widehat{\text{score}}$ fitted values are in the `score_hat` column. The residuals $y-\widehat{y}$ are displayed in the `residuals` column. Notice for example the first and fourth courses the female instructor of age 36 taught had positive residuals, indicating that the actual teaching score they received from students was more than their fitted score of 4.25. On the other hand, the second and third course this instructor taught had negative residuals, indicating that the actual teaching score they received from students was less than their fitted score of 4.25. 
 
 ```{block, type='learncheck', purl=FALSE}
 \vspace{-0.25in}
