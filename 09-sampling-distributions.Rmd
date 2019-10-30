@@ -383,7 +383,7 @@ Throughout this section, it is imperative that you remember that this is a theor
 ### Distribution {#dist}
 The sampling distribution of an estimator refers to the general shape of the distribution of estimates across repeated samples.  We can, in general, characterize a distribution in terms of its modality and symmetry/skew. Figure \@ref(fig:distribution) shows examples of some common distribution shapes.
 
-```{r distribution, echo=FALSE, out.width='100%', fig.cap="P-value diagram"}
+```{r distribution, echo=FALSE, out.width='100%', fig.cap="Common distribution shapes"}
 knitr::include_graphics('images/distribution.png')
 ```
 
@@ -579,7 +579,7 @@ In statistics, we prefer estimators that are precise over those that are not. Ag
 
 Figure \@ref(fig:bias-precision) illustrates the concepts of bias and precision. Note that an estimator can be precise but also biased. That is, all of the estimates tend to be close to one another (i.e. the sampling distribution has a small standard error), but they are centered around the wrong average value. Conversely, it's possible for an estimator to be unbiased (i.e. it's centered around the true population parameter value) but imprecise (i.e. large standard error, the estimates vary quite a bit from one (theoretical) sample to another). Most of the estimators you use in this class (e.g. $\bar{x}, s^2, \hat{\pi}$) are both precise and unbiased, which is clearly the preferred set of characteristics.
 
-```{r bias-precision, echo=FALSE, out.width='100%', fig.cap="P-value diagram"}
+```{r bias-precision, echo=FALSE, out.width='100%', fig.cap="Bias vs. Precision"}
 knitr::include_graphics('images/bias-precision.png')
 ```
 
