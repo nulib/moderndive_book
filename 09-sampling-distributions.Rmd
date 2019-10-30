@@ -29,16 +29,14 @@ In Chapter \@ref(populations) we introduced inferential statistics by discussing
 Let's load all the packages needed for this chapter (this assumes you've already installed them). If needed, read Section \@ref(packages) for information on how to install and load R packages.
 
 ```{r eval = FALSE}
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 library(moderndive)
 library(skimr)
 library(dslabs)
 ```
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 library(moderndive)
 #library(skimr)
 library(dslabs)
@@ -49,6 +47,7 @@ library(kableExtra)
 library(patchwork)
 library(readr)
 library(stringr)
+library(gridExtra)
 ```
 
 ***
@@ -73,29 +72,27 @@ It is important to emphasize here that this process is *theoretical*. In real li
 
 ## Sampling Activity {#sampling-activity}
 
-In the previous section, we provided an overview of repeated sampling and why the theoretical exercise is useful for understanding how to make inferences. This way of thinking, however, can be hard in the abstract. In this section, we provide a concrete example. 
+In the previous section, we provided an overview of repeated sampling and why the theoretical exercise is useful for understanding how to make inferences. This way of thinking, however, can be hard in the abstract.
 
 ### What proportion of this bowl's balls are red?
 
-Take a look at the bowl in Figure \@ref(fig:sampling-exercise-1). It has a certain number of red and a certain number of white balls all of equal size. Furthermore, it appears the bowl has been mixed beforehand as there does not seem to be any particular pattern to the spatial distribution of red and white balls. 
-
-Let's now ask ourselves, what proportion of this bowl's balls are red?
+In this section, we provide a concrete example, based upon a classroom activity completed in an introductory statistics class with 33 students. In the class, there is a large bowl of balls that contains red and white balls. **Importantly, we know that 37.5% of the balls are red (someone counted this!).**
 
 ```{r sampling-exercise-1, echo=FALSE, fig.cap="A bowl with red and white balls.", purl=FALSE, out.width = "80%"}
 knitr::include_graphics("images/sampling_bowl_1.jpg")
 ```
 
-One way to answer this question would be to perform an exhaustive count: remove each ball individually, count the number of red balls and the number of white balls, and divide the number of red balls by the total number of balls. However this would be a long and tedious process. 
+The goal of the activity is to understand what would happen if we didn’t actually count all of the red balls (a census), but instead estimated the proportion that are red based upon a smaller random sample (e.g., n = 50).  
 
-### Using the shovel once 
+### Taking one random sample 
 
-Instead of performing an exhaustive count, let's insert a shovel into the bowl as seen in Figure \@ref(fig:sampling-exercise-2).
+We begin by taking a random sample of n = 50 balls. To do so, we insert a shovel into the bowl, as seen in Figure \@ref(fig:sampling-exercise-2).
 
 ```{r sampling-exercise-2, echo=FALSE, fig.cap="Inserting a shovel into the bowl.", purl=FALSE, out.width = "80%"}
 knitr::include_graphics("images/sampling_bowl_2.jpg")
 ```
 
-Using the shovel we remove a number of balls as seen in Figure \@ref(fig:sampling-exercise-3).
+Using the shovel, we remove a number of balls as seen in Figure \@ref(fig:sampling-exercise-3).
 
 ```{r sampling-exercise-3, echo=FALSE, fig.cap="Fifty balls from the bowl.", purl=FALSE, out.width = "80%"}
 knitr::include_graphics("images/sampling_bowl_3_cropped.jpg")
@@ -103,19 +100,17 @@ knitr::include_graphics("images/sampling_bowl_3_cropped.jpg")
 
 Observe that 17 of the balls are red. There are a total of 5 x 10 = 50 balls, and thus 0.34 = 34% of the shovel's balls are red. We can view the proportion of balls that are red *in this shovel* as a guess of the proportion of balls that are red *in the entire bowl*. While not as exact as doing an exhaustive count, our guess of 34% took much less time and energy to obtain. 
 
-However, say, we started this activity over from the beginning. In other words, we replace the 50 balls back into the bowl and start over. Would we remove exactly 17 red balls again? In other words, would our guess at the proportion of the bowl's balls that are red be exactly 34% again? Maybe? 
+### Everyone takes a random sample (i.e., repeating this 33 times) {#student-shovels}
 
-What if we repeated this exercise several times? Would I obtain exactly 17 red balls each time? In other words, would our guess at the proportion of the bowl's balls that are red be exactly 34% every time? Surely not. Let's actually do this and observe the results with the help of 33 of our friends.
+In our random sample, we estimated the proportion of red balls to be 34%. But what if we were to have gotten a different random sample? Would we remove exactly 17 red balls again? In other words, would our guess at the proportion of the bowl's balls that are red be exactly 34% again? Maybe? What if we repeated this exercise several times? Would we obtain exactly 17 red balls each time? In other words, would our guess at the proportion of the bowl's balls that are red be exactly 34% every time? Surely not.
 
-### Using the shovel 33 times {#student-shovels}
+To explore this, every student in the introductory statistics class repeated the same activity. Each person:
 
-Each of our 33 friends will do the following: 
-
-- use the shovel to remove 50 balls each, 
-- count the number of red balls, 
-- use this number to compute the proportion of the 50 balls they removed that are red, 
-- return the balls into the bowl, and 
-- mix the contents of the bowl a little to not let a previous group's results influence the next group's set of results. 
+-	Used the shovel to remove 50 balls,
+-	Counted the number of red balls,
+-	Used this number to compute the proportion of the 50 balls they removed that are red,
+-	Returned the balls into the bowl, and
+-	Mixed the contents of the bowl a little to not let a previous group’s results influence the next group’s set of results.
 
 ```{r sampling-exercise-3b, echo=FALSE, fig.show='hold', fig.cap="Repeating sampling activity 33 times.", purl=FALSE, out.width = "20%"}
 #
@@ -143,7 +138,7 @@ Observe the following about the histogram in Figure \@ref(fig:sampling-exercise-
 * However the most frequently occurring proportions were between 0.30 = 30% and 0.35 = 35% red, right in the middle of the distribution.
 * The shape of this distribution is somewhat bell-shaped. 
 
-Let's construct this same hand-drawn histogram in R using your data visualization skills that you honed in Chapter \@ref(viz). We saved our 33 group of friends' proportion red in a data frame `tactile_prop_red` which is included in the `moderndive` package you loaded earlier. 
+Let's construct this same hand-drawn histogram in R using your data visualization skills that you honed in Chapter \@ref(viz). Each of the 33 student's proportion red is saved in a data frame `tactile_prop_red` which is included in the `moderndive` package you loaded earlier. 
 
 ```{r, eval=FALSE}
 tactile_prop_red
@@ -155,6 +150,8 @@ Let's display only the first 10 out of 33 rows of `tactile_prop_red`'s contents 
 ```{r tactilered, echo=FALSE}
 tactile_prop_red %>% 
   slice(1:10) %>% 
+  separate(group, into = c("student", "extra")) %>% 
+  select(-extra) %>% 
   kable(
     digits = 3,
     caption = "First 10 out of 33 groups' proportion of 50 balls that are red.", 
@@ -165,7 +162,7 @@ tactile_prop_red %>%
                 latex_options = c("HOLD_position", "repeat_header"))
 ```
 
-Observe for each `group` we have their names, the number of `red_balls` they obtained, and the corresponding proportion out of 50 balls that were red named `prop_red`. Observe, we also have a variable `replicate` enumerating each of the 33 groups; we chose this name because each row can be viewed as one instance of a replicated activity: using the shovel to remove 50 balls and computing the proportion of those balls that are red. 
+Observe for each `student` we have their names, the number of `red_balls` they obtained, and the corresponding proportion out of 50 balls that were red named `prop_red`. Observe, we also have a variable `replicate` enumerating each of the 33 students; we chose this name because each row can be viewed as one instance of a replicated activity: using the shovel to remove 50 balls and computing the proportion of those balls that are red. 
 
 We visualize the distribution of these 33 proportions using a `geom_histogram()` with `binwidth = 0.05` in Figure \@ref(fig:samplingdistribution-tactile), which is appropriate since the variable `prop_red` is numerical. This computer-generated histogram matches our hand-drawn histogram from the earlier Figure \@ref(fig:sampling-exercise-5). 
 
@@ -188,15 +185,22 @@ with the ggplot2 histogram so that `boundary` isn't needed. -->
 
 ### What are we doing here?
 
-What we just demonstrated in this activity was the process of *repeated sampling*, where we took 33 repeated samples of size 50. We would like to know the proportion of the bowl's balls that are red, but because the bowl has a very large number of balls performing an exhaustive count of the number of red and white balls in the bowl would be very costly in terms of both time and energy. We therefore extract a sample of 50 balls using the shovel. Using this sample of 50 balls, we estimate the proportion of the bowl's balls that are red using the proportion of the shovel's balls that are red. This estimate in our earlier example was 17 red balls out of 50 balls = 34%. Moreover, because we mixed the balls before each use of the shovel, the samples were randomly selected. Because each sample was drawn at random, the samples were different from each other. Because the samples were different from each other, we obtained the different proportions red observed in Table \@ref(tab:tactilered). This is known as the concept of *sampling variation*.
+We just worked through a **thought experiment** in which we imagined 33 different realities that could have occurred. In each, a different random sample of size 50 balls was selected and the proportion of balls that were red was calculated, providing an **estimate of the true proportion** of balls that are red in the entire bowl. We then compared these estimates to the true parameter value. 
 
-In Section \@ref(sampling-simulation) we'll mimic the hands-on sampling activity we just performed in a *computer simulation*; using a computer will allow us to repeat the above sampling activity much more than 33 times. Using a computer, not only will we be able to repeat the hands-on activity a very large number of times, but it will also allow us to use shovels with different numbers of slots than just 50.
+We found that there is variation in these estimates – what we call **sampling variability** – and that while the estimates are somewhat near to the population parameter, they are not typically equal to the population parameter value. That is, in some of these realities, the sample estimate was larger than the population value, while in others, the sample estimate was smaller. 
 
-The purpose of these simulations is to develop an understanding of two key concepts relating to repeated sampling: understanding the concept of sampling variation and the role that sample size plays in this variation. 
+But why did we do this? It may seem like a strange activity, since we already know the value of the population proportion. Why do we need to imagine these other realities? By understanding how close (or far) a sample estimate can be from a population parameter **in a situation when we know the true value of the parameter**, we are able to deduce properties of the estimator more generally, which we can use in real-life situations in which we do not know the value of the population parameter and have to estimate it. 
+
+Unfortunately, the thought exercise we just completed wasn’t very precise – certainly there are more than 33 possible alternative realities and samples that we could have drawn. Put another way, if we really want to understand properties of an estimator, we need to repeat this activity **thousands** of times. Doing this by hand – as illustrated in this section – would take forever. For this reason, in Section \@ref(sampling-simulation) we’ll extend the hands-on sampling activity we just performed by using a *computer simulation*. 
+
+Using a computer, not only will we be able to repeat the hands-on activity a very large number of times, but it will also allow us to use shovels with different numbers of slots than just 50. The purpose of these simulations is to develop an understanding of two key concepts relating to repeated sampling: understanding the concept of **sampling variation** and the role that **sample size** plays in this variation.
 
 ## Computer simulation {#sampling-simulation}
 
-In the previous Section \@ref(sampling-activity), we performed a tactile sampling activity by hand. In other words, we used a physical bowl of balls and a physical shovel. We performed this sampling activity by hand first so that we could develop a firm understanding of the root ideas behind sampling. In this section, we’ll mimic this tactile sampling activity with a virtual sampling activity using a computer. In other words, we’ll use a virtual analog to the bowl of balls and a virtual analog to the shovel.
+In the previous Section \@ref(sampling-activity), we began imagining other realities and the other possible samples we could have gotten other than our own. To do so, we read about an activity in which a physical bowl of balls and a physical shovel were used by 33 members of a statistics class. We began with this approach so that we could develop a firm understanding of the root ideas behind the theory of repeated sampling. 
+
+In this section, we’ll extend this activity to include 10,000 other realities and possible samples using a computer. We focus on 10,000 hypothetical samples since it is enough to get a strong understanding of the properties of an estimator, while remaining computationally simple to implement.
+
 
 ### Using the virtual shovel once
 
@@ -235,7 +239,7 @@ virtual_shovel %>%
                 latex_options = c("HOLD_position"))
 ```
 
-The `ball_ID` variable identifies which of the balls from `bowl` are included in our sample of 50 balls and `color` denotes its color. However what does the `replicate` variable indicate? In `virtual_shovel`'s case, `replicate` is equal to 1 for all 50 rows. This is telling us that these 50 rows correspond to a first repeated/replicated use of the shovel, in our case our first sample. We'll see below when we "virtually" take 33 samples, `replicate` will take values between 1 and 33. Before we do this, let's compute the proportion of balls in our virtual sample of size 50 that are red using the `dplyr` data wrangling verbs you learned in Chapter \@ref(wrangling). Let's breakdown the steps individually:
+The `ball_ID` variable identifies which of the balls from `bowl` are included in our sample of 50 balls and `color` denotes its color. However what does the `replicate` variable indicate? In `virtual_shovel`'s case, `replicate` is equal to 1 for all 50 rows. This is telling us that these 50 rows correspond to a first repeated/replicated use of the shovel, in our case our first sample. We'll see below when we "virtually" take 10,000 samples, `replicate` will take values between 1 and 10,000. Before we do this, let's compute the proportion of balls in our virtual sample of size 50 that are red using the `dplyr` data wrangling verbs you learned in Chapter \@ref(wrangling). Let's breakdown the steps individually:
 
 First, for each of our 50 sampled balls, identify if it is red using a test for equality using `==`. For every row where `color == "red"`, the Boolean `TRUE` is returned and for every row where `color` is not equal to `"red"`, the Boolean `FALSE` is returned. Let's create a new Boolean variable `is_red` using the `mutate()` function from Section \@ref(mutate):
 
@@ -287,26 +291,26 @@ virtual_shovel %>%
   mutate(prop_red = num_red / 50)
 ```
 
-Great! `r virtual_shovel_perc_red`% of `virtual_shovel`'s 50 balls were red! So based on this particular sample, our guess at the proportion of the `bowl`'s balls that are red is `r virtual_shovel_perc_red`%. But remember from our earlier tactile sampling activity that if we repeated this sampling, we would not necessarily obtain a sample of 50 balls with `r virtual_shovel_perc_red`% of them being red again; there will likely be some variation. In fact in Table \@ref(tab:virtual-shovel) we displayed 33 such proportions based on 33 tactile samples and then in Figure \@ref(fig:sampling-exercise-5) we visualized the distribution of the 33 proportions in a histogram. Let's now perform the virtual analogue of having 33 groups of students use the sampling shovel!
+Great! `r virtual_shovel_perc_red`% of `virtual_shovel`'s 50 balls were red! So based on this particular sample, our guess at the proportion of the `bowl`'s balls that are red is `r virtual_shovel_perc_red`%. But remember from our earlier tactile sampling activity that if we repeated this sampling, we would not necessarily obtain a sample of 50 balls with `r virtual_shovel_perc_red`% of them being red again; there will likely be some variation. In fact in Table \@ref(tab:tactilered) we displayed 33 such proportions based on 33 tactile samples and then in Figure \@ref(fig:sampling-exercise-5) we visualized the distribution of the 33 proportions in a histogram. Let's now perform the virtual analogue of having 10,000 students use the sampling shovel!
 
 
-### Using the virtual shovel 33 times
+### Using the virtual shovel 10,000 times
 
-Recall that in our tactile sampling exercise in Section \@ref(sampling-activity) we had 33 groups of students each use the shovel, yielding 33 samples of size 50 balls, which we then used to compute 33 proportions. In other words we repeated/replicated using the shovel 33 times. We can perform this repeated/replicated sampling virtually by once again using our virtual shovel function `rep_sample_n()`, but by adding the `reps = 33` argument, indicating we want to repeat the sampling 33 times. Be sure to scroll through the contents of `virtual_samples` in RStudio's viewer. 
+Recall that in our tactile sampling exercise in Section \@ref(sampling-activity) we had 33 students each use the shovel, yielding 33 samples of size 50 balls, which we then used to compute 33 proportions. In other words we repeated/replicated using the shovel 33 times. We can perform this repeated/replicated sampling virtually by once again using our virtual shovel function `rep_sample_n()`, but by adding the `reps = 10000` argument, indicating we want to repeat the sampling 10,000 times. Be sure to scroll through the contents of `virtual_samples` in RStudio's viewer. 
 
 ```{r, eval=FALSE}
 virtual_samples <- bowl %>% 
-  rep_sample_n(size = 50, reps = 33)
+  rep_sample_n(size = 50, reps = 10000)
 View(virtual_samples)
 ```
 ```{r, echo=FALSE}
 virtual_samples <- bowl %>% 
-  rep_sample_n(size = 50, reps = 33)
+  rep_sample_n(size = 50, reps = 10000)
 ```
 
-Observe that while the first 50 rows of `replicate` are equal to `1`, the next 50 rows of `replicate` are equal to `2`. This is telling us that the first 50 rows correspond to the first sample of 50 balls while the next 50 correspond to the second sample of 50 balls. This pattern continues for all `reps = 33` replicates and thus `virtual_samples` has 33 $\times$ 50 = 1650 rows. 
+Observe that while the first 50 rows of `replicate` are equal to `1`, the next 50 rows of `replicate` are equal to `2`. This is telling us that the first 50 rows correspond to the first sample of 50 balls while the next 50 correspond to the second sample of 50 balls. This pattern continues for all `reps = 10000` replicates and thus `virtual_samples` has 10,000 $\times$ 50 = 500,000 rows. 
 
-Let's now take the data frame `virtual_samples` with 33 $\times$ 50 = 1650 rows corresponding to 33 samples of size 50 balls and compute the resulting 33 proportions red. We'll use the same `dplyr` verbs as we did in the previous section, but this time with an additional `group_by()` of the `replicate` variable. Recall from Section \@ref(groupby) that by assigning the grouping variable "meta-data" before `summarizing()`, we'll obtain 33 different proportions red:
+Let's now take the data frame `virtual_samples` with 10,000 $\times$ 50 = 500,000 rows corresponding to 10,000 samples of size 50 balls and compute the resulting 10,000 proportions red. We'll use the same `dplyr` verbs as we did in the previous section, but this time with an additional `group_by()` of the `replicate` variable. Recall from Section \@ref(groupby) that by assigning the grouping variable "meta-data" before `summarizing()`, we'll obtain 10,000 different proportions red:
 
 ```{r, eval=FALSE}
 virtual_prop_red <- virtual_samples %>% 
@@ -316,7 +320,7 @@ virtual_prop_red <- virtual_samples %>%
 View(virtual_prop_red)
 ```
 
-Let's display only the first 10 out of 33 rows of `virtual_prop_red`'s contents in Table \@ref(tab:tactilered). As one would expect, there is variation in the resulting `prop_red` proportions red for the first 10 out 33 repeated/replicated samples.
+Let's display only the first 10 out of 10,000 rows of `virtual_prop_red`'s contents in Table \@ref(tab:tactilered). As one would expect, there is variation in the resulting `prop_red` proportions red for the first 10 out 10,000 repeated/replicated samples.
 
 <!-- Albert will remove `boundary` here on updates to chalkboard image. -->
 
@@ -339,102 +343,42 @@ virtual_prop_red %>%
                 latex_options = c("HOLD_position", "repeat_header"))
 ```
 
-Let's visualize the distribution of these 33 proportions red based on 33 virtual samples using a histogram with `binwidth = 0.05` in Figure \@ref(fig:samplingdistribution-virtual). 
+Let's visualize the distribution of these 10,000 proportions red based on 10,000 virtual samples using a histogram with `binwidth = 0.05` in Figure \@ref(fig:samplingdistribution-virtual). 
 
 ```{r eval=FALSE}
 ggplot(virtual_prop_red, aes(x = prop_red)) +
   geom_histogram(binwidth = 0.05, boundary = 0.4, color = "white") +
   labs(x = "Proportion of 50 balls that were red", 
-       title = "Distribution of 33 proportions red") 
+       title = "Distribution of 10,000 proportions red") 
 ```
-```{r samplingdistribution-virtual, echo=FALSE, fig.cap="Distribution of 33 proportions based on 33 samples of size 50"}
+```{r samplingdistribution-virtual, echo=FALSE, fig.cap="Distribution of 10,000 proportions based on 10,000 samples of size 50"}
 virtual_histogram <- ggplot(virtual_prop_red, aes(x = prop_red)) +
   geom_histogram(binwidth = 0.05, boundary = 0.4, color = "white")
 virtual_histogram + 
   labs(x = "Proportion of 50 balls that were red", 
-       title = "Distribution of 33 proportions red")
+       title = "Distribution of 10,000 proportions red")
+
 ``` 
 
-Observe that occasionally we obtained proportions red that are less than 0.3 = 30%, while on the other hand we occasionally we obtained proportions that are greater than 0.45 = 45%. However, the most frequently occurring proportions red out of 50 balls were between 35% and 40% (for 11 out 33 samples). Why do we have these differences in proportions red? Because of *sampling variation*. 
+Observe that every now and then, we obtain proportions as low as between 20% and 25%, and others as high as between 55% and 60%. These are rare however. However, the most frequently occurring proportions red out of 50 balls were between 35% and 40%. Why do we have these differences in proportions red? Because of *sampling variation*. 
 
-Let's now compare our virtual results with our tactile results from the previous section in Figure \@ref(fig:tactile-vs-virtual). We see that both histograms, in other words the distribution of the 33 proportions red, are *somewhat* similar in their center and spread although not identical. These slight differences are again due to random variation. Furthermore both distributions are *somewhat* bell-shaped.
-
-```{r tactile-vs-virtual, echo=FALSE, fig.cap="Comparing 33 virtual and 33 tactile proportions red."}
-bind_rows(
-  virtual_prop_red %>% 
-    mutate(type = "Virtual sampling"), 
-  tactile_prop_red %>% 
-    select(replicate, red = red_balls, prop_red) %>% 
-    mutate(type = "Tactile sampling")
-) %>% 
-  mutate(type = factor(type, levels = c("Virtual sampling", "Tactile sampling"))) %>% 
-  ggplot(aes(x = prop_red)) +
-  geom_histogram(binwidth = 0.05, boundary = 0.4, color = "white") +
-  facet_wrap(~type) +
-  labs(x = "Proportion of 50 balls that were red", 
-         title = "Comparing distributions")
-```
-
-
-### Using the virtual shovel 1000 times
-
-Now say we want study the variation in proportions red not based on 33 repeated/replicated samples, but rather a very large number of samples- say 1,000 samples. We have two choices at this point. We could have our students manually take 1,000 samples of 50 balls and compute the corresponding 1,000 proportion red out 50 balls. This would be cruel and unusual however, as this would be very tedious and time-consuming. This is where computers excel: automating long and repetitive tasks while performing them very quickly. Therefore at this point we will abandon tactile sampling in favor of only virtual sampling. Let's once again use the `rep_sample_n()` function with sample `size` set to 50 once again, but this time with the number of replicates `reps = 1000`. Be sure to scroll through the contents of `virtual_samples` in RStudio's viewer. 
-
-```{r, eval=FALSE}
-virtual_samples <- bowl %>% 
-  rep_sample_n(size = 50, reps = 1000)
-View(virtual_samples)
-```
-```{r, echo=FALSE}
-virtual_samples <- bowl %>% 
-  rep_sample_n(size = 50, reps = 1000)
-```
-
-
-Observe that now `virtual_samples` has 1,000 $\times$ 50 = 50,000 rows, instead of the 33 $\times$ 50 = 1,650 rows from earlier. Using the same code as earlier, let's take the data frame `virtual_samples` with 1,000 $\times$ 50 = 50,000 and compute the resulting 1,000 proportions red. 
-
-```{r, eval=FALSE}
-virtual_prop_red <- virtual_samples %>% 
-  group_by(replicate) %>% 
-  summarize(red = sum(color == "red")) %>% 
-  mutate(prop_red = red / 50)
-View(virtual_prop_red)
-```
-
-Observe that we now have 1,000 replicates of `prop_red`, the proportion of 50 balls that are red. Using the same code as earlier, let's now visualize the distribution of these 1,000 replicates of `prop_red` in a histogram in Figure \@ref(fig:samplingdistribution-virtual-1000).
-
-<!-- Albert will remove `boundary` here on updates to chalkboard image. -->
-
-```{r eval=FALSE}
-ggplot(virtual_prop_red, aes(x = prop_red)) +
-  geom_histogram(binwidth = 0.05, boundary = 0.4, color = "white") +
-  labs(x = "Proportion of 50 balls that were red", 
-       title = "Distribution of 1000 proportions red") 
-```
-```{r samplingdistribution-virtual-1000, echo=FALSE, fig.cap="Distribution of 1000 proportions based on 33 samples of size 50"}
-virtual_prop_red <- virtual_samples %>% 
-  group_by(replicate) %>% 
-  summarize(red = sum(color == "red")) %>% 
-  mutate(prop_red = red / 50)
-virtual_histogram <- ggplot(virtual_prop_red, aes(x = prop_red)) +
-  geom_histogram(binwidth = 0.05, boundary = 0.4, color = "white")
-virtual_histogram + 
-  labs(x = "Proportion of 50 balls that were red", 
-       title = "Distribution of 1000 proportions red")
-``` 
-
-Once again, the most frequently occurring proportions red occur between 35% and 40%. Every now and then, we obtain proportions as low as between 20% and 25%, and others as high as between 55% and 60%. These are rare however. Furthermore observe that we now have a much more symmetric and smoother bell-shaped distribution. 
+As a wrap up to this section, let’s reflect now on what we learned. First, we began with a situation in which we know the right answer – that the true proportion of red balls in the bowl (population) is 0.375 – and then we **simulated** drawing a random sample of size n = 50 balls and **estimating** the proportion of balls that are red from this sample. We then **repeated** this simulation another 9,999 times, each time randomly selecting a different sample and estimating the population proportion from the sample data. At the end, we collected 10,000 estimates of the proportion of balls that are red in the bowl (population) and created a histogram showing the distribution of these estimates. Just as in the case with the 33 samples of balls selected randomly by students (in Section 9.2), the resulting distribution indicates that there is **sampling variability** – that is, that some of the estimates are bigger and others smaller than the true proportion. In the next section, we will continue this discussion, providing new language and concepts for summarizing this distribution.
 
 
 <!-- Albert will add Learning Checks throughout this chapter after going over this chapter with his students. We should aim for 10-15 multiple choice or explanation type questions for the chapter as a whole with a concluding lab at the end. Documenting student questions can help to write these. -->
 
 ## Properties of Sampling Distributions {#properties_s}
 
-Once you have simulated many possible sample values of an estimator across repeated samples, an important question is how you can summarize these. When we consider the distribution of an estimator across repeated samples, we call this a *sampling distribution*. For example, in Figure \@ref(fig:samplingdistribution-virtual-1000) we visualized the sampling distribution of the estimator $\hat{\pi}$. The way you summarize a sampling distribution is the same way you’d summarize any other data: 
+In the previous sections, you were introduced to **sampling distributions** via both an example of a hands-on activity and one using computer simulation. In both cases, you explored the idea that the sample you see in your data is one of many, many possible samples of data that you could observe. To do so, you conducted a thought experiment in which you began with a population parameter (the proportion of red balls) that you knew, and then simulated 10,000 different hypothetical random samples of the same size that you used to calculate 10,000 estimates of the population proportion. At the end, you produced a histogram of these estimated values. 
 
-1. How can you characterize its distribution? 
-2. What is its average? 
-3. What is its standard deviation? 
+The histogram you produced is formally called a **sampling distribution**. While this is a nice visualization, it is not particularly helpful to summarize this only with a figure. For this reason, statisticians summarize the sampling distribution by answering three questions:
+
+1.	How can you characterize its distribution? (Also: Is it a known distribution?)
+2.	What is the average value in this distribution? How does that compare to the population parameter?
+3.	What is its standard deviation of this distribution? What range of values are likely to occur in samples of size n?
+
+Throughout this section, it is imperative that you remember that this is a theoretical exercise. By beginning with a situation in which we know the right answer, we will be able to deduce properties of estimators that we can leverage in cases in which we do not know the right answer (i.e., when you are conducting actual data analyses!). 
+
 
 ### Distribution {#dist}
 The sampling distribution of an estimator refers to the general shape of the distribution of estimates across repeated samples.  We can, in general, characterize a distribution in terms of its modality and symmetry/skew. Figure \@ref(fig:distribution) shows examples of some common distribution shapes.
@@ -447,15 +391,80 @@ knitr::include_graphics('images/distribution.png')
 
 Most estimators follow one of a few common distributions. These include:
 
-*	Normal distribution (e.g., sample mean: $\bar{x}$)
-*	t-distribution (e.g., sample mean standardized by standard error: $\frac{\bar{x}}{s/\sqrt{n}}$, where $s$ is the sample standard deviation
-*	Chi-squared distribution (e.g., sample variance: $s^2$)
-*	F-distribution (e.g., ratio of sample variances in two groups: ${s_1^2}/{s_2^2}$)
+*	Normal distribution
+*	t-distribution
+*	Chi-squared distribution 
+*	F-distribution
 
-Of these, the most common and important is the **Normal Distribution**. As a result of the Central Limit Theorem (CLT), when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in Figure \@ref(fig:samplingdistribution-virtual-1000) that the sampling distribution of $\hat{\pi}$ follows a Normal distribution. We will discuss the CLT further in Section \@ref(clt)
+The Normal distribution is characterized by two parameters: $\mu$, which determines the center of the distribution, and $\sigma$ which describes the spread. In Figure \@ref(fig:normal-dist), the solid- and dashed-line curves have the same standard deviation (i.e. $\sigma = 1$), so they have identical spread, but they have different means, so the dashed curve is simply shifted to the right to be centered at $\mu = 2$. On the other hand, the solid- and dotted-line curves are centered around the same value (i.e. $\mu = 0$), but the dotted curve has a larger standard deviation and is more spread out. The solid line is a special case of the Normal distribution called the **Standard Normal distribution**, which has mean 0 and standard deviation 1. Importantly, for all possible values of $\mu$ and $\sigma$, the normal distribution is **symmetric** and **unimodal**.
+
+```{r normal-dist, echo = FALSE, warning=FALSE, message=FALSE}
+ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
+  stat_function(fun = dnorm,
+                    aes(linetype = "mean = 0, sd = 1"), size = 1) +
+  stat_function(fun = dnorm, args = list(mean = 2, sd = 1),
+                    aes(linetype = "mean = 2, sd = 1"), size = 1) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 2),
+                    aes(linetype = "mean = 0, sd = 2"), size = 1) +
+  scale_linetype_manual(values = c(1, 3, 2)) +
+  labs(title = "Normal distribution", ylab = "") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+The t-distribution depends on one parameter, $df$, which stands for "degrees of freedom". Degrees of freedom are a function of sample size; for example in many cases $df = n - 1$. In general, the t-distribution has the same shape as the Normal distribution (symmetric, unimodal), but it has **heavier tails**. As sample sizes increase (and therefore degrees of freedom increase), the t-distribution becomes a very close approximation to the Normal distribution. 
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
+    stat_function(fun = dnorm,
+                    aes(linetype = "Standard Normal"), size = 1) +
+    stat_function(fun = dt, args = list(df = 2),
+                    aes(linetype = "t-distribution, df = 2"), size = 1) +
+    stat_function(fun = dt, args = list(df = 30),
+                    aes(linetype = "t-distribution, df = 30"), size = 1) +
+  scale_linetype_manual(values = c(1, 3, 2)) +
+  labs(title = "t-distribution", ylab = "") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+The Chi-squared distribution and F-distribution are both unimodal but skewed right. The Chi-squared distribution depends on one parameter $(df)$, and the F-distribution depends on two parameters $df_1$ and $df_2$. 
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+pF <- ggplot(data.frame(x = c(0, 50)), aes(x = x)) +
+  stat_function(fun = dchisq, args = list(df = 2), size = 1,
+                  aes(linetype = "df = 2")) +
+  stat_function(fun = dchisq, args = list(df = 5), size = 1,
+                  aes(linetype = "df = 5")) +
+  stat_function(fun = dchisq, args = list(df = 10), size = 1,
+                  aes(linetype = "df = 10")) +
+  scale_linetype_manual(values = c(1, 3, 2)) +
+  labs(title = "Chi-squared distribution") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = c(0.6, 0.7))
+
+pChi <- ggplot(data.frame(x = c(0, 6)), aes(x = x)) +
+    stat_function(fun = df, args = list(df1 = 2, df2 = 1), size = 1,
+                  aes(linetype = "df1 = 2, df2 = 1")) +
+  stat_function(fun = df, args = list(df1 = 5, df2 = 5), size = 1,
+                  aes(linetype = "df1 = 5, df2 = 5")) +
+  stat_function(fun = df, args = list(df1 = 10, df2 = 1), size = 1,
+                  aes(linetype = "df1 = 10, df2 = 1")) +
+  scale_linetype_manual(values = c(1, 3, 2)) +
+    labs(title = "F-distribution") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = c(0.6, 0.7))
+
+grid.arrange(pF, pChi, ncol = 2)
+```
+
+Of these four common distributions, the most common and important is the **Normal Distribution**. As a result of the Central Limit Theorem (CLT), when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in Figure \@ref(fig:samplingdistribution-virtual-10000) that the sampling distribution of $\hat{\pi}$ follows a Normal distribution. We will discuss the CLT further in Section \@ref(clt)
 
 ### Mean of the sampling distribution {#bias}
-If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value that the sample statistic is estimating.  Any difference in these two values is called **bias**:
+If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value that the sample statistic is estimating.  Any difference in these two values is called **bias**. That is:
+
+$$Bias = Average \ \ value \ \ of \ \ sampling \ \ distribution - True \ \ population \ \ parameter \ \ value$$
 
 *	A sample statistic is a **biased estimator** of a population parameter if its average value is more or less than the population parameter it is meant to estimate. 
 *	A sample statistic is an **unbiased estimator** of a population parameter if in the average sample it equals the population parameter value.
@@ -476,7 +485,7 @@ Here we see that $\hat{\pi}=$ `r mean(virtual_prop_red$prop_red)`, which is a go
 The difficulty with introducing this idea of bias in an introductory course is that most statistics used at this level (e.g., proportions, means, regression coefficients) are unbiased. Examples of biased statistics are more common in more complex models. One example, however, that illustrates this bias concept is that of sample variance estimator.
 
 Recall that we have used *standard deviation* as a summary statistic for how spread out data is. **Variance** is simply standard deviation *squared*, and thus it is also a measure of spread. The sample standard deviation is usually denoted by the letter $s$, and sample variance by $s^2$.  These are estimators for the population standard deviation (denoted $\sigma$) and the population variance (denoted $\sigma^2$). We estimate the sample variance using 
-$s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}$, where $n$ is the number of observations. When we use the `sd()` function in R, it is using the square root of this function in the background: $s= \sqrt{s^2} = \sqrt{\frac{\sum(x_i - \bar{x})^2}{(n-1)}}$. Until now, we have simply used this estimator without reason. You might ask: why is this divided by $n – 1$ instead of simply by $n$? To see why, let's look at an example.
+$s^2= \frac{\sum_{i = 1}^n(x_i - \bar{x})^2}{(n-1)}$, where $n$ is the sample size (check out \@ref(appendixA) if you are unfamiliar with the $\sum$ notation and using subscripts $i$). When we use the `sd()` function in R, it is using the square root of this function in the background: $s= \sqrt{s^2} = \sqrt{\frac{\sum_{i = 1}^n(x_i - \bar{x})^2}{(n-1)}}$. Until now, we have simply used this estimator without reason. You might ask: why is this divided by $n – 1$ instead of simply by $n$ like the formula for the mean (i.e. $\frac{\sum x_i}{n}$)? To see why, let's look at an example.
 
 The `gapminder` dataset in the `dslabs` package has life expectancy data on 185 countries in 2016. We will consider these 185 countries to be our population. The true variance of life expectancy in this population is $\sigma^2 = 57.5$.  
 
@@ -489,7 +498,7 @@ gapminder_2016 %>%
 Let's draw 10,000 repeated samples of n = 5 countries from this population. The data for the first 2 samples (replicates) is shown in \@ref(tab:s2-bias).
 
 ```{r echo = FALSE}
-set.seed(76)
+set.seed(73)
 ```
 
 ```{r}
@@ -515,7 +524,8 @@ We can then calculate the variance for each sample (replicate) using two differe
 
 ```{r}
 n <- 5
-variances <- samples %>% group_by(replicate) %>% 
+variances <- samples %>% 
+  group_by(replicate) %>% 
   summarise(s2_n = sum((life_expectancy - mean(life_expectancy))^2) / n, 
             s2 = sum((life_expectancy - mean(life_expectancy))^2) / (n - 1))
 ```
@@ -539,11 +549,11 @@ variances %>%
 
 Remember that the true value of the variance in this population is $\sigma^2 = 57.5$. We can see that $s_n^2$ is biased; on average it is equal to `r mean(variances$s2_n)`. By dividing by $n – 1$ instead of $n$, however, the bias is removed; the average value of $s^2$ = `r mean(variances$s2)`. Therefore we use $s^2= \frac{\sum(x_i - \bar{x})^2}{(n-1)}$ as our usual estimator for $\sigma^2$ because it is unbiased. 
 
-In Figure \@ref(fig:s2-bias-3) we visualize the sampling distribution of $s_n^2$ and $s^2$. The black dotted line corresponds to the population variance, and we can see that the mean of the $s^2$s line up with it very well, but on average the $s_n^2$s are an underestimate. 
+In Figure \@ref(fig:s2-bias-3) we visualize the sampling distribution of $s_n^2$ and $s^2$. The black dotted line corresponds to the population variance ($\sigma^2$), and we can see that the mean of the $s^2$s line up with it very well (blue vertical line), but on average the $s_n^2$s are an underestimate (red vertical line). 
 ```{r s2-bias-3, warning = FALSE, message = FALSE, fig.cap="Sample variance estimates for 10,000 samples of size n = 5"}
 ggplot(variances) + 
-  geom_histogram(aes(x = s2_n, fill = "red"), color = "white", alpha = 0.6) +
-  geom_histogram(aes(x = s2, fill = "blue"), color = "white", alpha = 0.6) +
+  geom_histogram(aes(x = s2_n, fill = "red"), color = "white", alpha = 0.5) +
+  geom_histogram(aes(x = s2, fill = "blue"), color = "white", alpha = 0.5) +
   geom_vline(xintercept = mean(variances$s2_n), color = "red") +
   geom_vline(xintercept = mean(variances$s2), color = "blue") +
   geom_vline(xintercept = var(gapminder_2016$life_expectancy), linetype = 2) +
@@ -560,10 +570,16 @@ While a sample statistic might on average be equal to the population parameter, 
 
 If we were analyzing a dataset in general, we might characterize this precision by a measure of the distribution’s spread, such as the standard deviation. We can do this with sampling distributions, too. The **standard error** of an estimator is the standard deviation of its sampling distribution:
 
-*	A *large* standard error means that an estimate (e.g., in the sample you have) may be far from the true population parameter. This means the estimate is *imprecise*. 
-*	A *small* standard error means an estimate (e.g., in the sample you have) is likely to be close to the true population parameter. This means the estimate is *precise*. 
+*	A *large* standard error means that an estimate (e.g., in the sample you have) may be far from the population parameter. This means the estimate is *imprecise*. 
+*	A *small* standard error means an estimate (e.g., in the sample you have) is likely to be close to the population parameter. This means the estimate is *precise*. 
 
 In statistics, we prefer estimators that are precise over those that are not. Again, this is tricky to understand at an introductory level, since nearly all sample statistics at this level can be proven to be the most precise estimators (out of all possible estimators) of the population parameters they are estimating. In more complex models, however, there are often competing estimators, and statisticians spend time studying the behavior of these estimators in comparison to one another. 
+
+Figure \@ref(bias-precision) illustrates the concepts of bias and precision. Note that an estimator can be precise but also biased. That is, all of the estimates tend to be close to one another (i.e. the sampling distribution has a small standard error), but they are centered around the wrong average value. Conversely, it's possible for an estimator to be unbiased (i.e. it's centered around the true population parameter value) but imprecise (i.e. large standard error, the estimates vary quite a bit from one (theoretical) sample to another). Most of the estimators you use in the class (e.g. $\bar{x}, s^2, \hat{\pi}$) are both precise and unbiased, which is clearly the preferred set of characteristics.
+
+```{r bias-precision, echo=FALSE, out.width='100%', fig.cap="P-value diagram"}
+knitr::include_graphics('images/bias-precision.png')
+```
 
 ### Confusing concepts {#conf}
 On one level, sampling distributions should seem straightforward and like simple extensions to methods you’ve learned already in this course. That is, just like sample data you have in front of you, we can summarize these sampling distributions in terms of their shape (distribution), mean (bias), and standard deviation (standard error).  But this similarity to data analysis is exactly what makes this tricky.
@@ -590,21 +606,21 @@ A shovel with 25 slots          |  A shovel with 50 slots  | A shovel with 100 s
 :-------------------------:|:-------------------------:|:-------------------------:
 ![](images/sampling/shovel_025.jpg){ height=1.7in }  |  ![](images/sampling/shovel_050.jpg){ height=1.7in } | ![](images/sampling/shovel_100.jpg){ height=1.7in } 
 
-If your goal was still to estimate the proportion of the bowl's balls that were red, which shovel would you choose? In our experience, most people would choose the shovel with 100 slots since it has the biggest sample size and hence would yield the "best" guess of the proportion of the bowl's 2400 balls that are red. Using our newly developed tools for virtual sampling simulations, let's unpack the effect of having different sample sizes! In other words, let's use `rep_sample_n()` with `size = 25`, `size = 50`, and `size = 100`, while keeping the number of repeated/replicated samples at 1000:
+If your goal was still to estimate the proportion of the bowl's balls that were red, which shovel would you choose? In our experience, most people would choose the shovel with 100 slots since it has the biggest sample size and hence would yield the "best" guess of the proportion of the bowl's 2400 balls that are red. Using our newly developed tools for virtual sampling simulations, let's unpack the effect of having different sample sizes! In other words, let's use `rep_sample_n()` with `size = 25`, `size = 50`, and `size = 100`, while keeping the number of repeated/replicated samples at 10,000:
 
-1. Virtually use the appropriate shovel to generate 1000 samples with `size` balls.
-1. Compute the resulting 1000 replicated of the proportion of the shovel's balls that are red.
-1. Visualize the distribution of these 1000 proportion red using a histogram.
+1. Virtually use the appropriate shovel to generate 10,000 samples with `size` balls.
+1. Compute the resulting 10,000 replicated of the proportion of the shovel's balls that are red.
+1. Visualize the distribution of these 10,000 proportion red using a histogram.
 
 Run each of the following code segments individually and then compare the three resulting histograms.
 
 ```{r, eval = FALSE}
 # Segment 1: sample size = 25 ------------------------------
-# 1.a) Virtually use shovel 1,000 times
+# 1.a) Virtually use shovel 10,000 times
 virtual_samples_25 <- bowl %>% 
-  rep_sample_n(size = 25, reps = 1000)
+  rep_sample_n(size = 25, reps = 10000)
 
-# 1.b) Compute resulting 1,000 replicates of proportion red
+# 1.b) Compute resulting 10,000 replicates of proportion red
 virtual_prop_red_25 <- virtual_samples_25 %>% 
   group_by(replicate) %>% 
   summarize(red = sum(color == "red")) %>% 
@@ -616,11 +632,11 @@ ggplot(virtual_prop_red_25, aes(x = prop_red)) +
   labs(x = "Proportion of 25 balls that were red", title = "25") 
 
 # Segment 2: sample size = 50 ------------------------------
-# 2.a) Virtually use shovel 1,000 times
+# 2.a) Virtually use shovel 10,000 times
 virtual_samples_50 <- bowl %>% 
-  rep_sample_n(size = 50, reps = 1000)
+  rep_sample_n(size = 50, reps = 10000)
 
-# 2.b) Compute resulting 1,000 replicates of proportion red
+# 2.b) Compute resulting 10,000 replicates of proportion red
 virtual_prop_red_50 <- virtual_samples_50 %>% 
   group_by(replicate) %>% 
   summarize(red = sum(color == "red")) %>% 
@@ -632,11 +648,11 @@ ggplot(virtual_prop_red_50, aes(x = prop_red)) +
   labs(x = "Proportion of 50 balls that were red", title = "50")  
 
 # Segment 3: sample size = 100 ------------------------------
-# 3.a) Virtually using shovel with 100 slots 1,000 times
+# 3.a) Virtually using shovel with 100 slots 10,000 times
 virtual_samples_100 <- bowl %>% 
-  rep_sample_n(size = 100, reps = 1000)
+  rep_sample_n(size = 100, reps = 10000)
 
-# 3.b) Compute resulting 1,000 replicates of proportion red
+# 3.b) Compute resulting 10,000 replicates of proportion red
 virtual_prop_red_100 <- virtual_samples_100 %>% 
   group_by(replicate) %>% 
   summarize(red = sum(color == "red")) %>% 
@@ -653,7 +669,7 @@ For easy comparison, we present the three resulting histograms in a single row w
 ```{r comparing-sampling-distributions, echo=FALSE, fig.cap="Comparing the distributions of proportion red for different sample sizes"}
 # n = 25
 virtual_samples_25 <- bowl %>% 
-  rep_sample_n(size = 25, reps = 1000)
+  rep_sample_n(size = 25, reps = 10000)
 virtual_prop_red_25 <- virtual_samples_25 %>% 
   group_by(replicate) %>% 
   summarize(red = sum(color == "red")) %>% 
@@ -661,7 +677,7 @@ virtual_prop_red_25 <- virtual_samples_25 %>%
   mutate(n = 25)
 # n = 50
 virtual_samples_50 <- bowl %>% 
-  rep_sample_n(size = 50, reps = 1000)
+  rep_sample_n(size = 50, reps = 10000)
 virtual_prop_red_50 <- virtual_samples_50 %>% 
   group_by(replicate) %>% 
   summarize(red = sum(color == "red")) %>% 
@@ -669,7 +685,7 @@ virtual_prop_red_50 <- virtual_samples_50 %>%
   mutate(n = 50)
 # n = 100
 virtual_samples_100 <- bowl %>% 
-  rep_sample_n(size = 100, reps = 1000)
+  rep_sample_n(size = 100, reps = 10000)
 virtual_prop_red_100 <- virtual_samples_100 %>% 
   group_by(replicate) %>% 
   summarize(red = sum(color == "red")) %>% 
@@ -683,20 +699,20 @@ comparing_sampling_distributions <- ggplot(virtual_prop, aes(x = prop_red)) +
 comparing_sampling_distributions
 ```
 
-Observe that as the sample size increases, the spread of the 1,000 replicates of the proportion red decreases. In other words, as the sample size increases, there are less differences due to sampling variation and the distribution centers more tightly around the same value. Eyeballing Figure \@ref(fig:comparing-sampling-distributions), things appear to center tightly around roughly 40%.
+Observe that as the sample size increases, the spread of the 10,000 replicates of the proportion red decreases. In other words, as the sample size increases, there are less differences due to sampling variation and the distribution centers more tightly around the same value. Eyeballing Figure \@ref(fig:comparing-sampling-distributions), things appear to center tightly around roughly 40%.
 
-We can be numerically explicit about the amount of spread in our 3 sets of 1,000 values of `prop_red` by computing the standard deviation for each of the three sampling distributions. For all three sample sizes, let's compute the standard deviation of the 1,000 proportions red by running the following data wrangling code that uses the `sd()` summary function.
+We can be numerically explicit about the amount of spread in our 3 sets of 10,000 values of `prop_red` by computing the standard deviation for each of the three sampling distributions. For all three sample sizes, let's compute the standard deviation of the 10,000 proportions red by running the following data wrangling code that uses the `sd()` summary function.
 
 ```{r, eval = FALSE}
 # n = 25
 virtual_prop_red_25 %>% 
-  summarize(sd = sd(prop_red))
+  summarize(SE = sd(prop_red))
 # n = 50
 virtual_prop_red_50 %>% 
-  summarize(sd = sd(prop_red))
+  summarize(SE = sd(prop_red))
 # n = 100
 virtual_prop_red_100 %>% 
-  summarize(sd = sd(prop_red))
+  summarize(SE = sd(prop_red))
 ```
 
 Let's compare these 3 measures of spread of the distributions in Table \@ref(tab:comparing-n).
@@ -705,11 +721,11 @@ Let's compare these 3 measures of spread of the distributions in Table \@ref(tab
 comparing_n_table <- virtual_prop %>% 
   group_by(n) %>% 
   summarize(sd = sd(prop_red)) %>% 
-  rename(`Number of slots in shovel` = n, `Standard deviation of proportions red` = sd) 
+  rename(`Number of slots in shovel` = n, `Standard error of proportion red` = sd) 
 comparing_n_table  %>% 
   kable(
     digits = 3,
-      caption = "Comparing standard deviations of proportions red for 3 different shovels.", 
+      caption = "Comparing standard error of proportion red for 3 different shovels.", 
       booktabs = TRUE
 ) %>% 
   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
@@ -788,4 +804,17 @@ data("gapminder", package = "gapminder")
 
 Figure \@ref(fig:infant-mortality-2) shows that for samples of size $n = 5$, the sampling distribution is still skewed slightly right. However, with even a moderate sample size of $n = 30$, the Central Limit Theorem kicks in, and we see that the sampling distribution of the mean ($\bar{x}$) is normal, even though the underlying data was skewed. We again see that the standard error of the estimate decreases as the sample size increases. 
 
-Overall, this simulation shows that not only might the precision of an estimate differ as a result of a larger sample size, but also the sampling distribution might be different for a smaller sample size (e.g., $n = 5$) than for a larger sample size (e.g., $n=100$). 
+Overall, this simulation shows that not only might the precision of an estimate differ as a result of a larger sample size, but also the sampling distribution might be different for a smaller sample size (e.g., $n = 5$) than for a larger sample size (e.g., $n=100$).
+
+### Summary of Sampling Distributions
+
+In this chapter, you’ve been introduced to the **theory of repeated sampling** that undergirds our ability to connect estimates from samples to parameters from populations that we wish to know about. In order to make these inferences, we need to understand how our results might change if – in a different reality – a different random sample was collected, or, more generally, how our results might differ across the many, many possible random samples we could have drawn. This led us to simulate the **sampling distribution** for our estimator of the population proportion.
+
+You also learned that statisticians summarize this sampling distribution in three ways. We showed that for the population proportion:
+
+1.  The sampling distribution of the sample proportion is symmetric, unimodal, and follows a **normal distribution** (when n = 50),
+2. The sample proportion is an **unbiased estimate** of the population proportion, and
+3. The sample proportion does not always equal the population proportion, i.e., there is some **sampling variability**, making it not uncommon to see values of the sample proportion larger or smaller than the population proportion. 
+
+In the next section of the book, we will build upon this theoretical foundation, developing approaches – based upon these properties – that we can use to make inferences from the sample we have to the population we wish to know about. 
+
