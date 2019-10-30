@@ -396,7 +396,7 @@ Most estimators follow one of a few common distributions. These include:
 *	Chi-squared distribution 
 *	F-distribution
 
-The Normal distribution is characterized by two parameters: $\mu$, which determines the center of the distribution, and $\sigma$ which describes the spread. In Figure \@ref(fig:samplingdistribution-virtual), the solid- and dashed-line curves have the same standard deviation (i.e. $\sigma = 1$), so they have identical spread, but they have different means, so the dashed curve is simply shifted to the right to be centered at $\mu = 2$. On the other hand, the solid- and dotted-line curves are centered around the same value (i.e. $\mu = 0$), but the dotted curve has a larger standard deviation and is therefore more spread out. The solid line is a special case of the Normal distribution called the **Standard Normal distribution**, which has mean 0 and standard deviation 1. Importantly, for all possible values of $\mu$ and $\sigma$, the normal distribution is **symmetric** and **unimodal**.
+The Normal distribution is characterized by two parameters: $\mu$, which determines the center of the distribution, and $\sigma$ which determines the spread. In Figure \@ref(fig:samplingdistribution-virtual), the solid- and dashed-line curves have the same standard deviation (i.e. $\sigma = 1$), so they have identical spread, but they have different means, so the dashed curve is simply shifted to the right to be centered at $\mu = 2$. On the other hand, the solid- and dotted-line curves are centered around the same value (i.e. $\mu = 0$), but the dotted curve has a larger standard deviation and is therefore more spread out. The solid line is a special case of the Normal distribution called the **Standard Normal distribution**, which has mean 0 and standard deviation 1. Importantly, for all possible values of $\mu$ and $\sigma$, the normal distribution is **symmetric** and **unimodal**.
 
 ```{r normaldist, echo=FALSE, fig.cap="Normal distribution"}
 ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
@@ -414,7 +414,7 @@ ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
 
 The t-distribution depends on one parameter, $df$, which stands for "degrees of freedom". $df$ is a function of sample size; for example in many cases $df = n - 1$. In general, the t-distribution has the same shape as the Normal distribution (symmetric, unimodal), but it has **heavier tails**. As sample size increases (and therefore degrees of freedom increases), the t-distribution becomes a very close approximation to the Normal distribution. 
 
-```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.cap="t-distribution"}
+```{r, fig.cap="t-distribution", echo = FALSE, message=FALSE, warning=FALSE}
 ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
     stat_function(fun = dnorm,
                     aes(linetype = "Standard Normal"), size = 1) +
@@ -423,7 +423,7 @@ ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
     stat_function(fun = dt, args = list(df = 30),
                     aes(linetype = "t-distribution, df = 30"), size = 1) +
   scale_linetype_manual(values = c(1, 3, 2)) +
-  labs(title = "t-distribution")
+  labs(title = "t-distribution") +
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5))
 ```
