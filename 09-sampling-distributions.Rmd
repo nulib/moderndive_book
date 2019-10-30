@@ -396,9 +396,9 @@ Most estimators follow one of a few common distributions. These include:
 *	Chi-squared distribution 
 *	F-distribution
 
-The Normal distribution is characterized by two parameters: $\mu$, which determines the center of the distribution, and $\sigma$ which describes the spread. In Figure \@ref(fig:normal-dist), the solid- and dashed-line curves have the same standard deviation (i.e. $\sigma = 1$), so they have identical spread, but they have different means, so the dashed curve is simply shifted to the right to be centered at $\mu = 2$. On the other hand, the solid- and dotted-line curves are centered around the same value (i.e. $\mu = 0$), but the dotted curve has a larger standard deviation and is more spread out. The solid line is a special case of the Normal distribution called the **Standard Normal distribution**, which has mean 0 and standard deviation 1. Importantly, for all possible values of $\mu$ and $\sigma$, the normal distribution is **symmetric** and **unimodal**.
+The Normal distribution is characterized by two parameters: $\mu$, which determines the center of the distribution, and $\sigma$ which describes the spread. In Figure \@ref(fig:samplingdistribution-virtual), the solid- and dashed-line curves have the same standard deviation (i.e. $\sigma = 1$), so they have identical spread, but they have different means, so the dashed curve is simply shifted to the right to be centered at $\mu = 2$. On the other hand, the solid- and dotted-line curves are centered around the same value (i.e. $\mu = 0$), but the dotted curve has a larger standard deviation and is therefore more spread out. The solid line is a special case of the Normal distribution called the **Standard Normal distribution**, which has mean 0 and standard deviation 1. Importantly, for all possible values of $\mu$ and $\sigma$, the normal distribution is **symmetric** and **unimodal**.
 
-```{r normal-dist, echo = FALSE, warning=FALSE, message=FALSE}
+```{r normaldist, echo=FALSE, fig.cap="Normal distribution"}
 ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
   stat_function(fun = dnorm,
                     aes(linetype = "mean = 0, sd = 1"), size = 1) +
@@ -412,9 +412,9 @@ ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-The t-distribution depends on one parameter, $df$, which stands for "degrees of freedom". Degrees of freedom are a function of sample size; for example in many cases $df = n - 1$. In general, the t-distribution has the same shape as the Normal distribution (symmetric, unimodal), but it has **heavier tails**. As sample sizes increase (and therefore degrees of freedom increase), the t-distribution becomes a very close approximation to the Normal distribution. 
+The t-distribution depends on one parameter, $df$, which stands for "degrees of freedom". $df$ is a function of sample size; for example in many cases $df = n - 1$. In general, the t-distribution has the same shape as the Normal distribution (symmetric, unimodal), but it has **heavier tails**. As sample size increases (and therefore degrees of freedom increases), the t-distribution becomes a very close approximation to the Normal distribution. 
 
-```{r, echo = FALSE, message=FALSE, warning=FALSE}
+```{r, echo = FALSE, message=FALSE, warning=FALSE, fig.cap="t-distribution"}
 ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
     stat_function(fun = dnorm,
                     aes(linetype = "Standard Normal"), size = 1) +
@@ -423,14 +423,16 @@ ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
     stat_function(fun = dt, args = list(df = 30),
                     aes(linetype = "t-distribution, df = 30"), size = 1) +
   scale_linetype_manual(values = c(1, 3, 2)) +
-  labs(title = "t-distribution", ylab = "") +
+  labs(title = "t-distribution")
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-The Chi-squared distribution and F-distribution are both unimodal but skewed right. The Chi-squared distribution depends on one parameter $(df)$, and the F-distribution depends on two parameters $df_1$ and $df_2$. 
+
+The Chi-squared distribution and F-distribution are both unimodal but skewed right. The Chi-squared distribution depends on one parameter $df$, and the F-distribution depends on two parameters $df_1$ and $df_2$. 
+
 ```{r, echo = FALSE, message=FALSE, warning=FALSE}
-pF <- ggplot(data.frame(x = c(0, 50)), aes(x = x)) +
+pF <- ggplot(data.frame(x = c(0, 30)), aes(x = x)) +
   stat_function(fun = dchisq, args = list(df = 2), size = 1,
                   aes(linetype = "df = 2")) +
   stat_function(fun = dchisq, args = list(df = 5), size = 1,
@@ -443,7 +445,7 @@ pF <- ggplot(data.frame(x = c(0, 50)), aes(x = x)) +
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = c(0.6, 0.7))
 
-pChi <- ggplot(data.frame(x = c(0, 6)), aes(x = x)) +
+pChi <- ggplot(data.frame(x = c(0, 10)), aes(x = x)) +
     stat_function(fun = df, args = list(df1 = 2, df2 = 1), size = 1,
                   aes(linetype = "df1 = 2, df2 = 1")) +
   stat_function(fun = df, args = list(df1 = 5, df2 = 5), size = 1,
@@ -459,7 +461,7 @@ pChi <- ggplot(data.frame(x = c(0, 6)), aes(x = x)) +
 grid.arrange(pF, pChi, ncol = 2)
 ```
 
-Of these four common distributions, the most common and important is the **Normal Distribution**. As a result of the Central Limit Theorem (CLT), when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in Figure \@ref(fig:samplingdistribution-virtual-10000) that the sampling distribution of $\hat{\pi}$ follows a Normal distribution. We will discuss the CLT further in Section \@ref(clt)
+Of these four common distributions, the most common and important is the **Normal Distribution**. As a result of the Central Limit Theorem (CLT), when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in Figure \@ref(fig:samplingdistribution-virtual) that the sampling distribution of $\hat{\pi}$ follows a Normal distribution. We will discuss the CLT further in Section \@ref(clt)
 
 ### Mean of the sampling distribution {#bias}
 If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value that the sample statistic is estimating.  Any difference in these two values is called **bias**. That is:
@@ -575,7 +577,7 @@ If we were analyzing a dataset in general, we might characterize this precision 
 
 In statistics, we prefer estimators that are precise over those that are not. Again, this is tricky to understand at an introductory level, since nearly all sample statistics at this level can be proven to be the most precise estimators (out of all possible estimators) of the population parameters they are estimating. In more complex models, however, there are often competing estimators, and statisticians spend time studying the behavior of these estimators in comparison to one another. 
 
-Figure \@ref(bias-precision) illustrates the concepts of bias and precision. Note that an estimator can be precise but also biased. That is, all of the estimates tend to be close to one another (i.e. the sampling distribution has a small standard error), but they are centered around the wrong average value. Conversely, it's possible for an estimator to be unbiased (i.e. it's centered around the true population parameter value) but imprecise (i.e. large standard error, the estimates vary quite a bit from one (theoretical) sample to another). Most of the estimators you use in the class (e.g. $\bar{x}, s^2, \hat{\pi}$) are both precise and unbiased, which is clearly the preferred set of characteristics.
+Figure \@ref(fig:bias-precision) illustrates the concepts of bias and precision. Note that an estimator can be precise but also biased. That is, all of the estimates tend to be close to one another (i.e. the sampling distribution has a small standard error), but they are centered around the wrong average value. Conversely, it's possible for an estimator to be unbiased (i.e. it's centered around the true population parameter value) but imprecise (i.e. large standard error, the estimates vary quite a bit from one (theoretical) sample to another). Most of the estimators you use in this class (e.g. $\bar{x}, s^2, \hat{\pi}$) are both precise and unbiased, which is clearly the preferred set of characteristics.
 
 ```{r bias-precision, echo=FALSE, out.width='100%', fig.cap="P-value diagram"}
 knitr::include_graphics('images/bias-precision.png')
