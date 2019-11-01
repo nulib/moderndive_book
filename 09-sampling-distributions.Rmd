@@ -375,7 +375,7 @@ The histogram you produced is formally called a **sampling distribution**. While
 
 1.	How can you characterize its distribution? (Also: Is it a known distribution?)
 2.	What is the average value in this distribution? How does that compare to the population parameter?
-3.	What is its standard deviation of this distribution? What range of values are likely to occur in samples of size n?
+3.	What is the standard deviation of this distribution? What range of values are likely to occur in samples of size $n$?
 
 Throughout this section, it is imperative that you remember that this is a theoretical exercise. By beginning with a situation in which we know the right answer, we will be able to deduce properties of estimators that we can leverage in cases in which we do not know the right answer (i.e., when you are conducting actual data analyses!). 
 
@@ -568,12 +568,12 @@ ggplot(variances) +
 Notice that the sampling distribution of the sample variance shown in Figure \@ref(fig:s2-bias-3) is not Normal but rather is skewed right; in fact, it follows a chi-square distribution with $n-1$ degrees of freedom. 
 
 ### Standard deviation of the sampling distribution {#precision}
-While a sample statistic might on average be equal to the population parameter, any one sample estimate might be far from the population parameter. An estimator is *precise* when the estimate is close to the population parameter in most samples. 
+In Section \@ref(bias) we mentioned that one desirable characteristic of an estimator is that it be **unbiased**. Another desirable characteristic of an estimator is that it be **precise**. An estimator is *precise* when the estimate is close to the average of its sampling distribution in most samples. In other words, the estimates do not vary greatly from one (theoretical) sample to another. 
 
 If we were analyzing a dataset in general, we might characterize this precision by a measure of the distribution’s spread, such as the standard deviation. We can do this with sampling distributions, too. The **standard error** of an estimator is the standard deviation of its sampling distribution:
 
-*	A *large* standard error means that an estimate (e.g., in the sample you have) may be far from the population parameter. This means the estimate is *imprecise*. 
-*	A *small* standard error means an estimate (e.g., in the sample you have) is likely to be close to the population parameter. This means the estimate is *precise*. 
+*	A *large* standard error means that an estimate (e.g., in the sample you have) may be far from the average of its sampling distribution. This means the estimate is *imprecise*. 
+*	A *small* standard error means an estimate (e.g., in the sample you have) is likely to be close to the average of its sampling distribution. This means the estimate is *precise*. 
 
 In statistics, we prefer estimators that are precise over those that are not. Again, this is tricky to understand at an introductory level, since nearly all sample statistics at this level can be proven to be the most precise estimators (out of all possible estimators) of the population parameters they are estimating. In more complex models, however, there are often competing estimators, and statisticians spend time studying the behavior of these estimators in comparison to one another. 
 
