@@ -76,15 +76,19 @@ As an example, let’s say you are trying to estimate the population average age
 
 <!-- change seed in chapter 9 to 2018 for the football fan data. This results in a better example to demonstrate CIs later on-->
 
-```{r}
+```{r, echo = FALSE}
 set.seed(2018)
+```
+
+```{r}
 football_fans <- data.frame(home_fan = rbinom(40000, 1, 0.91),
                             age = rnorm(40000, 30, 8)) %>% 
   mutate(age = case_when(age < 0 ~ 0,
                          age >=0 ~ age))
 sample_10 <- sample_n(football_fans, size = 10)
-mean(sample_10$age)
-var(sample_10$age)
+sample_10 %>% 
+  summarize(mean_age = mean(age),
+            var_age = var(age))
 ```
 To estimate the average age, you take a sample of $n = 10$ participants, producing an estimate of $\bar{x} =$ `r round(mean(sample_10$age),1)` years old. Your question is simply: is this a good estimate?
 
@@ -96,41 +100,51 @@ To estimate the average age, you take a sample of $n = 10$ participants, produci
 Note that we can extend the above properties to *differences* between groups as well. In general,
 
 * $Bias(X_1 - X_2) = Bias(X_1) - Bias(X_2) \dashrightarrow$ If $X_1, X_2$ are unbiased, then $X_1 - X_2$ is also unbiased.
-* So long as $X_1$ and $X_2$ are independent, $ \dashrightarrow SE(X_1 – X_2) = \sqrt{[SE(X_1)]^2 + [SE(X_2)]^2}$ 
+* So long as $X_1$ and $X_2$ are independent, $\dashrightarrow SE(X_1 – X_2) = \sqrt{[SE(X_1)]^2 + [SE(X_2)]^2}$ 
 * $Dist(X_1 - X_2) \dashrightarrow$ if $X_1, X_2$ are independent, then $X_1 – X_2$ are independent.
 
-This may seem really abstract. As an example, let’s focus on estimating the difference means between two groups in the population $(\mu_1 - \mu_2)$. In our `football_fans` example, we could consider whether there is a difference in average age between home fans and away fans, so $\mu_1$ refers here to the average age of all home fans in the population, and $\mu_2$ refers to the average age of all away fans in the population. We can estimate this difference in average age using $\bar{x}_1 - \bar{x}_2$ in our sample, where $\bar{x}_1$ is the average age of home fans in our sample and $\bar{x}_2$ is the average age of away fans in our sample. Using information in Table \@ref(tab:SE-table) above, because $\bar{x}_1$ is and unbiased estimator for $\mu_1$ and $\bar{x}_2$ is an unbiased estimator for $mu_2$, we have: 
+This may seem really abstract. As an example, let’s focus on estimating the difference means between two groups in the population $(\mu_1 - \mu_2)$. In our `football_fans` example, we could consider whether there is a difference in average age between home fans and away fans, so $\mu_1$ refers here to the average age of all home fans in the population, and $\mu_2$ refers to the average age of all away fans in the population. We can estimate this difference in average age using $\bar{x}_1 - \bar{x}_2$ in our sample, where $\bar{x}_1$ is the average age of home fans in our sample and $\bar{x}_2$ is the average age of away fans in our sample. Using information in Table \@ref(tab:SE-table) above, because $\bar{x}_1$ is and unbiased estimator for $\mu_1$ and $\bar{x}_2$ is an unbiased estimator for $\mu_2$, we have: 
 
 $$Bias(\bar{x}_1 - \bar{x}_2) = Bias(\bar{x}_1) - Bias(\bar{x}_2) = 0$$
 That is, on average, $\bar{x}_1 - \bar{x}_2$ will give us an unbiased estimate of $\mu_1 - \mu_2$. Also, because the age of home fans is independent of the age of away fans, we have:
 
 $$SE(\bar{x}_1 - \bar{x}_2) = \sqrt{[SE(\bar{x}_1)]^2 + [SE(\bar{x}_2)]^2} = \sqrt{(s_1^2/n_1 + s_2^2/n_2)}$$
 
-$$\bar{x}_1 - \bar{x}_2 \sim normally \ \ distributed$$
+$$\bar{x}_1 - \bar{x}_2 \sim N(mean = \mu_1 - \mu_2, SE = \sqrt{(s_1^2/n_1 + s_2^2/n_2)})$$
 Let's demonstrate this with our `football_fans` data by drawing a random sample of $n=100$ fans and computing $\bar{x}_1 - \bar{x}_2$. 
 
-```{r}
+```{r, echo = FALSE}
 set.seed(2018)
+```
+
+```{r}
 sample1_football_fans <- rep_sample_n(football_fans, size = 100, reps = 1)
 mean_age_by_fan_type <- sample1_football_fans %>% group_by(home_fan) %>% 
   summarise(mean_age = mean(age),
             sd_age = sd(age),
             n = n(),
             SE_xbar = sd_age / sqrt(n))
+
 mean_age_by_fan_type
+
 diff_means <- as.numeric(mean_age_by_fan_type[1,2]) - as.numeric(mean_age_by_fan_type[2,2])
+
 SE_diff_means <- as.numeric(sqrt(mean_age_by_fan_type[1, "SE_xbar"]^2 + mean_age_by_fan_type[2, "SE_xbar"]^2))
 SE_diff_means
 ```
 
-We see here that $\bar{x}_1 - \bar{x}_2 =$ `r diff_means` and $SE(\bar{x}_1 - \bar{x}_2) =$ `r SE_diff_means`. In our particular sample, home fans are older, but because the magnitude of our standard error is roughly 4 times the size of our point estimate, this indicates we have a relatively imprecise estimate. 
+We see here that $\bar{x}_1 - \bar{x}_2 =$ `r diff_means` and $SE(\bar{x}_1 - \bar{x}_2) =$ `r SE_diff_means`. In our particular sample, home fans are older, but because the magnitude of our standard error is roughly 1.5 times the size of our point estimate, this indicates we have a relatively imprecise estimate. 
 
 We could also look at the sampling distribution of $\bar{x}_1 - \bar{x}_2 =$ by taking 10,000 repeated samples and computing the difference in means in each.
 
-```{r diff-means, fig.cap = "Samping distribution of difference in means"}
+```{r, echo = FALSE}
 set.seed(2018)
+```
+
+```{r diff-means, fig.cap = "Samping distribution of difference in means"}
 samples_football_fans <- rep_sample_n(football_fans, size = 100, reps = 10000)
-mean_age_by_fan_type <- samples_football_fans %>% group_by(home_fan, replicate) %>% 
+mean_age_by_fan_type <- samples_football_fans %>% 
+  group_by(home_fan, replicate) %>% 
   summarise(mean_age = mean(age)) %>% 
   spread(key = home_fan, value = mean_age) %>% 
   rename("mean_age_away_fan" = `0`, "mean_age_home_fan" = `1`) %>% 
@@ -139,12 +153,13 @@ mean_age_by_fan_type <- samples_football_fans %>% group_by(home_fan, replicate) 
 ggplot(mean_age_by_fan_type, aes(x = diff_means)) +
   geom_histogram(color = "white")
 
-pop_mean_age_by_fan_type <- football_fans %>% group_by(home_fan) %>% 
+pop_mean_age_by_fan_type <- football_fans %>% 
+  group_by(home_fan) %>% 
   summarise(mean_age = mean(age),
             sd_age = sd(age))
 pop_mean_age_by_fan_type
 ```
-We see that the sampling distribution of $\bar{x}_1 - \bar{x}_2 =$ follows a normal distribution centered around the true population mean $\mu_1 - \mu_2 =$ `r as.numeric(pop_mean_age_by_fan_type[1,2]) - as.numeric(pop_mean_age_by_fan_type[2,2])`, as expected based on the properties presented in Table \@ref(SE-table).
+We see that the sampling distribution of $\bar{x}_1 - \bar{x}_2$ follows a normal distribution centered around the true population mean $\mu_1 - \mu_2 =$ `r as.numeric(pop_mean_age_by_fan_type[1,2]) - as.numeric(pop_mean_age_by_fan_type[2,2])`, as expected based on the properties presented in Table \@ref(SE-table).
 
 What does this mean for your data analysis?
 
