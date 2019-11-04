@@ -611,7 +611,7 @@ A shovel with 25 slots          |  A shovel with 50 slots  | A shovel with 100 s
 If your goal was still to estimate the proportion of the bowl's balls that were red, which shovel would you choose? In our experience, most people would choose the shovel with 100 slots since it has the biggest sample size and hence would yield the "best" guess of the proportion of the bowl's 2400 balls that are red. Using our newly developed tools for virtual sampling simulations, let's unpack the effect of having different sample sizes! In other words, let's use `rep_sample_n()` with `size = 25`, `size = 50`, and `size = 100`, while keeping the number of repeated/replicated samples at 10,000:
 
 1. Virtually use the appropriate shovel to generate 10,000 samples with `size` balls.
-1. Compute the resulting 10,000 replicated of the proportion of the shovel's balls that are red.
+1. Compute the resulting 10,000 replicates of the proportion of the shovel's balls that are red.
 1. Visualize the distribution of these 10,000 proportion red using a histogram.
 
 Run each of the following code segments individually and then compare the three resulting histograms.
