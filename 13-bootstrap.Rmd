@@ -2,7 +2,7 @@
 
 # Bootstrap {#bootstrap}
 
-```{r setup-CIs, include=FALSE, purl=FALSE}
+```{r setup-bootsrap, include=FALSE, purl=FALSE}
 chap <- 13
 lc <- 0
 rq <- 0
