@@ -389,12 +389,10 @@ knitr::include_graphics('images/distribution.png')
 
 <!-- retrieved diagram from previous 202 slides need to cite?-->
 
-Most estimators follow one of a few common distributions. These include:
+Most estimators follow one of a few common distributions. We will focus on two here:
 
 *	Normal distribution
-*	t-distribution
 *	Chi-squared distribution 
-*	F-distribution
 
 The Normal distribution is characterized by two parameters: $\mu$, which determines the center of the distribution, and $\sigma$ which determines the spread. In Figure \@ref(fig:samplingdistribution-virtual), the solid- and dashed-line curves have the same standard deviation (i.e. $\sigma = 1$), so they have identical spread, but they have different means, so the dashed curve is simply shifted to the right to be centered at $\mu = 2$. On the other hand, the solid- and dotted-line curves are centered around the same value (i.e. $\mu = 0$), but the dotted curve has a larger standard deviation and is therefore more spread out. The solid line is a special case of the Normal distribution called the **Standard Normal distribution**, which has mean 0 and standard deviation 1. Importantly, for all possible values of $\mu$ and $\sigma$, the normal distribution is **symmetric** and **unimodal**.
 
@@ -412,27 +410,11 @@ ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-The t-distribution depends on one parameter, $df$, which stands for "degrees of freedom". $df$ is a function of sample size; for example in many cases $df = n - 1$. In general, the t-distribution has the same shape as the Normal distribution (symmetric, unimodal), but it has **heavier tails**. As sample size increases (and therefore degrees of freedom increases), the t-distribution becomes a very close approximation to the Normal distribution. 
 
-```{r, fig.cap="t-distribution", echo = FALSE, message=FALSE, warning=FALSE}
-ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
-    stat_function(fun = dnorm,
-                    aes(linetype = "Standard Normal"), size = 1) +
-    stat_function(fun = dt, args = list(df = 2),
-                    aes(linetype = "t-distribution, df = 2"), size = 1) +
-    stat_function(fun = dt, args = list(df = 30),
-                    aes(linetype = "t-distribution, df = 30"), size = 1) +
-  scale_linetype_manual(values = c(1, 3, 2)) +
-  labs(title = "t-distribution") +
-  theme_classic() +
-  theme(plot.title = element_text(hjust = 0.5))
-```
-
-
-The Chi-squared distribution and F-distribution are both unimodal but skewed right. The Chi-squared distribution depends on one parameter $df$, and the F-distribution depends on two parameters $df_1$ and $df_2$. 
+The Chi-squared distribution is unimodal but skewed right. The Chi-squared distribution depends on one parameter $df$. 
 
 ```{r, echo = FALSE, message=FALSE, warning=FALSE}
-pF <- ggplot(data.frame(x = c(0, 30)), aes(x = x)) +
+ggplot(data.frame(x = c(0, 30)), aes(x = x)) +
   stat_function(fun = dchisq, args = list(df = 2), size = 1,
                   aes(linetype = "df = 2")) +
   stat_function(fun = dchisq, args = list(df = 5), size = 1,
@@ -445,7 +427,7 @@ pF <- ggplot(data.frame(x = c(0, 30)), aes(x = x)) +
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = c(0.6, 0.7))
 
-pChi <- ggplot(data.frame(x = c(0, 10)), aes(x = x)) +
+pF <- ggplot(data.frame(x = c(0, 10)), aes(x = x)) +
     stat_function(fun = df, args = list(df1 = 2, df2 = 1), size = 1,
                   aes(linetype = "df1 = 2, df2 = 1")) +
   stat_function(fun = df, args = list(df1 = 5, df2 = 5), size = 1,
@@ -457,11 +439,9 @@ pChi <- ggplot(data.frame(x = c(0, 10)), aes(x = x)) +
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5),
         legend.position = c(0.6, 0.7))
-
-grid.arrange(pF, pChi, ncol = 2)
 ```
 
-Of these four common distributions, the most common and important is the **Normal Distribution**. As a result of the Central Limit Theorem (CLT), when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in Figure \@ref(fig:samplingdistribution-virtual) that the sampling distribution of $\hat{\pi}$ follows a Normal distribution. We will discuss the CLT further in Section \@ref(clt)
+The **Normal Distribution** is the most common and important of all distributions. As a result of the Central Limit Theorem (CLT), when sample sizes are large, most sampling distributions will be approximated well by a Normal Distribution. In fact, we can see in Figure \@ref(fig:samplingdistribution-virtual) that the sampling distribution of $\hat{\pi}$ follows a Normal distribution. We will discuss the CLT further in Section \@ref(clt)
 
 ### Mean of the sampling distribution {#bias}
 If we were to summarize a dataset beyond the distribution, the first statistic we would likely report is the mean of the distribution. This is true with sampling distributions as well. With sampling distributions, however, we do not simply want to know what the mean is – we want to know how similar or different this is from the population parameter value that the sample statistic is estimating.  Any difference in these two values is called **bias**. That is:
@@ -593,6 +573,149 @@ It is imperative to remember that **sampling distributions are inherently theore
 *	The **distribution** of a variable is something you can directly examine in your data. The **sampling distribution** is a property of an estimator across repeated samples. 
 
 Remember, a sample statistic is a tool we use to estimate a parameter value in a population. The sampling distribution tells us how good this tool is: Does it work on average (bias)? Does it work most of the time (standard error)? Does it tend to over- or under- estimate (distribution)?
+
+## Standardization, Special Distributions, and Theory {#standardization}
+
+In the previous sections, we demonstrated that every statistic has a sampling distribution and that this distribution is used to make inferences between a statistic (estimate) calculated in a sample and its unknown (parameter) value in the population. For example, you now know that the sample mean’s sampling distribution is a normal distribution and that the sample variance’s sampling distribution is a chi-squared distribution. 
+
+### Standard Errors based on Theory
+In Section \@ref(precision) we explained that the standard error gives you a sense of how far from the average value an estimate might be in an observed sample. In simulations, you could see that a wide distribution meant a large standard error, while a narrow distribution meant a small standard error. We could see this relationship by beginning with a case in which we knew the right answer (e.g., the population mean) and then simulating random samples of the same size, estimating this parameter in each possible sample.
+
+But we can be more precise than this. Using mathematical properties of the normal distribution, a formula can be derived for this standard error. For example, for the sample mean, the standard error is,
+	$$SE(\bar{x}) = \frac{\sigma}{\sqrt{n}} = \frac{s}{\sqrt{n}},$$
+where $s = \sqrt{\frac{\sum (x_i – \bar{x})^2}{n – 1}}$ is the sample standard deviation. 
+
+Note that this standard error is a function of both the spread of the underlying data (the $x_i$’s) and the sample size ($n$). We will discuss more about the role of sample size in Section \@ref(size).
+
+In Table \@ref(tab:SE-table-ch-9) we provide properties of some estimators, including their standard errors, for many common statistics. Note that this is not exhaustive – there are many more estimators in the world of statistics, but the ones listed here are common and provide a solid introduction.
+
+```{r SE-table-ch-9, echo=FALSE, message=FALSE}
+if(!file.exists("rds/ch9_SE_table.rds")){
+  ch9_SE_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXpL0Gv4FJDpLdvfVOyyoUiwPzBxgzApeBrl9GGYOSRg6jBIGdonQFHvdQQl3lMFQQR3PAmxx7y6FQ/pub?gid=164147569&single=true&output=csv" %>% 
+    read_csv(na = "")
+    write_rds(ch9_SE_table, "rds/ch9_SE_table.rds")
+} else {
+  ch9_SE_table <- read_rds("rds/ch9_SE_table.rds")
+}
+
+ch9_SE_table %>% 
+  kable(
+    caption = "Properties of Sample Statistics", 
+    booktabs = TRUE,
+    escape = FALSE
+  ) %>% 
+  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
+                latex_options = c("HOLD_position")) %>%
+  column_spec(1, width = "0.5in") %>% 
+  column_spec(2, width = "0.7in") %>%
+  column_spec(3, width = "1in") %>%
+  column_spec(4, width = "1.1in") %>% 
+  column_spec(5, width = "1in")
+```
+
+The fact that there is a formula for this standard error means that we can know properties of the sampling distribution **without having to do a simulation** and can use this knowledge to make inferences. For example, let’s pretend we’re estimating a population mean, which we don’t know. To do so, we take a random sample of the population and estimate the mean ($\bar{x} = 5.2$) and standard deviation ($s = 2.1$) based upon $n = 10$ observations. Now, looking at Table \@ref(tab:SE-table-ch-9), we know that the sample mean:
+
+* Is an unbiased estimate of the population mean (so, on average, we get the right answer),
+* That the sampling distribution is a normal distribution, and that
+* The standard error (spread) of this distribution can be calculated as $SE(\bar{x}) = \frac{\sigma}{\sqrt{n}} = \frac{s}{\sqrt{n}} = \frac{2.1}{\sqrt{10}} = 0.664$.
+
+At this point, this is all you know, but in Chapters \@ref(CIs) – \@ref(hypothesis-tests), we will put these properties to good use. 
+
+### Standardization
+
+In order to make inferences, there is one additional step – **standardization**. Standardization is a useful statistical tool, in general, as it allows us to put measures that are on different scales all onto the same scale. You are already familiar with standardized measures – e.g., proportions and percentages – which allow you to make comparisons more easily. The idea is similar here. 
+
+To standardize, we take an estimate and divide it by its standard error, i.e.,
+			$$STAT = \frac{Estimate}{Standard \ \  Error}$$
+Note that you can calculate this statistic based on only values in your sample. For example, for the sample mean discussed previously, we would use:
+			$$STAT = \frac{\bar{x}}{SE(\bar{x})} = \frac{\bar{x}}{\frac{s}{\sqrt{n}}} = \frac{\sqrt{n}*\bar{x}}{s} =  
+				 \frac{\sqrt{10}*5.2}{{2.1}} = 7.83$$
+
+As another example, recall in Chapter \@ref(regression) when we fit the regression model:
+
+$$\widehat{score} = b_0 + b_1 \cdot\text{bty avg}$$
+
+and found $b_1 = 0.0666$. Using the formulas in Table \@ref(tab:SE-table-ch-9), we can calculate the standard error of $b_1$ by $$SE(b_1) = \sqrt{\frac{s_y^2}{(n-1)s_x^2}}$$
+
+Here, $s_y^2$ refers to the variance of the outcome variable $y$, which in this case is `score`, and $s_x^2$ refers to the variance in the explanatory variable $x$, which in this case is `bty_avg`. We can use our data wrangling skills to calculate these quantities.
+
+```{r}
+evals_ch5 <- evals %>%
+  select(score, bty_avg, age)
+
+evals_ch5 %>% 
+  summarize(n = n(),
+            sy2 = var(score),
+            sx2 = var(bty_avg)) %>% 
+  mutate(SE_b1 = sqrt(sy2/((n-1)*sx2)))
+```
+Therefore, our standardized statistic in this case is:
+
+$$STAT = \frac{b_1}{SE(b_1)} = \frac{b_1}{\sqrt{\frac{s_y^2}{(n-1)s_x^2}}} =  
+				 \frac{0.0666}{{0.0166}} = 4.01$$
+
+### Special distributions
+When the population parameter is zero, most standardized statistics can be shown to follow one of two distributions: 
+
+1. The **standard normal distribution** (denoted $N(0,1)$) has a mean of 0 and a standard deviation of 1
+2. The **t-distribution** (denoted $t(df)$) depends on one parameter, $df$, and has a mean of 0 and a standard deviation of $\frac{df}{df-1}$. Again $df$ stands for "degrees of freedom," which are given for particular statistics (e.g. $df = n - 1$)
+
+These distributions have interesting features which will be very useful to us in Chapters \@ref(CIs) – \@ref(hypothesis-tests). Below, we provide some of them:
+
+#### Standard Normal Distribution vs T-distribution
+
+```{r empirical-rule, echo=FALSE, out.width='100%', fig.cap="Empirical Rule: property of the Normal Distribution"}
+knitr::include_graphics('images/empirical_rule.png')
+```
+
+The Normal distribution has a very convenient property that says that approximately 68%, 95%, and 99.7% of data fall within 1, 2, and 3 standard deviations of the mean, respectively. Figure \@ref(fig:empirical-rule) displays this phenomenon, which is often called the Empirical Rule. Note this is a property of the Normal distribution in general, for all values of $\mu$ and $\sigma$, but we will consider it here for the special case of the Standard Normal distribution $(\mu = 0, \sigma = 1)$.
+
+If you were to plot the sampling distribution of a standardized statistic (denoted STAT) that follows a standard normal, this means you would expect:
+
+* Approximately 68% of STAT values to fall between -1 and 1
+* Approximately 95% of STAT values to fall between -2 and 2
+* Approximately 99.7% of STAT values to fall between -3 and 3
+
+Working on this type of standardized scale makes it easy for us to quickly determine where in the distribution we expect a value to fall. For example, if we have a value of 2.5, we know it will fall fairly far out in the right tail of the distribution. Or if we have a value of -0.5, we know it falls slightly to the left of center. This is displayed in Figure \@ref(fig:STAT-values).
+
+```{r STAT-values, fig.cap = "N(0,1) example values: STAT = -0.5, STAT = 2.5", echo = FALSE}
+ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
+    stat_function(fun = dnorm) +
+  geom_vline(xintercept = 2.5, color = "red") +
+  geom_vline(xintercept = -0.5, color = "red") +
+  labs(x = "STAT",
+       y = "") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.y = element_blank(),
+                axis.ticks.y = element_blank(),
+        axis.line.y = element_blank()) +
+  scale_x_continuous(breaks = c(-3,-2,-1,0,1,2,3))
+  
+
+```
+
+In general, the t-distribution has the same shape as the Standard Normal distribution (symmetric, unimodal), but it has **heavier tails**. As sample size increases (and therefore degrees of freedom increases), the t-distribution becomes a very close approximation to the Normal distribution. 
+
+```{r, fig.cap="t-distribution with example 95% cutoff values", echo = FALSE, message=FALSE, warning=FALSE}
+ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
+    stat_function(fun = dnorm,
+                    aes(linetype = "Standard Normal"), size = 1) +
+    stat_function(fun = dt, args = list(df = 2),
+                    aes(linetype = "t-distribution, df = 2"), size = 1) +
+    stat_function(fun = dt, args = list(df = 30),
+                    aes(linetype = "t-distribution, df = 30"), size = 1) +
+  scale_linetype_manual(values = c(1, 3, 2)) +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_vline(xintercept = -2.04, linetype = 2, color = "red") +
+  geom_vline(xintercept = -4.3, linetype = 3, color = "red") +
+  geom_vline(xintercept = 2.04, linetype = 2, color = "red") +
+  geom_vline(xintercept = 4.3, linetype = 3, color = "red") +
+  xlab("STAT")
+```
+
+Because the exact shape of the t-distribution depends on the sample size, we can't define one nice rule like the Empirical Rule to know which "cutoff" values correspond to 95% of the data, for example. If $df = 30$, for example, it can be shown that 95% of the data will fall between -2.04 and 2.04, but if $df = 2$, 95% of the data will fall between -4.3 and 4.3. This is what we mean by the t-distribution having "heavier tails"; more of the observations fall farther out in the tails of the distribution, compared to the Normal distribution.
 
 ## Sample Size and Sampling Distributions {#size} 
 Let’s return to our football stadium thought experiment. Let’s say you could estimate the average age of fans by selecting a sample of $n = 10$ or by selecting a sample of $n = 100$. Which would be better? Why? A larger sample will certainly cost more – is this worth it? What about a sample of $n = 500$? Is that worth it?
@@ -738,12 +861,16 @@ As we observed visually in Figure \@ref(fig:comparing-sampling-distributions), a
 
 Overall, this simulation shows that compared to a smaller sample size (e.g., $n = 10$), with a larger sample size (e.g., $n = 100$), the sampling distribution has less spread and a smaller standard error. This means that an estimate from a larger sample is likely closer to the population parameter value than one from a smaller sample. 
 
+Note that this is exactly what we would expect by looking at the standard error formulas in Table \@ref(tab:SE-table-ch-9). Sample size $n$ appears in some form on the denominator in each formula, and we know by simple arithmetic that dividing by a larger number causes the calculation to result in a smaller value. Therefore it is a general mathematical property that increasing sample size will decrease the standard error. 
+
 ## Central Limit Theorem (CLT) {#clt}
 
 <!--Some of this language comes straight from your old 202 slides. Does this need to be cited? Not sure if it orignially came from you or OpenIntro-->
-There is a very useful result in statistics called the **Central Limit Theorem** which tells us that the sampling distribution of the sample mean is well approximated by the normal distribution. While not all variables follow a normal distribution, many estimators have sampling distributions that are normal. We have already seen this to be true with the sample proportion.
+There is a very useful result in statistics called the **Central Limit Theorem** which tells us that the sampling distribution of a **standardized statistic** is well approximated by the Normal distribution. While not all variables follow a normal distribution, many estimators have sampling distributions that are normal. We have already seen this to be true with the sample proportion.
 
-More formally, the CLT tells us that $$\bar{x} \sim N(mean = \mu, SE = \frac{\sigma}{\sqrt{n}}),$$ where $\mu$ is the population mean of X, $\sigma$ is the population standard deviation of X, and $n$ is the sample size. 
+More formally, the CLT tells us that when the population parameter is 0, $$STAT = \frac{{Estimate}}{SE} \rightarrow N(0,1)$$ 
+
+Importantly, note that the $SE$ is a function of sample size (as seen in Table \@ref(tab:SE-table-ch-9)). The CLT holds when this sample size is large (that's what $\rightarrow$ means). For many statistics, this means when the sample size is bigger than about $n = 30$. 
 
 ### CLT conditions
 Certain conditions must be met for the CLT to apply:

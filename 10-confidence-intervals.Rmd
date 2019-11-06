@@ -171,9 +171,10 @@ Importantly, what this does not mean is that you need to get a larger sample!
 
 ## Combining an estimate with its precision
 
-A **confidence interval** gives a range of plausible values for a parameter. It depends on a specified confidence level with higher confidence levels corresponding to wider confidence intervals and lower confidence levels corresponding to narrower confidence intervals. Common confidence levels include 90%, 95%, and 99%.
+A **confidence interval** gives a range of plausible values for a parameter. It allows us to combine an estimate (e.g. $\bar{x}$) with a measure of its precision (i.e. its standard error). Confidence intervals depend on a specified confidence level (e.g. 90%, 95%, 99%), with higher confidence levels corresponding to wider confidence intervals and lower confidence levels corresponding to narrower confidence intervals.
 
 Usually we don’t just begin sections with a definition, but *confidence intervals* are simple to define and play an important role in the sciences and any field that uses data. 
+
 You can think of a confidence interval as playing the role of a net when fishing. Using a single point-estimate to estimate an unknown parameter is like trying to catch a fish in a murky lake with a single spear, and using a confidence interval is like fishing with a net. We can throw a spear where we saw a fish, but we will probably miss. If we toss a net in that area, we have a good chance of catching the fish. Analogously, if we report a point estimate, we probably won't hit the exact population parameter, but if we report a range of plausible values based around our statistic, we have a good shot at catching the parameter. 
 
 <!--want to include the pic from the old slides to accompany the analogy? Also took language from the slides- need to be cited?-->
