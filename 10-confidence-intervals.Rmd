@@ -33,6 +33,7 @@ Let’s load all the packages needed for this chapter (this assumes you’ve alr
 ```{r, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(moderndive)
+library(dslabs)
 library(infer)
 library(janitor)
 ```
@@ -42,135 +43,10 @@ library(janitor)
 library(readr)
 library(knitr)
 library(kableExtra)
+library(gridExtra)
 ```
 
-<!-- 
-Commenting out all of previous 10.1 - some of it got worked into new 9.5. May want to add in some of these examples into ch 9 in future
 
-## Theory based upon assumptions and models {#theory-two} -->
-
-<!-- In the table below, we provide some basic properties of common sampling statistics you are likely to encounter in this course. (How do we know these properties are true? These have been proven mathematically by statisticians.) -->
-
-<!-- ```{r SE-table, echo=FALSE, message=FALSE} -->
-<!-- if(!file.exists("rds/ch10_SE_table.rds")){ -->
-<!--   ch10_SE_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXpL0Gv4FJDpLdvfVOyyoUiwPzBxgzApeBrl9GGYOSRg6jBIGdonQFHvdQQl3lMFQQR3PAmxx7y6FQ/pub?gid=164147569&single=true&output=csv" %>%  -->
-<!--     read_csv(na = "") -->
-<!--     write_rds(ch10_SE_table, "rds/ch10_SE_table.rds") -->
-<!-- } else { -->
-<!--   ch10_SE_table <- read_rds("rds/ch10_SE_table.rds") -->
-<!-- } -->
-
-<!-- ch10_SE_table %>%  -->
-<!--   kable( -->
-<!--     caption = "Properties of Sample Statistics",  -->
-<!--     booktabs = TRUE, -->
-<!--     escape = FALSE -->
-<!--   ) %>%  -->
-<!--   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16), -->
-<!--                 latex_options = c("HOLD_position")) %>% -->
-<!--   column_spec(1, width = "0.5in") %>%  -->
-<!--   column_spec(2, width = "0.7in") %>% -->
-<!--   column_spec(3, width = "1in") %>% -->
-<!--   column_spec(4, width = "1.1in") %>%  -->
-<!--   column_spec(5, width = "1in") -->
-<!-- ``` -->
-
-<!-- As an example, let’s say you are trying to estimate the population average age at the football game $\mu$. Let's use our simulated `football_fans` dataset again that has information on the whole population of 40,000 fans. -->
-
-<!-- <!-- change seed in chapter 9 to 2018 for the football fan data. This results in a better example to demonstrate CIs later on--> -->
-
-<!-- ```{r, echo = FALSE} -->
-<!-- set.seed(2018) -->
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- football_fans <- data.frame(home_fan = rbinom(40000, 1, 0.91), -->
-<!--                             age = rnorm(40000, 30, 8)) %>%  -->
-<!--   mutate(age = case_when(age < 0 ~ 0, -->
-<!--                          age >=0 ~ age)) -->
-<!-- sample_10 <- sample_n(football_fans, size = 10) -->
-<!-- sample_10 %>%  -->
-<!--   summarize(mean_age = mean(age), -->
-<!--             var_age = var(age)) -->
-<!-- ``` -->
-<!-- To estimate the average age, you take a sample of $n = 10$ participants, producing an estimate of $\bar{x} =$ `r round(mean(sample_10$age),1)` years old. Your question is simply: is this a good estimate? -->
-
-<!-- * The estimator here is the sample mean, $\bar{x}$.  -->
-<!-- * We know that the sample mean provides an unbiased estimate of the population mean. In the average possible sample, this statistic will be right. -->
-<!-- * We know that the sampling distribution of the sample mean is the normal distribution. This is unimodal and symmetric, meaning that our estimate is just as likely larger than this population mean as it is smaller.  -->
-<!-- * The standard error of a sample mean is $SE(\bar{x}) = s/\sqrt{n}$. In this sample, since $s^2 =$ `r round(var(sample_10$age),1)`, we can calculate this standard error to be  $SE(\bar{x}) =$ `r round(var(sample_10$age),1)`$/\sqrt{10} =$ `r round(sqrt(var(sample_10$age)) / sqrt(10), 2) `. Note that a standard error is always in the same units as the original variable, so in this case the standard error is `r round(sqrt(var(sample_10$age)) / sqrt(10), 2) ` *years*. Comparing this to the sample mean ($\bar{x} =$ `r round(mean(sample_10$age),1)`) this gives us a sense that we are somewhat close to the true parameter value.  -->
-
-<!-- Note that we can extend the above properties to *differences* between groups as well. In general, -->
-
-<!-- * $Bias(X_1 - X_2) = Bias(X_1) - Bias(X_2) \dashrightarrow$ If $X_1, X_2$ are unbiased, then $X_1 - X_2$ is also unbiased. -->
-<!-- * So long as $X_1$ and $X_2$ are independent, $\dashrightarrow SE(X_1 – X_2) = \sqrt{[SE(X_1)]^2 + [SE(X_2)]^2}$  -->
-<!-- * $Dist(X_1 - X_2) \dashrightarrow$ if $X_1, X_2$ are independent, then $X_1 – X_2$ are independent. -->
-
-<!-- This may seem really abstract. As an example, let’s focus on estimating the difference means between two groups in the population $(\mu_1 - \mu_2)$. In our `football_fans` example, we could consider whether there is a difference in average age between home fans and away fans, so $\mu_1$ refers here to the average age of all home fans in the population, and $\mu_2$ refers to the average age of all away fans in the population. We can estimate this difference in average age using $\bar{x}_1 - \bar{x}_2$ in our sample, where $\bar{x}_1$ is the average age of home fans in our sample and $\bar{x}_2$ is the average age of away fans in our sample. Using information in Table \@ref(tab:SE-table) above, because $\bar{x}_1$ is and unbiased estimator for $\mu_1$ and $\bar{x}_2$ is an unbiased estimator for $\mu_2$, we have:  -->
-
-<!-- $$Bias(\bar{x}_1 - \bar{x}_2) = Bias(\bar{x}_1) - Bias(\bar{x}_2) = 0$$ -->
-<!-- That is, on average, $\bar{x}_1 - \bar{x}_2$ will give us an unbiased estimate of $\mu_1 - \mu_2$. Also, because the age of home fans is independent of the age of away fans, we have: -->
-
-<!-- $$SE(\bar{x}_1 - \bar{x}_2) = \sqrt{[SE(\bar{x}_1)]^2 + [SE(\bar{x}_2)]^2} = \sqrt{(s_1^2/n_1 + s_2^2/n_2)}$$ -->
-
-<!-- $$\bar{x}_1 - \bar{x}_2 \sim N(mean = \mu_1 - \mu_2, SE = \sqrt{(s_1^2/n_1 + s_2^2/n_2)})$$ -->
-<!-- Let's demonstrate this with our `football_fans` data by drawing a random sample of $n=100$ fans and computing $\bar{x}_1 - \bar{x}_2$.  -->
-
-<!-- ```{r, echo = FALSE} -->
-<!-- set.seed(2018) -->
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- sample1_football_fans <- rep_sample_n(football_fans, size = 100, reps = 1) -->
-<!-- mean_age_by_fan_type <- sample1_football_fans %>% group_by(home_fan) %>%  -->
-<!--   summarise(mean_age = mean(age), -->
-<!--             sd_age = sd(age), -->
-<!--             n = n(), -->
-<!--             SE_xbar = sd_age / sqrt(n)) -->
-
-<!-- mean_age_by_fan_type -->
-
-<!-- diff_means <- as.numeric(mean_age_by_fan_type[1,2]) - as.numeric(mean_age_by_fan_type[2,2]) -->
-
-<!-- SE_diff_means <- as.numeric(sqrt(mean_age_by_fan_type[1, "SE_xbar"]^2 + mean_age_by_fan_type[2, "SE_xbar"]^2)) -->
-<!-- SE_diff_means -->
-<!-- ``` -->
-
-<!-- We see here that $\bar{x}_1 - \bar{x}_2 =$ `r diff_means` and $SE(\bar{x}_1 - \bar{x}_2) =$ `r SE_diff_means`. In our particular sample, home fans are older, but because the magnitude of our standard error is roughly 1.5 times the size of our point estimate, this indicates we have a relatively imprecise estimate.  -->
-
-<!-- We could also look at the sampling distribution of $\bar{x}_1 - \bar{x}_2 =$ by taking 10,000 repeated samples and computing the difference in means in each. -->
-
-<!-- ```{r, echo = FALSE} -->
-<!-- set.seed(2018) -->
-<!-- ``` -->
-
-<!-- ```{r diff-means, fig.cap = "Samping distribution of difference in means"} -->
-<!-- samples_football_fans <- rep_sample_n(football_fans, size = 100, reps = 10000) -->
-<!-- mean_age_by_fan_type <- samples_football_fans %>%  -->
-<!--   group_by(home_fan, replicate) %>%  -->
-<!--   summarise(mean_age = mean(age)) %>%  -->
-<!--   spread(key = home_fan, value = mean_age) %>%  -->
-<!--   rename("mean_age_away_fan" = `0`, "mean_age_home_fan" = `1`) %>%  -->
-<!--   mutate(diff_means = mean_age_home_fan - mean_age_away_fan) -->
-
-<!-- ggplot(mean_age_by_fan_type, aes(x = diff_means)) + -->
-<!--   geom_histogram(color = "white") -->
-
-<!-- pop_mean_age_by_fan_type <- football_fans %>%  -->
-<!--   group_by(home_fan) %>%  -->
-<!--   summarise(mean_age = mean(age), -->
-<!--             sd_age = sd(age)) -->
-<!-- pop_mean_age_by_fan_type -->
-<!-- ``` -->
-<!-- We see that the sampling distribution of $\bar{x}_1 - \bar{x}_2$ follows a normal distribution centered around the true population mean $\mu_1 - \mu_2 =$ `r as.numeric(pop_mean_age_by_fan_type[1,2]) - as.numeric(pop_mean_age_by_fan_type[2,2])`, as expected based on the properties presented in Table \@ref(SE-table). -->
-
-<!-- What does this mean for your data analysis? -->
-
-<!-- * You need to think about sample size and how it might affect the sampling distribution.  -->
-<!-- * If you have a large enough sample (e.g., $n > 50$), you can probably assume the sampling distribution is normally distributed.  -->
-<!-- * If you have a smaller sample (e.g., $n < 50$), you should look up what the appropriate sampling distribution would be (e.g., t-distribution, F-distribution).  -->
-
-<!-- Importantly, what this does not mean is that you need to get a larger sample!  -->
 
 ## Combining an estimate with its precision
 
@@ -190,7 +66,43 @@ If the sampling distribution of an estimator is normally distributed, then we ca
 * 95% of the values are between -1.96 and +1.96. 
 * 90% of values are between -1.645 and +1.645. 
 
-<!--insert graphic of the empirical rule here?-->
+```{r N-CIs, fig.cap = "N(0,1) 95% cutoff values", message = FALSE, echo = FALSE, warning = FALSE}
+shade_curve <- function(MyDF, tstart, tend, fill = "red", alpha = .5){
+  geom_area(data = subset(MyDF, x >= 0 + tstart
+                          & x < 0 + tend),
+            aes(y=y), fill = fill, color = NA, alpha = alpha)
+}
+
+data <- data.frame(x = seq(from = -5, to = 5, by = 0.01)) %>% 
+  mutate(y = dnorm(x))
+
+
+p95 <- ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
+    stat_function(fun = dnorm, size = 1, color = "red") +
+  geom_vline(xintercept = -1.96, linetype = 2) +
+  geom_vline(xintercept = 1.96, linetype = 2) +
+  shade_curve(data, tstart = -1.96, tend = 1.96) +
+  scale_x_continuous(breaks = c(-3,-1.96,0,1.96,3)) +
+  annotate(geom="text", x = 0, y=.2, label="95%",
+              color="black", size = 10)
+p90 <- ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
+    stat_function(fun = dnorm, size = 1, color = "red") +
+  geom_vline(xintercept = -1.645, linetype = 2) +
+  geom_vline(xintercept = 1.645, linetype = 2) +
+  shade_curve(data, tstart = -1.645, tend = 1.645) +
+  scale_x_continuous(breaks = c(-3,-1.645,0,1.645,3)) +
+  annotate(geom="text", x = 0, y=.2, label="90%",
+              color="black", size = 10)
+p99 <- ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
+    stat_function(fun = dnorm, size = 1, color = "red") +
+  geom_vline(xintercept = -2.575, linetype = 2) +
+  geom_vline(xintercept = 2.575, linetype = 2) +
+  shade_curve(data, tstart = -2.575, tend = 2.575) +
+  scale_x_continuous(breaks = c(-3,-2.575,0,2.575,3)) +
+  annotate(geom="text", x = 0, y=.2, label="99%",
+              color="black", size = 10)
+grid.arrange(p90, p95, p99)
+```
 
 Using this, we can define a 95% confidence interval for a population parameter as,
 $$Estimate \ \pm 1.96*SE(Estimate),$$ or written in interval notation as
@@ -198,21 +110,95 @@ $$[Estimate \ \ – \ 1.96*SE(Estimate),\ \ \ Estimate + 1.96*SE(Estimate)]$$
 
 For example, a 95% confidence interval for the population mean $\mu$ can be constructed based upon the sample mean as, $$[\bar{x} - 1.96 * SE(\bar{x}), \ \bar{x} + 1.96*SE(\bar{x})]$$
 
-In our penny example, our original sample `pennies_sample` had $\bar{x} =$ `r mean(pennies_sample$age_in_2011)` and $SE(\bar{x}) = \frac{s}{\sqrt{n}} =$ `r sd(pennies_sample$age_in_2011)/sqrt(40)`, which gives a confidence interval of (`r round(mean(pennies_sample$age_in_2011) - 1.96*sd(pennies_sample$age_in_2011)/sqrt(40), 2)`, `r round(mean(pennies_sample$age_in_2011) + 1.96*sd(pennies_sample$age_in_2011)/sqrt(40), 2)`). 
+Let's return to our football fan example. Imagine that we have data on the population of 40,000 fans, their ages and whether or not they are cheering for the home team. This simulated data exists in the data frame `football_fans`. 
+
+```{r, echo = FALSE}
+set.seed(2018)
+```
+
+```{r}
+football_fans <- data.frame(home_fan = rbinom(40000, 1, 0.91),
+                            age = rnorm(40000, 30, 8)) %>%
+  mutate(age = case_when(age < 0 ~ 0,
+                         age >=0 ~ age))
+```
+
+We see that the average age in this population is $\mu =$ `r mean(football_fans$age)` and the standard deviation is $\sigma =$ `r sd(football_fans$age)`.
+```{r}
+football_fans %>% 
+  summarize(mu = mean(age),
+            sigma = sd(age))
+```
+
+Let's take a sample of 100 fans from this population and compute the average age, $\bar{x}$ and its standard error $SE(\bar{x})$. 
+
+```{r}
+sample_100_fans <- football_fans %>% 
+  sample_n(100)
+
+mean_age_stats <- sample_100_fans %>% 
+  summarize(n = n(),
+            xbar = mean(age),
+            sigma = sd(football_fans$age),
+            SE_xbar = sigma/sqrt(n))
+mean_age_stats
+```
+Because we know the sample mean is normally distributed, we can construct a 95% confidence interval for $\bar{x}$ by
+
+$$29.7 \pm 1.96*\frac{8.02}{\sqrt{100}},$$
+which results in the interval $[28.1, 31.3]$.
+
+```{r}
+CI <- mean_age_stats %>% 
+  summarize(lower = xbar - 1.96*SE_xbar,
+            upper = xbar + 1.96*SE_xbar)
+CI
+  
+```
+
+<!--  `pennies_sample` had $\bar{x} =$ `r mean(pennies_sample$age_in_2011)` and $SE(\bar{x}) = \frac{s}{\sqrt{n}} =$ `r sd(pennies_sample$age_in_2011)/sqrt(40)`, which gives a confidence interval of (`r round(mean(pennies_sample$age_in_2011) - 1.96*sd(pennies_sample$age_in_2011)/sqrt(40), 2)`, `r round(mean(pennies_sample$age_in_2011) + 1.96*sd(pennies_sample$age_in_2011)/sqrt(40), 2)`).  -->
 
 A few properties are worth keeping in mind:
 
 * This interval is *symmetric*. This symmetry follows from the fact that the normal distribution is a symmetric distribution. *If the sampling distribution is not normal, the confidence interval may not be symmetric*.
-* The multiplier 1.96 used in this interval corresponding to 95% comes directly from properties of the normal distribution. *If the sampling distribution is not normal, this multiplier might be different*. For example, this multiplier is *larger* when the distribution has heavy tails, as with the t-distribution. The multiplier will also be different if you want to use a level of confidence other than 95%. 
+* The multiplier 1.96 used in this interval corresponding to 95% comes directly from properties of the normal distribution. *If the sampling distribution is not normal, this multiplier might be different*. For example, this multiplier is *larger* when the distribution has heavy tails, as with the t-distribution. The multiplier will also be different if you want to use a level of confidence other than 95%. We will discuss this further in the next section.
 
-<!-- In progress: 
-## Constructing a General Confidence Interval -->
+## Constructing a General Confidence Interval
 
-<!-- In general, we construct a confidence interval using what we know about an estimator's sampling distribution. Above, we used the multiplier 1.96 because we know that $\bar{x}$ follows a Normal distribution, and we wanted our "level of confidence" to be 95%. If we wanted to construct a 90% confidence interval, we would use 1.645 -->
+In general, we construct a confidence interval using what we know about an estimator's (standardized) sampling distribution. Above, we used the multiplier 1.96 because we know that $\frac{\bar{x} - \mu}{\frac{\sigma}{\sqrt{n}}}$ follows a standard Normal distribution, and we wanted our "level of confidence" to be 95%. If we wanted to construct a 90% confidence interval, we would use the multiplier 1.645. Note that the multiplier in a confidence interval, often called a **critical value**, is simply a cutoff value from either the $t$ or standard normal distribution that corresponds to the desired level of confidence for the interval (e.g. 90%, 95%, 99%).
 
-<!-- $$\text{Estimate} \pm \text{Critical Value} * SE(\text{Estimate})$$ -->
+In general, a confidence interval is of the form:
 
-<!-- A **critical value** is a cutoff value from either the $t$ or standard normal distribution that corresponds to the desired level of confidence for the interval (e.g. 90%, 95%, 99%).  -->
+$$\text{Estimate} \pm \text{Critical Value} * SE(\text{Estimate})$$
+
+In order to construct a confidence interval you need to:
+
+1. Calculate the estimate from your sample
+2. Calculate the standard error of you estimate
+3. Determine the appropriate sampling distribution for your standardized estimate (usually t(df) or N(0,1))
+4. Determine your desired level of confidence (e.g. 90%, 95%, 99%)
+5. Use 3 and 4 to determine the correct critical value
+
+Suppose we have a sample of $n = 20$ and are using a t-distribution to construct a 95% confidence interval. Remember that the t-distribution is characterized by its degrees of freedom; here the appropriate degrees of freedom are $df = n - 1 = 19$. We can find the appropriate critical value using the `qt()` function in R. Recall that in order for 95% of the data to fall in the middle, this means that 2.5% of the data must fall in each tail, respectively. We therefore want to find the critical value that has a probability of 0.025 to the *left* (i.e. in the *lower tail*). 
+```{r}
+qt(p = .025, df = 19, lower.tail = TRUE)
+```
+Note that because the t-distribution is symmetric, we know that the upper cutoff value will be +2.09 and therefore it's not necessary to calculate it separately. For demonstration purposes, however, it can be calculated in two ways in R: by specifying that we want the value that gives 2.5% in the upper tail (i.e. `lower.tail = FALSE`) or by specifying that we want the value that gives 97.5% in the lower tail. Note these two are logically equivalent.
+
+```{r}
+qt(p = .025, df = 19, lower.tail = FALSE)
+qt(p = .975, df = 19, lower.tail = TRUE)
+```
+
+Note that since a 95% confidence interval for a $t(19)$ distribution will be somewhat wider than a 95% confidence interval for a N(0,1) distribution (because 2.09 > 1.96). This is consistent with what we would expect given that we know the t-distribution has *heavier tails*, meaning more of the data falls farther out in the tails than in the N(0,1) distribution. 
+
+Note that changing the degrees of freedom (by having a different sample size) will change the critical value. For example, if instead we have $n = 50$, the correct critical value would be $\pm 2.01$. The larger the sample size for the t-distribution, the closer the critical value gets to the corresponding critical value in the N(0,1) distribution (in this case, 1.96). 
+
+```{r}
+qt(p = .025, df = 49)
+```
+
+
 
 <!--either here or as a class/homework exercise, could demonstrate the empirical rule / these cutoff values via simulations-->
 
@@ -220,34 +206,47 @@ A few properties are worth keeping in mind:
 ## Interpreting a Confidence Interval
 Like many statistics, while a confidence interval is fairly straightforward to construct, it is very easy to interpret incorrectly. In fact, many researchers – statisticians included – get the interpretation of confidence intervals wrong. This goes back to the idea of **counterfactual thinking** that we introduced previously: a confidence interval is a property of a population and estimator, not a particular sample. It asks: if I constructed this interval in every possible sample, in what percentage of samples would I correctly include the true population parameter? 
 
-To see this, let’s return to the sampling distribution of the sample mean for our age of football fans example. Recall that we have simulated population data for all 40,000 fans and we took 10,000 repeated samples of size 100. Figure \@ref(fig:samp-dist-mean) shows the sampling distribution of the sample mean. Recall that the true population mean is `r mean(football_fans$age)`
+To see this, let’s return to the sample mean for our age of football fans example and consider its sampling distribution. Recall that we have population data for all 40,000 fans. Below we take 10,000 repeated samples of size 100 and display the sampling distribution of the sample mean in Figure \@ref(fig:samp-dist-mean). Recall that the true population mean is `r mean(football_fans$age)`
+
+```{r, echo = FALSE}
+set.seed(2018)
+```
 
 ```{r samp-dist-mean, fig.cap="Sampling Distribution of Average Age of Fans at a Football Game", message = FALSE, warning = FALSE}
-set.seed(2018)
-samp_means_football_fans <- samples_football_fans %>% 
-  group_by(replicate) %>% summarise(mean = mean(age),
-                                    sd = sd(age),
-                                    n = n(),
-                                    se = sd / sqrt(n))
 
-mu <- mean(football_fans$age)
+samples_football_fans <- football_fans %>% 
+  rep_sample_n(size =  100, reps = 10000)
+
+samp_means_football_fans <- samples_football_fans %>% 
+  group_by(replicate) %>% 
+  summarise(xbar = mean(age),
+            sd = sd(age),
+            n = n(),
+            SE_xbar = sd / sqrt(n))
+
 samp_dist_plot <- 
   ggplot(samp_means_football_fans) +
-    geom_histogram(aes(x = mean), color = "white") +
-    geom_vline(xintercept = mu, color = "blue")
+    geom_histogram(aes(x = xbar), color = "white") +
+    geom_vline(xintercept = mean(football_fans$age), color = "blue")
 samp_dist_plot
 ```
 
-
-Assume that the sample we actually observed was `replicate = 437`, which had $\bar{x} =$ `r samp_means_football_fans[437,2]`. If we used this sample mean to construct a 95% confidence interval, the population mean would be in this interval, right? Figure \@ref(fig:samp-dist-mean-2) shows a confidence interval shaded around $\bar{x} =$ `r samp_means_football_fans[437,2]`, which is indicated by the red line. This confidence interval successfully includes the true population mean. 
+Assume that the sample we actually observed was `replicate = 77`, which had $\bar{x} =$ `r samp_means_football_fans[77,2]`. If we used this sample mean to construct a 95% confidence interval, the population mean would be in this interval, right? Figure \@ref(fig:samp-dist-mean-2) shows a confidence interval shaded around $\bar{x} =$ `r samp_means_football_fans[77,2]`, which is indicated by the red line. This confidence interval successfully includes the true population mean. 
 
 ```{r samp-dist-mean-2, warning = FALSE, message = FALSE, fig.cap="Confidence Interval shaded for an observed sample mean of 29.8"}
-xbar <- filter(samp_means_football_fans, replicate == 437)$mean
-xbar
-SE <- filter(samp_means_football_fans, replicate == 437)$se
-endpoints <- c(xbar - 1.96*SE, xbar + 1.96*SE)
+CI <- samp_means_football_fans %>% 
+  filter(replicate == 77) %>% 
+  summarize(lower = xbar - 1.96*SE_xbar,
+            upper = xbar + 1.96*SE_xbar)
+CI
+
+xbar <- samp_means_football_fans %>% 
+  filter(replicate == 77) %>% 
+  select(xbar) %>% 
+  as.numeric()
+
 samp_dist_plot +
-  shade_ci(endpoints) +
+  shade_ci(CI) +
   geom_vline(xintercept = xbar, color = "red")
 
 ```
@@ -255,38 +254,60 @@ samp_dist_plot +
 Assume now that we were unlucky and drew a sample with a mean far from the population mean. One such case is `replicate = ` `r 545`, which had $\bar{x} =$ `r samp_means_football_fans[545,2]`. In this case, is the population mean in this interval? Figure \@ref(samp-dist-mean-3) displays this scenario.
 
 ```{r samp-dist-mean-3, warning = FALSE, message = FALSE, fig.cap="Confidence Interval shaded for an observed sample mean of 32.3"}
-xbar <- filter(samp_means_football_fans, replicate == 545)$mean
-SE <- filter(samp_means_football_fans, replicate == 545)$se
-endpoints <- c(xbar - 1.96*SE, xbar + 1.96*SE)
+CI <- samp_means_football_fans %>% 
+  filter(replicate == 545) %>% 
+  summarize(lower = xbar - 1.96*SE_xbar,
+            upper = xbar + 1.96*SE_xbar)
+CI
+
+xbar <- samp_means_football_fans %>% 
+  filter(replicate == 545) %>% 
+  select(xbar) %>% 
+  as.numeric()
+
 samp_dist_plot +
-  shade_ci(endpoints) +
+  shade_ci(CI) +
   geom_vline(xintercept = xbar, color = "red")
 
 ```
 In this case, the confidence interval does not include the true population mean. Importantly, remember that in real life we only have the data in front of us from one sample. *We don’t know what the population mean is*, and we don’t know if our estimate is the value near to the mean (Figure \@ref(samp-dist-mean-2) ) or far from the mean (Figure \@ref(samp-dist-mean-3) ). Also recall `replicate = ` `r 545` was a legitimate random sample drawn from the population of 40,000 football fans. Just by chance, it is possible to observe a sample mean that is far from the true population mean. 
 
-We could compute 95% confidence intervals for all 10,000 of our repeated samples, and we would expect approximately 95% of them to contain the true mean. 
+We could compute 95% confidence intervals for all 10,000 of our repeated samples, and we would expect approximately 95% of them to contain the true mean. We create a new variable `captured_95` to indicate whether the true population mean $\mu$ is captured between the lower and upper values of the confidence interval for the given sample. Let's look at the results for the 5 samples. 
 ```{r}
-mu <- mean(football_fans$age)
+mu <- football_fans %>% 
+  summarize(mean(age)) %>% 
+  as.numeric()
+
 CIs_football_fans <- samp_means_football_fans %>% 
-  mutate(lb_95 = mean - 1.96*se,
-         ub_95 = mean + 1.96*se,
-         captured_95 = lb_95 <= mu & mu <= ub_95)
-sum(CIs_football_fans$captured_95) / 10000
+  mutate(lower = xbar - 1.96*SE_xbar,
+         upper = xbar + 1.96*SE_xbar,
+         captured_95 = lower <= mu & mu <= upper)
+CIs_football_fans %>% 
+  slice(1:5)
+```
+
+We see that each of the first 5 confidence intervals do contain $\mu$. Let's look across all 10,000 confidence intervals (from our 10,000 repeated samples), and see what proportion contain $\mu$. 
+```{r}
+CIs_football_fans %>% 
+  summarize(sum(captured_95)/n())
 ```
 In fact, `r round((sum(CIs_football_fans$captured_95) / 10000)*100,2)`% of the 10,000 do capture the true mean. 
 
 For visualization purposes, we'll take a smaller subset of 100 of these confidence intervals and display the results in Figure \@ref(CI-fig). In this smaller subset, 96 of the 100 95% confidence intervals contain the true population mean. 
-```{r CI-fig, fig.cap="Confidence Interval for Average Age from 100 repeated samples of size 100"}
+
+```{r, echo = FALSE}
 set.seed(2018)
+```
+```{r CI-fig, fig.cap="Confidence Interval for Average Age from 100 repeated samples of size 100"}
 CI_subset <- sample_n(CIs_football_fans, 100) %>% 
   mutate(replicate_id = seq(1:100))
+
 ggplot(CI_subset) +
-  geom_point(aes(x = mean, y = replicate_id, color = captured_95)) +
-  geom_segment(aes(y = replicate_id, yend = replicate_id, x = lb_95, xend = ub_95, 
+  geom_point(aes(x = xbar, y = replicate_id, color = captured_95)) +
+  geom_segment(aes(y = replicate_id, yend = replicate_id, x = lower, xend = upper, 
                    color = captured_95)) +
   labs(
-    x = expression("Age in 2011 (Years)"),
+    x = expression("Age"),
     y = "Replicate ID",
     title = expression(paste("95% percentile-based confidence intervals for ", 
                              mu, sep = ""))
@@ -294,6 +315,19 @@ ggplot(CI_subset) +
   scale_color_manual(values = c("blue", "orange")) + 
   geom_vline(xintercept = mu, color = "red") 
 ```
+
+What if we instead constructed 90% confidence intervals? That is, we instead used 1.645 as our critical value instead of 1.96. 
+
+```{r}
+CIs_90_football_fans <- samp_means_football_fans %>% 
+  mutate(lower = xbar - 1.645*SE_xbar,
+         upper = xbar + 1.645*SE_xbar,
+         captured_90 = lower <= mu & mu <= upper)
+
+CIs_90_football_fans %>% 
+  summarize(sum(captured_90)/n())
+```
+As expected, when we use the 90% critical value, approximately 90% of the confidence intervals contain the true mean. Note that because we are using a smaller multiplier (1.645 vs. 1.96), our intervals are *narrower*, which makes it more likely that some of our intervals will not capture the true mean. Think back to the fishing analogy: you will probably capture the fish fewer times when using a small net versus a large net. 
 
 ## Example: One proportion {#one-prop-ci}
 

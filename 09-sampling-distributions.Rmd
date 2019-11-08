@@ -900,7 +900,7 @@ Certain conditions must be met for the CLT to apply:
 
 This is also difficult to verify for the population, but we can check it using the sample data, and assume that the sample mirrors the population.
 
-### CLT example
+### CLT example {#clt-example}
 
 Let's return to the `gapminder` dataset, this time looking at the variable `infant_mortality`. We'll first subset our data to only include the year 2015, and we'll exclude the 7 countries that have missing data for `infant_mortality`. Figure \@ref(fig:infant-mortality) shows the distribution of `infant_mortality`, which is skewed right. 
 
