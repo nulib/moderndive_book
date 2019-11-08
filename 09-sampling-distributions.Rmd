@@ -866,11 +866,22 @@ Note that this is exactly what we would expect by looking at the standard error 
 ## Central Limit Theorem (CLT) {#clt}
 
 <!--Some of this language comes straight from your old 202 slides. Does this need to be cited? Not sure if it orignially came from you or OpenIntro-->
-There is a very useful result in statistics called the **Central Limit Theorem** which tells us that the sampling distribution of a **standardized statistic** is well approximated by the Normal distribution. While not all variables follow a normal distribution, many estimators have sampling distributions that are normal. We have already seen this to be true with the sample proportion.
 
-More formally, the CLT tells us that when the population parameter is 0, $$STAT = \frac{{Estimate}}{SE} \rightarrow N(0,1)$$ 
+There is a very useful result in statistics called the **Central Limit Theorem** which tells us that the sampling distribution of the sample mean is well approximated by the normal distribution. While not all variables follow a normal distribution, many estimators have sampling distributions that are normal. We have already seen this to be true with the sample proportion.
 
-Importantly, note that the $SE$ is a function of sample size (as seen in Table \@ref(tab:SE-table-ch-9)). The CLT holds when this sample size is large (that's what $\rightarrow$ means). For many statistics, this means when the sample size is bigger than about $n = 30$. 
+More formally, the CLT tells us that $$\bar{x} \sim N(mean = \mu, SE = \frac{\sigma}{\sqrt{n}}),$$ where $\mu$ is the population mean of X, $\sigma$ is the population standard deviation of X, and $n$ is the sample size. 
+
+Note that we if we standardize the sample mean, it will follow the standard normal distribution. That is: $$Z = \frac{\bar{x} - \mu}{\frac{\sigma}{\sqrt{n}}} \sim N(0,1)$$. 
+
+
+<!-- 
+Beth's rewrite: 
+
+There is a very useful result in statistics called the **Central Limit Theorem** which tells us that the sampling distribution of a **standardized statistic** is well approximated by the Normal distribution. While not all variables follow a normal distribution, many estimators have sampling distributions that are normal. We have already seen this to be true with the sample proportion. 
+
+More formally, the CLT tells us that when the population parameter is 0, $$STAT = \frac{{Estimate}}{SE} \rightarrow N(0,1)$$  
+
+Importantly, note that the $SE$ is a function of sample size (as seen in Table \@ref(tab:SE-table-ch-9)). The CLT holds when this sample size is large (that's what $\rightarrow$ means). For many statistics, this means when the sample size is bigger than about $n = 30$.  -->
 
 ### CLT conditions
 Certain conditions must be met for the CLT to apply:
@@ -920,9 +931,10 @@ sample_100 <- rep_sample_n(gapminder_2015, size = 100, reps = 10000) %>%
   mutate(n = 100)
 
 all_samples <- bind_rows(sample_5, sample_30, sample_100)
+
 ggplot(all_samples) +
-  geom_histogram(aes(x = mean_infant_mortality), color = "white") +
-  facet_wrap(~n) +
+  geom_histogram(aes(x = mean_infant_mortality), color = "white", bins = 50) +
+  facet_wrap(~n, ncol = 1, scales = "free_y") +
   xlab("Mean infant mortality") +
   ylab("Number of samples")
 ```

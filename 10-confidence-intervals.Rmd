@@ -44,130 +44,133 @@ library(knitr)
 library(kableExtra)
 ```
 
-## Theory based upon assumptions and models {#theory-two}
+<!-- 
+Commenting out all of previous 10.1 - some of it got worked into new 9.5. May want to add in some of these examples into ch 9 in future
 
-In the table below, we provide some basic properties of common sampling statistics you are likely to encounter in this course. (How do we know these properties are true? These have been proven mathematically by statisticians.)
+## Theory based upon assumptions and models {#theory-two} -->
 
-```{r SE-table, echo=FALSE, message=FALSE}
-if(!file.exists("rds/ch10_SE_table.rds")){
-  ch10_SE_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXpL0Gv4FJDpLdvfVOyyoUiwPzBxgzApeBrl9GGYOSRg6jBIGdonQFHvdQQl3lMFQQR3PAmxx7y6FQ/pub?gid=164147569&single=true&output=csv" %>% 
-    read_csv(na = "")
-    write_rds(ch10_SE_table, "rds/ch10_SE_table.rds")
-} else {
-  ch10_SE_table <- read_rds("rds/ch10_SE_table.rds")
-}
+<!-- In the table below, we provide some basic properties of common sampling statistics you are likely to encounter in this course. (How do we know these properties are true? These have been proven mathematically by statisticians.) -->
 
-ch10_SE_table %>% 
-  kable(
-    caption = "Properties of Sample Statistics", 
-    booktabs = TRUE,
-    escape = FALSE
-  ) %>% 
-  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-                latex_options = c("HOLD_position")) %>%
-  column_spec(1, width = "0.5in") %>% 
-  column_spec(2, width = "0.7in") %>%
-  column_spec(3, width = "1in") %>%
-  column_spec(4, width = "1.1in") %>% 
-  column_spec(5, width = "1in")
-```
+<!-- ```{r SE-table, echo=FALSE, message=FALSE} -->
+<!-- if(!file.exists("rds/ch10_SE_table.rds")){ -->
+<!--   ch10_SE_table <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXpL0Gv4FJDpLdvfVOyyoUiwPzBxgzApeBrl9GGYOSRg6jBIGdonQFHvdQQl3lMFQQR3PAmxx7y6FQ/pub?gid=164147569&single=true&output=csv" %>%  -->
+<!--     read_csv(na = "") -->
+<!--     write_rds(ch10_SE_table, "rds/ch10_SE_table.rds") -->
+<!-- } else { -->
+<!--   ch10_SE_table <- read_rds("rds/ch10_SE_table.rds") -->
+<!-- } -->
 
-As an example, let’s say you are trying to estimate the population average age at the football game $\mu$. Let's use our simulated `football_fans` dataset again that has information on the whole population of 40,000 fans.
+<!-- ch10_SE_table %>%  -->
+<!--   kable( -->
+<!--     caption = "Properties of Sample Statistics",  -->
+<!--     booktabs = TRUE, -->
+<!--     escape = FALSE -->
+<!--   ) %>%  -->
+<!--   kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16), -->
+<!--                 latex_options = c("HOLD_position")) %>% -->
+<!--   column_spec(1, width = "0.5in") %>%  -->
+<!--   column_spec(2, width = "0.7in") %>% -->
+<!--   column_spec(3, width = "1in") %>% -->
+<!--   column_spec(4, width = "1.1in") %>%  -->
+<!--   column_spec(5, width = "1in") -->
+<!-- ``` -->
 
-<!-- change seed in chapter 9 to 2018 for the football fan data. This results in a better example to demonstrate CIs later on-->
+<!-- As an example, let’s say you are trying to estimate the population average age at the football game $\mu$. Let's use our simulated `football_fans` dataset again that has information on the whole population of 40,000 fans. -->
 
-```{r, echo = FALSE}
-set.seed(2018)
-```
+<!-- <!-- change seed in chapter 9 to 2018 for the football fan data. This results in a better example to demonstrate CIs later on--> -->
 
-```{r}
-football_fans <- data.frame(home_fan = rbinom(40000, 1, 0.91),
-                            age = rnorm(40000, 30, 8)) %>% 
-  mutate(age = case_when(age < 0 ~ 0,
-                         age >=0 ~ age))
-sample_10 <- sample_n(football_fans, size = 10)
-sample_10 %>% 
-  summarize(mean_age = mean(age),
-            var_age = var(age))
-```
-To estimate the average age, you take a sample of $n = 10$ participants, producing an estimate of $\bar{x} =$ `r round(mean(sample_10$age),1)` years old. Your question is simply: is this a good estimate?
+<!-- ```{r, echo = FALSE} -->
+<!-- set.seed(2018) -->
+<!-- ``` -->
 
-* The estimator here is the sample mean, $\bar{x}$. 
-* We know that the sample mean provides an unbiased estimate of the population mean. In the average possible sample, this statistic will be right.
-* We know that the sampling distribution of the sample mean is the normal distribution. This is unimodal and symmetric, meaning that our estimate is just as likely larger than this population mean as it is smaller. 
-* The standard error of a sample mean is $SE(\bar{x}) = s/\sqrt{n}$. In this sample, since $s^2 =$ `r round(var(sample_10$age),1)`, we can calculate this standard error to be  $SE(\bar{x}) =$ `r round(var(sample_10$age),1)`$/\sqrt{10} =$ `r round(sqrt(var(sample_10$age)) / sqrt(10), 2) `. Note that a standard error is always in the same units as the original variable, so in this case the standard error is `r round(sqrt(var(sample_10$age)) / sqrt(10), 2) ` *years*. Comparing this to the sample mean ($\bar{x} =$ `r round(mean(sample_10$age),1)`) this gives us a sense that we are somewhat close to the true parameter value. 
+<!-- ```{r} -->
+<!-- football_fans <- data.frame(home_fan = rbinom(40000, 1, 0.91), -->
+<!--                             age = rnorm(40000, 30, 8)) %>%  -->
+<!--   mutate(age = case_when(age < 0 ~ 0, -->
+<!--                          age >=0 ~ age)) -->
+<!-- sample_10 <- sample_n(football_fans, size = 10) -->
+<!-- sample_10 %>%  -->
+<!--   summarize(mean_age = mean(age), -->
+<!--             var_age = var(age)) -->
+<!-- ``` -->
+<!-- To estimate the average age, you take a sample of $n = 10$ participants, producing an estimate of $\bar{x} =$ `r round(mean(sample_10$age),1)` years old. Your question is simply: is this a good estimate? -->
 
-Note that we can extend the above properties to *differences* between groups as well. In general,
+<!-- * The estimator here is the sample mean, $\bar{x}$.  -->
+<!-- * We know that the sample mean provides an unbiased estimate of the population mean. In the average possible sample, this statistic will be right. -->
+<!-- * We know that the sampling distribution of the sample mean is the normal distribution. This is unimodal and symmetric, meaning that our estimate is just as likely larger than this population mean as it is smaller.  -->
+<!-- * The standard error of a sample mean is $SE(\bar{x}) = s/\sqrt{n}$. In this sample, since $s^2 =$ `r round(var(sample_10$age),1)`, we can calculate this standard error to be  $SE(\bar{x}) =$ `r round(var(sample_10$age),1)`$/\sqrt{10} =$ `r round(sqrt(var(sample_10$age)) / sqrt(10), 2) `. Note that a standard error is always in the same units as the original variable, so in this case the standard error is `r round(sqrt(var(sample_10$age)) / sqrt(10), 2) ` *years*. Comparing this to the sample mean ($\bar{x} =$ `r round(mean(sample_10$age),1)`) this gives us a sense that we are somewhat close to the true parameter value.  -->
 
-* $Bias(X_1 - X_2) = Bias(X_1) - Bias(X_2) \dashrightarrow$ If $X_1, X_2$ are unbiased, then $X_1 - X_2$ is also unbiased.
-* So long as $X_1$ and $X_2$ are independent, $\dashrightarrow SE(X_1 – X_2) = \sqrt{[SE(X_1)]^2 + [SE(X_2)]^2}$ 
-* $Dist(X_1 - X_2) \dashrightarrow$ if $X_1, X_2$ are independent, then $X_1 – X_2$ are independent.
+<!-- Note that we can extend the above properties to *differences* between groups as well. In general, -->
 
-This may seem really abstract. As an example, let’s focus on estimating the difference means between two groups in the population $(\mu_1 - \mu_2)$. In our `football_fans` example, we could consider whether there is a difference in average age between home fans and away fans, so $\mu_1$ refers here to the average age of all home fans in the population, and $\mu_2$ refers to the average age of all away fans in the population. We can estimate this difference in average age using $\bar{x}_1 - \bar{x}_2$ in our sample, where $\bar{x}_1$ is the average age of home fans in our sample and $\bar{x}_2$ is the average age of away fans in our sample. Using information in Table \@ref(tab:SE-table) above, because $\bar{x}_1$ is and unbiased estimator for $\mu_1$ and $\bar{x}_2$ is an unbiased estimator for $\mu_2$, we have: 
+<!-- * $Bias(X_1 - X_2) = Bias(X_1) - Bias(X_2) \dashrightarrow$ If $X_1, X_2$ are unbiased, then $X_1 - X_2$ is also unbiased. -->
+<!-- * So long as $X_1$ and $X_2$ are independent, $\dashrightarrow SE(X_1 – X_2) = \sqrt{[SE(X_1)]^2 + [SE(X_2)]^2}$  -->
+<!-- * $Dist(X_1 - X_2) \dashrightarrow$ if $X_1, X_2$ are independent, then $X_1 – X_2$ are independent. -->
 
-$$Bias(\bar{x}_1 - \bar{x}_2) = Bias(\bar{x}_1) - Bias(\bar{x}_2) = 0$$
-That is, on average, $\bar{x}_1 - \bar{x}_2$ will give us an unbiased estimate of $\mu_1 - \mu_2$. Also, because the age of home fans is independent of the age of away fans, we have:
+<!-- This may seem really abstract. As an example, let’s focus on estimating the difference means between two groups in the population $(\mu_1 - \mu_2)$. In our `football_fans` example, we could consider whether there is a difference in average age between home fans and away fans, so $\mu_1$ refers here to the average age of all home fans in the population, and $\mu_2$ refers to the average age of all away fans in the population. We can estimate this difference in average age using $\bar{x}_1 - \bar{x}_2$ in our sample, where $\bar{x}_1$ is the average age of home fans in our sample and $\bar{x}_2$ is the average age of away fans in our sample. Using information in Table \@ref(tab:SE-table) above, because $\bar{x}_1$ is and unbiased estimator for $\mu_1$ and $\bar{x}_2$ is an unbiased estimator for $\mu_2$, we have:  -->
 
-$$SE(\bar{x}_1 - \bar{x}_2) = \sqrt{[SE(\bar{x}_1)]^2 + [SE(\bar{x}_2)]^2} = \sqrt{(s_1^2/n_1 + s_2^2/n_2)}$$
+<!-- $$Bias(\bar{x}_1 - \bar{x}_2) = Bias(\bar{x}_1) - Bias(\bar{x}_2) = 0$$ -->
+<!-- That is, on average, $\bar{x}_1 - \bar{x}_2$ will give us an unbiased estimate of $\mu_1 - \mu_2$. Also, because the age of home fans is independent of the age of away fans, we have: -->
 
-$$\bar{x}_1 - \bar{x}_2 \sim N(mean = \mu_1 - \mu_2, SE = \sqrt{(s_1^2/n_1 + s_2^2/n_2)})$$
-Let's demonstrate this with our `football_fans` data by drawing a random sample of $n=100$ fans and computing $\bar{x}_1 - \bar{x}_2$. 
+<!-- $$SE(\bar{x}_1 - \bar{x}_2) = \sqrt{[SE(\bar{x}_1)]^2 + [SE(\bar{x}_2)]^2} = \sqrt{(s_1^2/n_1 + s_2^2/n_2)}$$ -->
 
-```{r, echo = FALSE}
-set.seed(2018)
-```
+<!-- $$\bar{x}_1 - \bar{x}_2 \sim N(mean = \mu_1 - \mu_2, SE = \sqrt{(s_1^2/n_1 + s_2^2/n_2)})$$ -->
+<!-- Let's demonstrate this with our `football_fans` data by drawing a random sample of $n=100$ fans and computing $\bar{x}_1 - \bar{x}_2$.  -->
 
-```{r}
-sample1_football_fans <- rep_sample_n(football_fans, size = 100, reps = 1)
-mean_age_by_fan_type <- sample1_football_fans %>% group_by(home_fan) %>% 
-  summarise(mean_age = mean(age),
-            sd_age = sd(age),
-            n = n(),
-            SE_xbar = sd_age / sqrt(n))
+<!-- ```{r, echo = FALSE} -->
+<!-- set.seed(2018) -->
+<!-- ``` -->
 
-mean_age_by_fan_type
+<!-- ```{r} -->
+<!-- sample1_football_fans <- rep_sample_n(football_fans, size = 100, reps = 1) -->
+<!-- mean_age_by_fan_type <- sample1_football_fans %>% group_by(home_fan) %>%  -->
+<!--   summarise(mean_age = mean(age), -->
+<!--             sd_age = sd(age), -->
+<!--             n = n(), -->
+<!--             SE_xbar = sd_age / sqrt(n)) -->
 
-diff_means <- as.numeric(mean_age_by_fan_type[1,2]) - as.numeric(mean_age_by_fan_type[2,2])
+<!-- mean_age_by_fan_type -->
 
-SE_diff_means <- as.numeric(sqrt(mean_age_by_fan_type[1, "SE_xbar"]^2 + mean_age_by_fan_type[2, "SE_xbar"]^2))
-SE_diff_means
-```
+<!-- diff_means <- as.numeric(mean_age_by_fan_type[1,2]) - as.numeric(mean_age_by_fan_type[2,2]) -->
 
-We see here that $\bar{x}_1 - \bar{x}_2 =$ `r diff_means` and $SE(\bar{x}_1 - \bar{x}_2) =$ `r SE_diff_means`. In our particular sample, home fans are older, but because the magnitude of our standard error is roughly 1.5 times the size of our point estimate, this indicates we have a relatively imprecise estimate. 
+<!-- SE_diff_means <- as.numeric(sqrt(mean_age_by_fan_type[1, "SE_xbar"]^2 + mean_age_by_fan_type[2, "SE_xbar"]^2)) -->
+<!-- SE_diff_means -->
+<!-- ``` -->
 
-We could also look at the sampling distribution of $\bar{x}_1 - \bar{x}_2 =$ by taking 10,000 repeated samples and computing the difference in means in each.
+<!-- We see here that $\bar{x}_1 - \bar{x}_2 =$ `r diff_means` and $SE(\bar{x}_1 - \bar{x}_2) =$ `r SE_diff_means`. In our particular sample, home fans are older, but because the magnitude of our standard error is roughly 1.5 times the size of our point estimate, this indicates we have a relatively imprecise estimate.  -->
 
-```{r, echo = FALSE}
-set.seed(2018)
-```
+<!-- We could also look at the sampling distribution of $\bar{x}_1 - \bar{x}_2 =$ by taking 10,000 repeated samples and computing the difference in means in each. -->
 
-```{r diff-means, fig.cap = "Samping distribution of difference in means"}
-samples_football_fans <- rep_sample_n(football_fans, size = 100, reps = 10000)
-mean_age_by_fan_type <- samples_football_fans %>% 
-  group_by(home_fan, replicate) %>% 
-  summarise(mean_age = mean(age)) %>% 
-  spread(key = home_fan, value = mean_age) %>% 
-  rename("mean_age_away_fan" = `0`, "mean_age_home_fan" = `1`) %>% 
-  mutate(diff_means = mean_age_home_fan - mean_age_away_fan)
+<!-- ```{r, echo = FALSE} -->
+<!-- set.seed(2018) -->
+<!-- ``` -->
 
-ggplot(mean_age_by_fan_type, aes(x = diff_means)) +
-  geom_histogram(color = "white")
+<!-- ```{r diff-means, fig.cap = "Samping distribution of difference in means"} -->
+<!-- samples_football_fans <- rep_sample_n(football_fans, size = 100, reps = 10000) -->
+<!-- mean_age_by_fan_type <- samples_football_fans %>%  -->
+<!--   group_by(home_fan, replicate) %>%  -->
+<!--   summarise(mean_age = mean(age)) %>%  -->
+<!--   spread(key = home_fan, value = mean_age) %>%  -->
+<!--   rename("mean_age_away_fan" = `0`, "mean_age_home_fan" = `1`) %>%  -->
+<!--   mutate(diff_means = mean_age_home_fan - mean_age_away_fan) -->
 
-pop_mean_age_by_fan_type <- football_fans %>% 
-  group_by(home_fan) %>% 
-  summarise(mean_age = mean(age),
-            sd_age = sd(age))
-pop_mean_age_by_fan_type
-```
-We see that the sampling distribution of $\bar{x}_1 - \bar{x}_2$ follows a normal distribution centered around the true population mean $\mu_1 - \mu_2 =$ `r as.numeric(pop_mean_age_by_fan_type[1,2]) - as.numeric(pop_mean_age_by_fan_type[2,2])`, as expected based on the properties presented in Table \@ref(SE-table).
+<!-- ggplot(mean_age_by_fan_type, aes(x = diff_means)) + -->
+<!--   geom_histogram(color = "white") -->
 
-What does this mean for your data analysis?
+<!-- pop_mean_age_by_fan_type <- football_fans %>%  -->
+<!--   group_by(home_fan) %>%  -->
+<!--   summarise(mean_age = mean(age), -->
+<!--             sd_age = sd(age)) -->
+<!-- pop_mean_age_by_fan_type -->
+<!-- ``` -->
+<!-- We see that the sampling distribution of $\bar{x}_1 - \bar{x}_2$ follows a normal distribution centered around the true population mean $\mu_1 - \mu_2 =$ `r as.numeric(pop_mean_age_by_fan_type[1,2]) - as.numeric(pop_mean_age_by_fan_type[2,2])`, as expected based on the properties presented in Table \@ref(SE-table). -->
 
-* You need to think about sample size and how it might affect the sampling distribution. 
-* If you have a large enough sample (e.g., $n > 50$), you can probably assume the sampling distribution is normally distributed. 
-* If you have a smaller sample (e.g., $n < 50$), you should look up what the appropriate sampling distribution would be (e.g., t-distribution, F-distribution). 
+<!-- What does this mean for your data analysis? -->
 
-Importantly, what this does not mean is that you need to get a larger sample! 
+<!-- * You need to think about sample size and how it might affect the sampling distribution.  -->
+<!-- * If you have a large enough sample (e.g., $n > 50$), you can probably assume the sampling distribution is normally distributed.  -->
+<!-- * If you have a smaller sample (e.g., $n < 50$), you should look up what the appropriate sampling distribution would be (e.g., t-distribution, F-distribution).  -->
+
+<!-- Importantly, what this does not mean is that you need to get a larger sample!  -->
 
 ## Combining an estimate with its precision
 
@@ -180,16 +183,20 @@ You can think of a confidence interval as playing the role of a net when fishing
 <!--want to include the pic from the old slides to accompany the analogy? Also took language from the slides- need to be cited?-->
 
 ### Confidence Interval with the Normal distribution
+
 If the sampling distribution of an estimator is normally distributed, then we can use properties of the standard normal distribution to create a confidence interval. Recall that in the standard normal distribution:
 
+* 99% of values are between -2.575 and +2.575
 * 95% of the values are between -1.96 and +1.96. 
-* 90% of values are between -1.68 and +1.68. 
+* 90% of values are between -1.645 and +1.645. 
 
 <!--insert graphic of the empirical rule here?-->
 
 Using this, we can define a 95% confidence interval for a population parameter as,
-$$(Estimate \ \ – \ 1.96*SE(Estimate),\ \ \ Estimate + 1.96*SE(Estimate))$$
-For example, a 95% confidence interval for the population mean $\mu$ can be constructed based upon the sample mean as, $$(\bar{x} - 1.96 * SE(\bar{x}), \ \bar{x} + 1.96*SE(\bar{x}))$$
+$$Estimate \ \pm 1.96*SE(Estimate),$$ or written in interval notation as
+$$[Estimate \ \ – \ 1.96*SE(Estimate),\ \ \ Estimate + 1.96*SE(Estimate)]$$
+
+For example, a 95% confidence interval for the population mean $\mu$ can be constructed based upon the sample mean as, $$[\bar{x} - 1.96 * SE(\bar{x}), \ \bar{x} + 1.96*SE(\bar{x})]$$
 
 In our penny example, our original sample `pennies_sample` had $\bar{x} =$ `r mean(pennies_sample$age_in_2011)` and $SE(\bar{x}) = \frac{s}{\sqrt{n}} =$ `r sd(pennies_sample$age_in_2011)/sqrt(40)`, which gives a confidence interval of (`r round(mean(pennies_sample$age_in_2011) - 1.96*sd(pennies_sample$age_in_2011)/sqrt(40), 2)`, `r round(mean(pennies_sample$age_in_2011) + 1.96*sd(pennies_sample$age_in_2011)/sqrt(40), 2)`). 
 
@@ -197,6 +204,15 @@ A few properties are worth keeping in mind:
 
 * This interval is *symmetric*. This symmetry follows from the fact that the normal distribution is a symmetric distribution. *If the sampling distribution is not normal, the confidence interval may not be symmetric*.
 * The multiplier 1.96 used in this interval corresponding to 95% comes directly from properties of the normal distribution. *If the sampling distribution is not normal, this multiplier might be different*. For example, this multiplier is *larger* when the distribution has heavy tails, as with the t-distribution. The multiplier will also be different if you want to use a level of confidence other than 95%. 
+
+<!-- In progress: 
+## Constructing a General Confidence Interval -->
+
+<!-- In general, we construct a confidence interval using what we know about an estimator's sampling distribution. Above, we used the multiplier 1.96 because we know that $\bar{x}$ follows a Normal distribution, and we wanted our "level of confidence" to be 95%. If we wanted to construct a 90% confidence interval, we would use 1.645 -->
+
+<!-- $$\text{Estimate} \pm \text{Critical Value} * SE(\text{Estimate})$$ -->
+
+<!-- A **critical value** is a cutoff value from either the $t$ or standard normal distribution that corresponds to the desired level of confidence for the interval (e.g. 90%, 95%, 99%).  -->
 
 <!--either here or as a class/homework exercise, could demonstrate the empirical rule / these cutoff values via simulations-->
 
