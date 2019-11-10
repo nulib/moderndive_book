@@ -658,7 +658,7 @@ $$STAT = \frac{b_1}{SE(b_1)} = \frac{b_1}{\sqrt{\frac{s_y^2}{(n-1)s_x^2}}} =
 When the population parameter is zero, most standardized statistics can be shown to follow one of two distributions: 
 
 1. The **standard normal distribution** (denoted $N(0,1)$) has a mean of 0 and a standard deviation of 1
-2. The **t-distribution** (denoted $t(df)$) depends on one parameter, $df$, and has a mean of 0 and a standard deviation of $\frac{df}{df-1}$. Again $df$ stands for "degrees of freedom," which are given for particular statistics (e.g. $df = n - 1$)
+2. The **t-distribution** (denoted $t(df)$) depends on one parameter, $df$, and has a mean of 0 and a standard deviation of $\sqrt{\frac{df}{df-2}}$. Again $df$ stands for "degrees of freedom," which are given for particular statistics (e.g. $df = n - 1$)
 
 These distributions have interesting features which will be very useful to us in Chapters \@ref(CIs) – \@ref(hypothesis-tests). Below, we provide some of them:
 

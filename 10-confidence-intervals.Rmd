@@ -62,8 +62,8 @@ You can think of a confidence interval as playing the role of a net when fishing
 
 In order to construct a confidence interval, we need to know the sampling distribution of a *standardized* statistic. Recall from Chapter \@ref(sampling) that we can standardize an estimate by subtracting its mean and dividing by its standard error:
 
-$$\frac{Estimate - Mean(Estimate)}{SE(Estimate)}$$
-Just like an estimator has a sampling distribution, the standardized form of an estimate also has a sampling distribution. Most standardized statistics follow a $N(0,1)$ or $t(df)$ distribution. Table \@ref(tab:samp-dist-table-ch-10) shows the distribution of the standardized statistics for many of the  common statistics we have seen previously. 
+$$STAT = \frac{Estimate - Mean(Estimate)}{SE(Estimate)}$$
+While we have seen that the sampling distribution of many common estimators are normally distributed (see Table \@ref(tab:SE-table-ch-9)), this is not always the case for the *standardized estimate* computed by $STAT$. This is because the standard errors of many estimators, which appear on the denominator of $STAT$, are a function of an additional estimated quantity – the sample variance $s^2$.  When this is the case, the sampling distribution for **STAT is a t-distribution with a specified degrees of freedom (df)**. Table \@ref(tab:samp-dist-table-ch-10) shows the distribution of the standardized statistics for many of the  common statistics we have seen previously.
 
 ```{r samp-dist-table-ch-10, echo=FALSE, message=FALSE}
 if(!file.exists("rds/ch10_samp_dist.rds")){
@@ -89,7 +89,7 @@ ch10_samp_dist %>%
   column_spec(5, width = "1in")
 ```
 
-Note that many of these standardized estimators (all but the proportion and difference in proportions) involve $s$, the sample estimate of the standard deviation. If in fact the population standard deviation was known, we could replace the $s$'s in these formulas with $\sigma$'s, and the distribution would follow a $N(0,1)$ rather than a $t(df)$. When the population standard deviation is unknown - which is most likely to be the case in practice - we have to estimate it by $s$, which adds some uncertainty to our standardized statistic. Using the t-distribution (instead of $N(0,1)$) allows us to account for this uncertainty by allowing for more probability to fall in the tails of the distribution. 
+If in fact the population standard variance was known and didn't have to be estimated, we could replace the $s^2$'s in these formulas with $\sigma^2$'s, and the sampling distribution of $STAT$ would follow a $N(0,1)$ distribution. 
 
 ### Confidence Interval with the Normal distribution
 
@@ -254,7 +254,7 @@ mean_age_stats_unknown_sd <- sample_100_fans %>%
 mean_age_stats_unknown_sd
 ```
 
-In this case, we should use the t-distribution to construct our confidence interval because - refering back to Table \@ref(tab:ch10_samp_dist) - we know $\frac{\bar{x} - \mu}{\frac{s}{\sqrt{n}}} \sim t(df = n-1)$. Recall that we took a sample of size $n = 100$, so our degrees of freedom here are $df = 99$, and the appropriate critical value for a 95% confidence interval is `r qt(p = .025, df = 99)`. 
+In this case, we should use the t-distribution to construct our confidence interval because - refering back to Table \@ref(tab:samp-dist-table-ch-10) - we know $\frac{\bar{x} - \mu}{\frac{s}{\sqrt{n}}} \sim t(df = n-1)$. Recall that we took a sample of size $n = 100$, so our degrees of freedom here are $df = 99$, and the appropriate critical value for a 95% confidence interval is `r qt(p = .025, df = 99)`. 
 
 ```{r}
 qt(p = .025, df = 99)
@@ -342,7 +342,7 @@ samp_dist_plot +
 ```
 In this case, the confidence interval does not include the true population mean. Importantly, remember that in real life we only have the data in front of us from one sample. *We don’t know what the population mean is*, and we don’t know if our estimate is the value near to the mean (Figure \@ref(fig:samp-dist-mean-2) ) or far from the mean (Figure \@ref(fig:samp-dist-mean-3) ). Also recall `replicate = ` `r 545` was a legitimate random sample drawn from the population of 40,000 football fans. Just by chance, it is possible to observe a sample mean that is far from the true population mean. 
 
-We could compute 95% confidence intervals for all 10,000 of our repeated samples, and we would expect approximately 95% of them to contain the true mean; this is the definition of what it means to be "95% confident" in statistics. Another way to think about it, when constructing 95% confidence intervals, we expect that we'll only end up with an "unlucky" sample- that is, a sample whose confidence interval doesn't capture the true mean - just 5% of the time. 
+We could compute 95% confidence intervals for all 10,000 of our repeated samples, and we would expect approximately 95% of them to contain the true mean; this is the definition of what it means to be "95% confident" in statistics. Another way to think about it, when constructing 95% confidence intervals, we expect that we'll only end up with an "unlucky" sample- that is, a sample whose mean is far enough from the population mean such that the confidence interval doesn't capture it - just 5% of the time. 
 
 For each of our 10,000 samples, let's create a new variable `captured_95` to indicate whether the true population mean $\mu$ is captured between the lower and upper values of the confidence interval for the given sample. Let's look at the results for the first 5 samples. 
 ```{r}
@@ -416,7 +416,7 @@ There is a trade-off here between the width of an interval and the level of conf
 knitr::include_graphics("images/garfield_comic.png")
 ```
 
-A second way you can decrease the margin of error is by *increasing sample size*. Recall that all of our formulas for standard errors involve $n$ on the denominator (see Table \@ref(tab:ch9_SE_table) ), so by increasing sample size on the denominator, we decrease our standard error. We also saw this demonstrated via simulations in Section \@ref(size). Because our margin of error formula involves standard error, increasing the sample size decreases the standard error and thus decreases the margin of error. This fits with our intuition that having more infomation (i.e. a larger sample size) will give us a more precise estimate (i.e. a narrower confidence interval) of the parameter we're interested in. 
+A second way you can decrease the margin of error is by *increasing sample size*. Recall that all of our formulas for standard errors involve $n$ on the denominator (see Table \@ref(tab:SE-table-ch-9) ), so by increasing sample size on the denominator, we decrease our standard error. We also saw this demonstrated via simulations in Section \@ref(size). Because our margin of error formula involves standard error, increasing the sample size decreases the standard error and thus decreases the margin of error. This fits with our intuition that having more infomation (i.e. a larger sample size) will give us a more precise estimate (i.e. a narrower confidence interval) of the parameter we're interested in. 
 
 ## Example: One proportion {#one-prop-ci}
 
@@ -442,8 +442,6 @@ tactile_shovel1
 We can use our data wrangling tools to compute the proportion that are red in this data. 
 
 ```{r}
-n <- dim(tactile_shovel1)[1]
-
 prop_red_stats <- tactile_shovel1 %>% 
   summarize(n = n(),
             pi_hat = sum(color == "red") / n,
@@ -451,7 +449,7 @@ prop_red_stats <- tactile_shovel1 %>%
 prop_red_stats
 ```
 
-As shown in Table \@ref(tab:ch10_samp_dist), the appropriate distribution for a confidence interval of $\hat{\pi}$ is $N(0,1)$, so we can use the critical value 1.96 to construct a 95% confidence interval.
+As shown in Table \@ref(tab:samp-dist-table-ch-10), the appropriate distribution for a confidence interval of $\hat{\pi}$ is $N(0,1)$, so we can use the critical value 1.96 to construct a 95% confidence interval.
 
 ```{r}
 CI <- prop_red_stats %>% 
@@ -520,7 +518,7 @@ diff_prop_yes_stats <- prop_yes_stats %>%
 diff_prop_yes_stats
 ```
 
-This value represents the proportion of those that yawned after seeing a seed yawn (0.2941) minus the proportion of those that yawned with not seeing a seed (0.25). Using the $N(0,1)$ distribution, we can construct the following 95% confidence interval. 
+This `diff_in_props` value represents the proportion of those that yawned after seeing a seed yawn (0.2941) minus the proportion of those that yawned with not seeing a seed (0.25). Using the $N(0,1)$ distribution, we can construct the following 95% confidence interval. 
 
 ```{r}
 CI <- diff_prop_yes_stats %>% 

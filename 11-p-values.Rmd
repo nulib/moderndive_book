@@ -18,7 +18,7 @@ options(scipen = 99, digits = 3)
 set.seed(2018)
 ```
 
-In Chapter \@ref(CIs), we covered how to use the theory of repeated samples to make inferences from a sample (your data) to a population. To do so, we introduced the counterfactual thinking that underpins statistical reasoning, wherein making inferences requires you to imagine alternative versions of your data that you might have under other possible samples selected in the same way. In this chapter, we extend this counterfactual reasoning to imagine other possible samples you might have seen if you knew the trend in the population. This way of thinking will lead us to define p-values.
+In Chapter \@ref(CIs), we covered how to construct and interpret confidence intervals, which use the theory of repeated samples to make inferences from a sample (your data) to a population. To do so, we used counterfactual thinking that underpins statistical reasoning, wherein making inferences requires you to imagine alternative versions of your data that you might have under other possible samples selected in the same way. In this chapter, we extend this counterfactual reasoning to imagine other possible samples you might have seen if you knew the trend in the population. This way of thinking will lead us to define p-values.
 
 ### Needed Packages {-}
 
@@ -81,15 +81,13 @@ knitr::include_graphics('images/p-value-figure.png')
 
 In general, in order to estimate a p-value, you first need to standardize your sample statistic. This standardization makes it easier to determine the sampling distribution under the null hypothesis. 
 
-This standardization is easiest when the sampling distribution of the estimator itself is normally distributed, as is the case for the sample mean, the difference in sample means, the relationship between two continuous covariates, and many others. 
-
-In these cases, this standardization is conducted using the following formula:
+Standardization is conducted using the following formula:
 
 $$t\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)}$$
 
-Note this is just a special case of the previous standardization formula we've seen before, where here we're plugging in the "null value" for the mean of the estimate. The null value refers to the value of the population parameter assumed by the null hypothesis. Recall that in many cases, the null value is zero. That is, we begin the proof by contradiction by assuming there is no relationship, no differences between groups, etc. in the population.
+Note this is just a special case of the previous standardization formula we've seen before, where here we're plugging in the "null value" for the mean of the estimate. The null value refers to the value of the population parameter assumed by the null hypothesis. As we mentioned, in many cases the null value is zero. That is, we begin the proof by contradiction by assuming there is no relationship, no differences between groups, etc. in the population.
 
-This **t-statistic** is then used to determine the sampling distribution under the null hypothesis and the p-value based upon the observed value. 
+This standardized **t-statistic** is then used to determine the sampling distribution under the null hypothesis and the p-value based upon the observed value. 
 
 ## P-value and Null Distribution Example
 
@@ -108,15 +106,15 @@ movies_sample
 
 The variables include the `title` and `year` the movie was filmed. Furthermore, we have a numerical variable `rating`, which is the IMDB rating out of 10 stars, and a binary categorical variable `genre` indicating if the movie was an `Action` or `Romance` movie. We are interested in whether there is a difference in average ratings between the `Action` and `Romance` genres. That is, our parameter of interest is $\mu_1 - \mu_2$, which we estimate by $\bar{x}_1 - \bar{x}_2$.
 
-Let's calculate the number of movies, the mean rating, and the standard deviation split by the binary variable `genre`.  We'll also calculate $\frac{s_i^2}{n_i}$ for each group, which we will refer to as the `var_xbar_i`, which will be used to calculate the standard error for $\bar{x}_1 - \bar{x}_2$. 
+Let's calculate the number of movies (`n`), the mean rating (`xbar`), and the standard deviation (`s`) split by the binary variable `genre`. We'll also calculate $\frac{s_i^2}{n_i}$ for each group (`var_xbar`), which will be used to calculate the standard error for $\bar{x}_1 - \bar{x}_2$.
 
 ```{r}
 genre_mean_stats <- movies_sample %>% 
   group_by(genre) %>% 
   summarize(n = n(), 
-            xbar_i = mean(rating), 
-            s_i = sd(rating),
-            var_xbar_i = s_i^2/n)
+            xbar = mean(rating), 
+            s = sd(rating),
+            var_xbar = s^2/n)
 genre_mean_stats
 ```
 
@@ -156,8 +154,8 @@ So we have `r n_romance` movies with an average rating of `r x_bar_romance %>% r
 
 ```{r}
 diff_genre_means_stats <- genre_mean_stats %>% 
-  summarize(diff_in_means = diff(xbar_i),
-            SE_diff = sqrt(sum(var_xbar_i))) 
+  summarize(diff_in_means = diff(xbar),
+            SE_diff = sqrt(sum(var_xbar))) 
 diff_genre_means_stats
 ```
 
@@ -171,16 +169,18 @@ diff_genre_means_stats %>%
 There appears to be an edge of `r (x_bar_romance - x_bar_action) %>% round(2)` stars in romance movie ratings. The question is however, are these results indicative of a true difference for all romance and action movies? Or could this difference be attributable to chance and sampling variation? Computing a p-value for this t-statistic can help us to answer this. 
 
 ### Theory based p-values
-While we have shown that the sampling distribution of the sample mean and of the regression coefficient estimates are normally distributed, this is not always the case for the t-statistic computed above. This is because the standard errors of many estimators, which appear on the denominator of the t-statistic, are a function of an additional estimated quantity – the sample variance $s^2$.  When this is the case, the sampling distribution for the **t-statistic is a t-distribution with a specified degrees of freedom (df)**. Degrees of freedom for this distribution are provided in the table below. 
+Recall from Chapter \@ref(CIs) that even though the sampling distribution of many estimators are normally distributed, the t-statistic computed above often follows a $t(df)$ distribution because the formula involves an additional estimated quantity $s^2$ when the population variance is unknown. Recall that (difference in) proportions still follow the $N(0,1)$ distribution because they do not require $s^2$ to be estimated. An abbreviated version of Table \@ref(tab:samp-dist-table-ch-10) with the relevant degrees of freedom is given below
 
 
 Statistics |Population parameter |		Estimator	|	t-distribution df
 -----------|---------------------|--------------|------------------
 Mean       |$\mu$                |	$\bar{x}$		|	$n – 1$
-Diff in means | $\mu_1 -\mu_2$	|	$\bar{x}_1 - \bar{x}_2$ | $n_1 + n_2 – 2$
+Difference in means | $\mu_1 -\mu_2$	|	$\bar{x}_1 - \bar{x}_2$ | $min(n_1 -1, n_2 – 1)$ 
+Regression intercept | $\beta_0$ | $b_0$ | $n - 2$
+Regression slope | $\beta_1$ | $b_1$ | $n - 2$
 
 
-We can calculate a p-value by asking: Assuming the null distribution, what is the probability that we will see a t-statistic as extreme as the one from our data? To answer this, we can calculate this using `pt(t_stat, df)`, where `t_stat` is the t-statistic we calculated from our sample data, and `df` is the appropriate degrees of freedom for our estimator and sample size. There is a default argument `lower.tail = TRUE` in the `pt()` function, which means it returns the probability *to the left* of the `t_stat` value you enter. For example, Figure \@ref(fig:t-lower-tail) shows the shaded probabilty that is implied by the code `pt(1.5, df = 30, lower.tail = TRUE)` and Figure \@ref(fig:t-upper-tail) shows the shaded probabilty that is implied by the code `pt(1.5, df = 30, lower.tail = FALSE)`. 
+We can calculate a p-value by asking: Assuming the null distribution, what is the probability that we will see a t-statistic as extreme as the one from our data? To answer this, we can calculate this using `pt(t_stat, df)`, where `t_stat` is the t-statistic we calculated from our sample data, and `df` is the appropriate degrees of freedom for our estimator and sample size. Remember there is a default argument `lower.tail = TRUE` in the `pt()` function, which means it returns the probability *to the left* of the `t_stat` value you enter. For example, Figure \@ref(fig:t-lower-tail) shows the shaded probabilty that is implied by the code `pt(1.5, df = 30)` and Figure \@ref(fig:t-upper-tail) shows the shaded probabilty that is implied by the code `pt(1.5, df = 30, lower.tail = FALSE)`. 
 
 ```{r t-lower-tail, fig.cap = "pt(1.5, df = 30, lower.tail = TRUE)", message = FALSE, echo = FALSE, warning = FALSE}
 shade_curve <- function(MyDF, tstart, tend, fill = "red", alpha = .5){
@@ -201,7 +201,7 @@ ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
   
 ```
 
-```{r t-upper-tail, fig.cap = "pt(1.5, df = 30, lower.tail = TRUE)", message = FALSE, echo = FALSE, warning = FALSE}
+```{r t-upper-tail, fig.cap = "pt(1.5, df = 30, lower.tail = FALSE)", message = FALSE, echo = FALSE, warning = FALSE}
 ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
     stat_function(fun = dt, args = list(df = 66),
                     aes(colour = "t-distribution"), size = 1) +
@@ -210,10 +210,45 @@ ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
   
 ```
 **Caveat**:
-It is important to note that the t-distribution is often referred to as a “small sample” distribution. That is because once the degrees of freedom are large enough (when the sample size is large), the t-distribution is actually quite similar to the normal distribution (See Figure \@ref(t-vs-z-2) ). For analysis purposes, however, you don’t need to determine when to use one or the other as your sampling distribution: just always use the t-distribution. 
+It is important to note that the t-distribution is often referred to as a “small sample” distribution. That is because once the degrees of freedom are large enough (when the sample size is large), the t-distribution is actually quite similar to the normal distribution as we have seen previously. For analysis purposes, however, you don’t need to determine when to use one or the other as your sampling distribution: just always use the t-distribution (unless dealing with proportions). 
 
 
 In our IMDB movies example, we observe a `t_stat = 2.91`, and we want to know what the probability of observing a t-statistic *as large* as this would be under the null distribution. Therefore we want to include the argument `lower.tail = FALSE` when computing our p-value. Note our $df = n_1 + n_2 - 2 = 36 + 32 - 2 = 66$, so our p-value is given by `pt(2.91, 66, lower.tail = FALSE)` = `r round(pt(2.91, 66, lower.tail = FALSE), 4)`. This tells us that if the null distribution is true (i.e. there is no true difference between average ratings of romance and action movies on IMDB), we would only observe a difference as large as we did `r round(pt(2.91, 66, lower.tail = FALSE)*100, 2)`% of the time. This provides evidence - via proof by contradiction - that the null distribution is likely false; that is, there is likely a true difference in average ratings of romance and action moview on IMDB.
+
+<!-- ## CDC Example -->
+
+<!-- ```{r} -->
+<!-- source("http://www.openintro.org/stat/data/cdc.R") -->
+
+<!-- prop_poor_health_stats <- cdc %>%  -->
+<!--   group_by(smoke100) %>%  -->
+<!--   summarize(n = n(), -->
+<!--             num_fair_poor = sum(genhlth == "fair" | genhlth == "poor"), -->
+<!--             pi_hat = num_fair_poor/n, -->
+<!--             var_pi_hat = pi_hat*(1-pi_hat)/num_fair_poor) -->
+<!-- prop_poor_health_stats -->
+
+<!-- diff_in_props <- prop_poor_health_stats %>%  -->
+<!--   summarize(diff_in_props = diff(pi_hat), -->
+<!--             SE_diff = sqrt(sum(var_pi_hat)), -->
+<!--             t_stat = (diff_in_props - 0)/SE_diff) -->
+<!-- diff_in_props -->
+
+<!-- pnorm(4.32, lower.tail = FALSE) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- ed_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTQ9AvbzZ2DBIRmh5h_NJLpC_b4u8-bwTeeMxwSbGX22eBkKDt7JWMqnuBpAVad6-OXteFcjBY4dGqf/pub?gid=300215043&single=true&output=csv") -->
+
+<!-- stats <- ed_data %>%  -->
+<!--   summarize(n = n(), -->
+<!--             sy = sd(MATH_pre), -->
+<!--             sx = sd(SES_CONT), -->
+<!--             SE = sqrt(sy^2/(sx^2*(n-1)))) -->
+
+<!-- ed_fit <- lm(data = ed_data, MATH_pre ~ SES_CONT) -->
+<!-- summary(ed_fit) -->
+<!-- ``` -->
 
 
 ## Interpretation of P-values
