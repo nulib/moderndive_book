@@ -61,15 +61,16 @@ If likelihood of the observed relationship is small (given your assumption of no
 
 In the example of asking if there is a difference in SAT scores between men and women, you will note that in order to prove that there is a difference, we begin by assuming that there is not a difference (Step 1). We call this the null hypothesis – it is the hypothesis we are attempting to disprove. The most common null hypotheses are:
 
-* A parameter is 0 in the population.
-* There is no difference between two or more groups in the population.
-* There is no relationship between two variables in the population.
+* A parameter is 0 in the population (e.g. some treatment effect $\theta = 0$)
+* There is no difference between two or more groups in the population (e.g. $\mu_1 - \mu_2 = 0$)
+* There is no relationship between two variables in the population (e.g. $\beta_1$)
+* The population parameter is equal to some norm known or assumed by previous data or literature (e.g. $\pi = 0.5$ or $\mu = \mu_{norm}$)
 
 Importantly, this hypothesis is about the value or relationship in the population, not the sample. (This is a very easy mistake to make). Remember, you have data in your sample, so you know without a doubt if there is a difference or relationship in your data (that is your estimate). What you do not know is if there is a difference or relationship in the population. 
-Once a null hypothesis is determined, the next step is to determine what the sampling distribution of the estimator would be if this null hypothesis were true (Step 2). We can determine what this null distribution would look like, just as we've done with sampling distributions more generally: using mathematical theory. 
+Once a null hypothesis is determined, the next step is to determine what the sampling distribution of the estimator would be if this null hypothesis were true (Step 2). We can determine what this null distribution would look like, just as we've done with sampling distributions more generally: using mathematical theory and formulas for known distributions. 
 
 ### P-values
-Once the distribution of the sample statistic is determined under the null hypothesis, to complete the stochastic proof by contradiction, you simply need to ask: Given this distribution, how likely is it that I would have drawn a random sample in which the estimated value is this extreme or more extreme? 
+Once the distribution of the sample statistic under the null hypothesis is determined, to complete the stochastic proof by contradiction, you simply need to ask: Given this distribution, how likely is it that I would have drawn a random sample in which the estimated value is this extreme or more extreme? 
 
 This is the **p-value**: The probability of your observing an estimate as extreme as the one you observed if the null hypothesis is true. If this p-value is small, it means that this data is unlikely to occur under the null hypothesis, and thus the null hypothesis is unlikely to be true. (See, proof by contradiction!)
 
@@ -104,9 +105,13 @@ We'll focus on a random sample of 68 movies that are classified as either "actio
 movies_sample
 ```
 
-The variables include the `title` and `year` the movie was filmed. Furthermore, we have a numerical variable `rating`, which is the IMDB rating out of 10 stars, and a binary categorical variable `genre` indicating if the movie was an `Action` or `Romance` movie. We are interested in whether there is a difference in average ratings between the `Action` and `Romance` genres. That is, our parameter of interest is $\mu_1 - \mu_2$, which we estimate by $\bar{x}_1 - \bar{x}_2$.
+The variables include the `title` and `year` the movie was filmed. Furthermore, we have a numerical variable `rating`, which is the IMDB rating out of 10 stars, and a binary categorical variable `genre` indicating if the movie was an `Action` or `Romance` movie. We are interested in whether there is a difference in average ratings between the `Action` and `Romance` genres. 
 
-Let's calculate the number of movies (`n`), the mean rating (`xbar`), and the standard deviation (`s`) split by the binary variable `genre`. We'll also calculate $\frac{s_i^2}{n_i}$ for each group (`var_xbar`), which will be used to calculate the standard error for $\bar{x}_1 - \bar{x}_2$.
+That is, our parameter of interest is $\mu_1 - \mu_2$, which we estimate by $\bar{x}_1 - \bar{x}_2$. We start by assuming there is no difference, therefore our null value is $\mu_1 - \mu_2 = 0$. We want to calculate the t-statistic for this scenario:
+
+$$t\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)} = \frac{(\bar{x}_1 - \bar{x}_2) - 0}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$ 
+
+Let's compute all the necessary values from our sample data. We need: the number of movies (`n`), the mean rating (`xbar`), and the standard deviation (`s`) split by the binary variable `genre`. We'll also calculate $\frac{s_i^2}{n_i}$ for each group (`var_xbar`), which is needed to calculate the denominator of $t_{stat}$.
 
 ```{r}
 genre_mean_stats <- movies_sample %>% 
@@ -118,10 +123,7 @@ genre_mean_stats <- movies_sample %>%
 genre_mean_stats
 ```
 
-We start by assuming there is no difference, therefore our null value is $\mu_1 - \mu_2 = 0$. We want to calculate the t-statistic for this scenario:
 
-$$t\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)} = \frac{(\bar{x}_1 - \bar{x}_2) - 0}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$ 
-Let's compute all the necessary values from our sample data. 
 ```{r, echo=FALSE}
 movies_genre_summaries <- movies_sample %>% 
   group_by(genre) %>% 
@@ -148,28 +150,21 @@ se_diff <- sqrt(sd_romance^2 / n_romance + sd_action^2 / n_action)
 t_stat <- ((x_bar_romance - x_bar_action) - 0)/sqrt(sd_romance^2 / n_romance + sd_action^2 / n_action)
 ```
 
-
-
-So we have `r n_romance` movies with an average rating of `r x_bar_romance %>% round(2)` stars out of 10 and `r n_action` movies with a sample mean rating of `r x_bar_action %>% round(2)` stars out of 10. The difference in these average ratings is thus `r x_bar_romance %>% round(2)` - `r x_bar_action %>% round(2)` = `r (x_bar_romance - x_bar_action) %>% round(2)`. And the standard error of this difference is `r se_diff`.
+So we have `r n_romance` movies with an average rating of `r x_bar_romance %>% round(2)` stars out of 10 and `r n_action` movies with a sample mean rating of `r x_bar_action %>% round(2)` stars out of 10. The difference in these average ratings is thus `r x_bar_romance %>% round(2)` - `r x_bar_action %>% round(2)` = `r (x_bar_romance - x_bar_action) %>% round(2)`. And the standard error of this difference is `r se_diff`. Our resulting `t_stat` is `r t_stat`.
 
 ```{r}
-diff_genre_means_stats <- genre_mean_stats %>% 
+genre_mean_stats %>% 
   summarize(diff_in_means = diff(xbar),
-            SE_diff = sqrt(sum(var_xbar))) 
-diff_genre_means_stats
+            SE_diff = sqrt(sum(var_xbar)),
+            t_stat = diff_in_means / SE_diff) 
 ```
 
-Our resulting `t_stat` is `r t_stat`.
 
-```{r}
-diff_genre_means_stats %>% 
-  summarise(t_stat = diff_in_means / SE_diff)
-```
 
 There appears to be an edge of `r (x_bar_romance - x_bar_action) %>% round(2)` stars in romance movie ratings. The question is however, are these results indicative of a true difference for all romance and action movies? Or could this difference be attributable to chance and sampling variation? Computing a p-value for this t-statistic can help us to answer this. 
 
 ### Theory based p-values
-Recall from Chapter \@ref(CIs) that even though the sampling distribution of many estimators are normally distributed, the t-statistic computed above often follows a $t(df)$ distribution because the formula involves an additional estimated quantity $s^2$ when the population variance is unknown. Recall that (difference in) proportions still follow the $N(0,1)$ distribution because they do not require $s^2$ to be estimated. An abbreviated version of Table \@ref(tab:samp-dist-table-ch-10) with the relevant degrees of freedom is given below
+Recall from Chapter \@ref(CIs) that even though the sampling distribution of many estimators are normally distributed, the t-statistic computed above often follows a $t(df)$ distribution because the formula for the standard error of many estimators involves an additional estimated quantity, $s^2$, when the population variance is unknown. Recall that (difference in) proportions still follow the $N(0,1)$ distribution because they do not require $s^2$ to be estimated. An abbreviated version of Table \@ref(tab:samp-dist-table-ch-10) with the relevant degrees of freedom for the t-distribution is given below:
 
 
 Statistics |Population parameter |		Estimator	|	t-distribution df
@@ -178,6 +173,7 @@ Mean       |$\mu$                |	$\bar{x}$		|	$n – 1$
 Difference in means | $\mu_1 -\mu_2$	|	$\bar{x}_1 - \bar{x}_2$ | $min(n_1 -1, n_2 – 1)$ 
 Regression intercept | $\beta_0$ | $b_0$ | $n - 2$
 Regression slope | $\beta_1$ | $b_1$ | $n - 2$
+
 
 
 We can calculate a p-value by asking: Assuming the null distribution, what is the probability that we will see a t-statistic as extreme as the one from our data? To answer this, we can calculate this using `pt(t_stat, df)`, where `t_stat` is the t-statistic we calculated from our sample data, and `df` is the appropriate degrees of freedom for our estimator and sample size. Remember there is a default argument `lower.tail = TRUE` in the `pt()` function, which means it returns the probability *to the left* of the `t_stat` value you enter. For example, Figure \@ref(fig:t-lower-tail) shows the shaded probabilty that is implied by the code `pt(1.5, df = 30)` and Figure \@ref(fig:t-upper-tail) shows the shaded probabilty that is implied by the code `pt(1.5, df = 30, lower.tail = FALSE)`. 
@@ -213,7 +209,7 @@ ggplot(data.frame(x = c(-6, 6)), aes(x = x)) +
 It is important to note that the t-distribution is often referred to as a “small sample” distribution. That is because once the degrees of freedom are large enough (when the sample size is large), the t-distribution is actually quite similar to the normal distribution as we have seen previously. For analysis purposes, however, you don’t need to determine when to use one or the other as your sampling distribution: just always use the t-distribution (unless dealing with proportions). 
 
 
-In our IMDB movies example, we observe a `t_stat = 2.91`, and we want to know what the probability of observing a t-statistic *as large* as this would be under the null distribution. Therefore we want to include the argument `lower.tail = FALSE` when computing our p-value. Note our $df = n_1 + n_2 - 2 = 36 + 32 - 2 = 66$, so our p-value is given by `pt(2.91, 66, lower.tail = FALSE)` = `r round(pt(2.91, 66, lower.tail = FALSE), 4)`. This tells us that if the null distribution is true (i.e. there is no true difference between average ratings of romance and action movies on IMDB), we would only observe a difference as large as we did `r round(pt(2.91, 66, lower.tail = FALSE)*100, 2)`% of the time. This provides evidence - via proof by contradiction - that the null distribution is likely false; that is, there is likely a true difference in average ratings of romance and action moview on IMDB.
+In our IMDB movies example, we observe a `t_stat = 2.91`, and we want to know what the probability of observing a t-statistic *as large* as this would be under the null distribution. Therefore we want to include the argument `lower.tail = FALSE` when computing our p-value. Note our $df = n_1 + n_2 - 2 = 36 + 32 - 2 = 66$, so our p-value is given by `pt(2.91, 66, lower.tail = FALSE)` = `r round(pt(2.91, 66, lower.tail = FALSE), 4)`. This tells us that if the null distribution is true (i.e. if there is no true difference between average ratings of romance and action movies on IMDB), we would only observe a difference as large as we did `r round(pt(2.91, 66, lower.tail = FALSE)*100, 2)`% of the time. This provides evidence - via proof by contradiction - that the null distribution is likely false; that is, there is likely a true difference in average ratings of romance and action moview on IMDB.
 
 <!-- ## CDC Example -->
 
@@ -250,6 +246,63 @@ In our IMDB movies example, we observe a `t_stat = 2.91`, and we want to know wh
 <!-- summary(ed_fit) -->
 <!-- ``` -->
 
+## Example: Ride-share prices
+
+Imagine you work for Lyft and you want to know how Lyft prices compare with your competitor, Uber. Because you work for Lyft, you have access to all of the company's data and know that the average price for a Lyft ride is $\mu = \$19.50$. However, you are only able to obtain a random sample of data on 100 Uber rides. Let's load in this data and take a look at it.
+
+```{r, echo = FALSE, eval = FALSE}
+set.seed(146)
+uber_rides <- data.frame(
+  price = rnorm(100, mean = 21, sd = 5),
+  duration = rnorm(100, mean = 30.1, sd = 9.88)
+)
+
+write_rds(uber_rides, "data/uber_rides.rds")
+write_csv(uber_rides, "data/uber_rides.csv")
+```
+
+```{r, warning = FALSE, message = FALSE}
+uber_rides <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQpOEBZ5zXfOnoIeRxql4X1-djLqCZRkNg4X1yqhdYXCqm_exyaeYDgWaj4KJ2FgpqPZPoDvD71gYEr/pub?gid=0&single=true&output=csv")
+
+glimpse(uber_rides)
+```
+
+
+We want to know whether or not $\mu_{\text{uber}} = \$19.50$, so we estimate $\mu_{\text{uber}}$ by $\bar{x}_{\text{uber}}$. We find that in our sample, the average Uber ride price is $\$20.30$. 
+```{r}
+uber_rides %>% 
+  summarize(xbar = mean(price))
+```
+This is higher than the Lyft population average of $\$19.50$, but is this indicative of a true difference in average prices, or is this just the result of sampling variation and the fact we're only observing 100 data points? Let's compute a t-statistic and p-value to help answer this question. 
+
+Note, we begin by assuming there is no difference in average prices. That is, we start with the null hypothesis that $\mu_{\text{uber}} = \$19.50$. If this null hypothesis is true, we expect the t-statistic $\frac{\bar{x} - 19.50}{\frac{s}{\sqrt{n}}}$ to follow a t-distribution with $df = n - 1 = 99$. Let's compute this t-statistic for the values in our sample and compare it to this known sampling distribution.
+
+```{r}
+uber_rides %>% 
+  summarize(xbar = mean(price),
+            s = sd(price),
+            n = n(),
+            SE = s/sqrt(n),
+            t_stat = (xbar - 19.50)/SE)
+```
+
+```{r uber-fig, fig.cap="t-statistic for average price of Uber rides (n = 100)", echo = FALSE, message=FALSE, warning=FALSE}
+ggplot(data.frame(x = c(-5, 5)), aes(x = x)) +
+    stat_function(fun = dt, args = list(df = 99),
+                    colour = "red", size = 1) +
+  geom_vline(xintercept = 1.53, linetype = 2) +
+  shade_curve(data, tstart = 1.53, tend = 5) +
+  scale_x_continuous(breaks = c(-3, -1, 0, 1.53, 3)) +
+  theme_classic() +
+  xlab("t-statistic")
+```
+
+By looking at Figure \@ref(fig:uber-fig) and computing the p-value using `pt()`, we see that if Lyft and Uber prices are in fact equal on average (i.e. if $\mu_{\text{uber}} = \$19.50$), we would expect to observe an average price as large or larger than the one we did (i.e. $\bar{x}_{\text{uber}} = 20.3$) about 6.5% of the time. 
+
+```{r}
+pt(1.53, df = 99, lower.tail = FALSE)
+
+```
 
 ## Interpretation of P-values
 Like many statistical concepts, p-values are often misunderstood and misinterpreted. Remember, a p-value is the probability that you would observe data as extreme as the data you do if, in fact, the null hypothesis is true. As Wikipedia notes:
