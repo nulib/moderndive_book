@@ -78,6 +78,7 @@ As you can see from this table, there are 4 possible combinations. If you decide
 In life, we often have to make decisions like this. In making these decisions, there are trade-offs. Perhaps you are the type of person that has FOMO – in that case, you may really want to minimize your Type II error, but at the expense of attending some boring parties and wasting your time (a higher Type I error). Or perhaps you are risk averse and hate wasting time – in which case you want to minimize your Type I error, at the expense of missing out on some really great parties (a higher Type II error).
 
 There are a few important points here:
+
 * When making a decision, you cannot know in advance what the actual outcome will be.
 * Sometimes your decision will be the right one. Ideally, you’d like this to be most of the time.
 * But, sometimes your decision will be the wrong one. Importantly, you cannot minimize both Type I and II errors at the same time. One will be minimized at the expense of the other.
@@ -137,6 +138,7 @@ law_table %>%
 ```
 
 As the table notes, in two of the cases, the jury correctly determines that the defendant is either guilty or not. But there are also two cases in which the jury’s decision is incorrect:
+
 * Type I error: Wrongly Convicted. In this case, the jury decides that the defendant is guilty when in fact they are not. This might be because evidence that was presented was falsified or because prejudices and discrimination affect how the jury perceives the defendant.
 * Type II error: Insufficient Evidence. In this case, the jury decides that the defendant is “not guilty” when in fact they are. This is typically because there is insufficient evidence.
 
@@ -170,7 +172,7 @@ ht_table %>%
 There is a lot of new information here to define:
 * We **reject** the null hypothesis if the p-value is smaller than some threshold (i.e., p < threshold).
 * We **do not reject** the null hypothesis if the p-value is larger than this threshold (i.e., p > threshold).
-* The **null model** is as we’ve defined it in Chapter 11. In most cases it is that there is no effect, no difference, or no relationship. (Other null hypotheses are possible, these are just the most common.)
+* The **null model** is as we’ve defined it in Chapter \@ref(pvalues). In most cases it is that there is no effect, no difference, or no relationship. (Other null hypotheses are possible, these are just the most common.)
 * The **alternative model** is a model we are seeking evidence to prove is correct. For example, the alternative model may be that there is an average non-zero difference between men and women’s SAT scores. Or that there is a correlation between income and education. Specifying an alternative can be tricky – usually this is based both on substantive knowledge and findings from prior studies.
 
 Just as in the other decision-making context, there are two cases in which these decisions are correct, and two cases in which they are not:

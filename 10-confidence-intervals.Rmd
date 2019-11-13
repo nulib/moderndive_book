@@ -60,7 +60,7 @@ You can think of a confidence interval as playing the role of a net when fishing
 
 ### Sampling distributions of standardized statistics
 
-In order to construct a confidence interval, we need to know the sampling distribution of a *standardized* statistic. Recall from Chapter \@ref(sampling) that we can standardize an estimate by subtracting its mean and dividing by its standard error:
+In order to construct a confidence interval, we need to know the sampling distribution of a *standardized* statistic. We can standardize an estimate by subtracting its mean and dividing by its standard error:
 
 $$STAT = \frac{Estimate - Mean(Estimate)}{SE(Estimate)}$$
 While we have seen that the sampling distribution of many common estimators are normally distributed (see Table \@ref(tab:SE-table-ch-9)), this is not always the case for the *standardized estimate* computed by $STAT$. This is because the standard errors of many estimators, which appear on the denominator of $STAT$, are a function of an additional estimated quantity – the sample variance $s^2$.  When this is the case, the sampling distribution for **STAT is a t-distribution with a specified degrees of freedom (df)**. Table \@ref(tab:samp-dist-table-ch-10) shows the distribution of the standardized statistics for many of the  common statistics we have seen previously.
