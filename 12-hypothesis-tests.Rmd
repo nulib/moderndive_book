@@ -109,7 +109,7 @@ medicine_table %>%
 
 As the table notes, in two of the cases, the test correctly determines that you are either pregnant or not pregnant. But there are also two cases in which the test (a decision) is incorrect:
 
-* Type I error: False Positive. In this case, the test tells you that you are pregnant when in fact you are not. This would occur if the level of HcG required to indicate positive was too low.
+* Type I error: False Positive. In this case, the test tells you that you are pregnant when in fact you are not. This would occur if the level of HcG required to indicate positive is too low.
 * Type II error: False Negative. In this case, the test tells you that you are not pregnant but you actually are. This would occur if the level of HcG required to indicate positive is too high.
 
 When a pregnancy test manufacturer develops the test, they have to pay attention to these two possible error types and think through the trade-offs of each. For example, if they wanted to minimize the Type II error (False Negative), they could just create a test that always tells people they are pregnant (i.e., HcG >= 0). Conversely, if they wanted to minimize the Type I error (False Positive), they could set the HcG level to be very high, so that it only detects pregnancy for those that are 6 months pregnant. Of course, the trade-off here is that certainly many who took the test would actually be pregnant, and yet the test would tell them otherwise.
@@ -189,8 +189,8 @@ In science, these values have been somewhat arbitrarily set as:
 
 This use of a threshold for rejecting a null hypothesis gives rise to some important language:
 
-* When $p < 0.05$ (or whatever threshold is used), we say that we **reject the null hypothesis**. This is often referred to as a “statistically significant” effect.
-* When $p > 0.05$ (or whatever threshold is used), we say that we **do not have enough evidence to reject the null hypothesis**. Note that it is not appropriate to say that we *accept* the null hypothesis.
+* When $p < 0.05$ (or whatever $\alpha$ threshold is used), we say that we **reject the null hypothesis**. This is often referred to as a “statistically significant” effect.
+* When $p > 0.05$ (or whatever $\alpha$ threshold is used), we say that we **do not have enough evidence to reject the null hypothesis**. Note that it is not appropriate to say that we *accept* the null hypothesis.
 
 Finally, there is one more piece of vocabulary that is important:
 
@@ -205,20 +205,20 @@ Finally, there is one more piece of vocabulary that is important:
 
 ## Conducting Hypothesis Tests
 
-In data analysis, hypothesis tests can be broken down into the following framework given by Allen Downey [here](http://allendowney.blogspot.com/2016/06/there-is-still-only-one-test.html):
+<!-- In data analysis, hypothesis tests can be broken down into the following framework given by Allen Downey [here](http://allendowney.blogspot.com/2016/06/there-is-still-only-one-test.html): -->
 
-```{r ht-framework, echo=FALSE, fig.cap="Hypothesis Testing Framework", purl=FALSE}
-knitr::include_graphics("images/ht.png")
-```
+<!-- ```{r ht-framework, echo=FALSE, fig.cap="Hypothesis Testing Framework", purl=FALSE} -->
+<!-- knitr::include_graphics("images/ht.png") -->
+<!-- ``` -->
 
 In practice, conducting a hypothesis test is straightforward:
 
 * Determine the sampling distribution based upon the null model
 * Find the test-statistic value observed in your data
 * Calculate a p-value
-* Reject the null hypothesis if the p-value is less than a pre-defined threshold.
+* Reject the null hypothesis if the p-value is less than a pre-defined threshold $\alpha$.
 
-This last point is significant – for the hypothesis test to be valid, **you must pre-specify your threshold, not after you have seen the p-value in your data.**
+This last point is important – for the hypothesis test to be valid, **you must pre-specify your threshold, not after you have seen the p-value in your data.**
 
 ### Promotions Example {#ht-activity}
 
@@ -242,12 +242,15 @@ ggplot(promotions, aes(x = gender, fill = decision)) +
   labs(x = "Gender on personnel file")
 ```
 
-Observe in Figure \@ref(fig:promotions-barplot) that it appears that female personnel files were much less likely to be accepted for promotion.  Let's quantify these promotion rates by computing the proportion of personnel files accepted for promotion for each group using the `dplyr` package for data wrangling:
+Observe in Figure \@ref(fig:promotions-barplot) that it appears that female personnel files were much less likely to be accepted for promotion (even though they were identical to the male personnel files).  Let's quantify these promotion rates by computing the proportion of personnel files accepted for promotion for each group using the `dplyr` package for data wrangling:
 
 ```{r}
-promotions %>%
-  group_by(gender, decision) %>%
-  summarize(n = n())
+promotion_props <- promotions %>%
+  group_by(gender) %>%
+  summarize(n = n(),
+            num_promoted = sum(decision == "promoted"),
+            pi_hat = num_promoted / n)
+promotion_props
 ```
 ```{r, echo=FALSE}
 observed_point_estimate <- promotions %>%
@@ -263,44 +266,36 @@ The question is however, does this provide *conclusive* evidence that there is g
 
 $$H_0: \pi_m = \pi_f$$
 $$H_1: \pi_m \neq \pi_f,$$
-where $\pi_f$ is the proportion of female files selected for promotion and $\pi_m$ is the propotion of male files selected for promotion. Here the null hypothesis corresponds to the scenario in which there is *no gender discrimination*; that is, males and females are promoted at identical rates. We will specify this test ahead of time to have $\alpha = 0.05$. That is, we are comfortable with a 5% Type I error rate, and we will reject the null hypothesis if $p < 0.05$.
+where $\pi_f$ is the proportion of female files selected for promotion and $\pi_m$ is the proportion of male files selected for promotion. Here the null hypothesis corresponds to the scenario in which there is *no gender discrimination*; that is, males and females are promoted at identical rates. We will specify this test ahead of time to have $\alpha = 0.05$. That is, we are comfortable with a 5% Type I error rate, and we will reject the null hypothesis if $p < 0.05$.
 
 Note the null hypothesis can be rewritten as
-$$H_0: \pi_m - \pi_f = 0$$ by subtracting $\pi_f$ from both sides. Therefore, the population parameter we are interested in estimating is $\pi_m - \pi_f$. Referring back to Table \@ref(tab:SE-table), we can see that the appropriate estimator is $\hat{\pi}_m - \hat{\pi}_f$. Under the null hypothesis, $\hat{\pi}_m - \hat{\pi}_f$ is normally distributed with mean $\pi_m - \pi_f$ and standard error $\sqrt{\frac{{\pi}_m(1-{\pi}_m)}{n_m} + \frac{{\pi}_f(1-{\pi}_f)}{n_f}}$.
+$$H_0: \pi_m - \pi_f = 0$$ by subtracting $\pi_f$ from both sides. Therefore, the population parameter we are interested in estimating is $\pi_m - \pi_f$. 
 
-Recall from Chapter \@ref(pvalues) that we calculate a test statistic using the following general formula:
+Recall from Chapter \@ref(pvalues) that we calculate the standardized statistic under the null hypothesis by subtracting the null value from the estimate and dividing by the standard error. Within the context of hypothesis tests, where we are actually *testing* the null hypothesis to make a decision (rather than simply computing a p-value), we usually refer to the t-statistic as a *test-statistic*. 
+
 $$test\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)}$$
-In this example, we have $$test\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_m(1-\pi_m)}{n_m} + \frac{\pi_f(1-\pi_f)}{n_f}}}$$ Note that the null value here is $0$ because our null hypothesis states $\pi_m - \pi_f = 0$. We can use the promotions data to compute this observed test statistic. However, on the denominator we need separate values for $\pi_m$ and $\pi_f$, which aren't specified in our null hypothesis. When conducting a hypothesis test on the difference in proportions, we compute a *pooled* proportion to plug in for these unknown values. This pooled estimate, which we will denote $\pi_0$ can be calculated by $$\pi_{0} = \frac{\# \ of \ successes_1 + \# of successes_2}{n_1 + n_2}.$$ Therefore, the test statistic is computed by $$t\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_0(1-\pi_0)}{n_m} + \frac{\pi_0(1-\pi_0)}{n_f}}}$$
+
+In this example, we have $$test\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_m(1-\pi_m)}{n_m} + \frac{\pi_f(1-\pi_f)}{n_f}}}$$ Note that the null value here is $0$ because our null hypothesis states $\pi_m - \pi_f = 0$. In the hypothesis test context, because we are assuming $\pi_m = \pi_f$, we can use all of the data to compute one *pooled* proportion to plug in for $\pi_m$ and $\pi_f$ in the standard error formula instead of using separate estimates $\hat{\pi}_m$ and $\hat{\pi}_f$. This pooled estimate, which we will denote $\pi_0$ can be calculated by $$\pi_{0} = \frac{\# \ of \ successes_1 + \# of successes_2}{n_1 + n_2}.$$ Therefore, the test statistic is computed by $$test\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_0(1-\pi_0)}{n_m} + \frac{\pi_0(1-\pi_0)}{n_f}}}$$
+
+Think about this intuition for a second: since we are working under the hypothesis that the two parameters $\pi_m$ and $\pi_f$ are equal, it is more efficient to use *all* of the information to estimate *one* parameter than to use half of the data to estimate $\pi_m$ and the other half of the data to estimate $\pi_f$.
 
 In the promotions example, $$\pi_0 = \frac{21 + 14}{24 + 24} = 0.729.$$ We can compute the test statistic with the following code.
 
 ```{r, promotions-t-stat}
-results <- promotions %>%
-  group_by(gender, decision) %>%
-  summarize(n = n()) %>%
-  mutate(prop = n / sum(n))
-results
+estimates <- promotion_props %>% 
+  summarize(diff_pi_hat = abs(diff(pi_hat)),
+            pi_0 = sum(num_promoted)/sum(n),
+            SE = sqrt(pi_0*(1-pi_0)/24 + pi_0*(1-pi_0)/24)) 
+estimates
 
-male_promotions <- as.numeric(results[2,3])
-female_promotions <- as.numeric(results[4,3])
-
-n_m <- 24
-n_f <- 24
-
-pi_0 <- (male_promotions + female_promotions) / (n_m + n_f)
-pi_0
-SE_pi_0 <- sqrt(pi_0 * (1 - pi_0) / n_m
-           + pi_0 * (1 - pi_0) / n_f)
-pi_hat_m <- as.numeric(results[2,4])
-pi_hat_f <- as.numeric(results[4,4])
-test_stat <- (pi_hat_m - pi_hat_f) / SE_pi_0
-test_stat
+estimates %>% 
+  transmute(test_stat = diff_pi_hat/SE)
 ```
 
-Our test statistic is equal to `r round(test_stat,2)`, which we can now use to compute our p-value.
+Our test statistic is equal to 2.27, which we can now use to compute our p-value. Recall from Table \@ref(tab:samp-dist-table-ch-10) that the standardized statistic for a difference in proportions follows a N(0,1) distribution, so we can use `pnorm()` to compute the p-value. 
 
 ```{r}
-p_value <- pnorm(test_stat, lower.tail = FALSE)*2
+p_value <- 2*pnorm(2.27, lower.tail = FALSE)
 p_value
 ```
 
@@ -311,6 +306,9 @@ shade_curve <- function(MyDF, tstart, tend, fill = "red", alpha = .5){
             aes(y=y), fill = fill, color = NA, alpha = alpha)
 }
 
+test_stat <- estimates %>% 
+  transmute(test_stat = diff_pi_hat/SE) %>% 
+  as.numeric()
 data <- data.frame(x = seq(from = -5, to = 5, by = 0.01)) %>%
   mutate(y = dnorm(x))
 ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
@@ -324,172 +322,97 @@ ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
   theme(legend.position = "none")
 
 ```
-Note that we use the function `pnorm()` here because our test statistic follows the normal distribution. We set `lower.tail = FALSE` so that it gives us the probability in the left tail of the distribution, and we multiply by 2 because we are conducting a two-sided hypothesis test. The p-value = `r round(p_value, 2)` is represented by the shaded region in Figure \@ref(fig:promotions-p-value). Because our p-value is less than our pre-specified level of $\alpha = 0.05$, we **reject the null hypothesis** and conclude that there is sufficient evidence of gender discrimination in this context.
+Note that we set `lower.tail = FALSE` so that it gives us the probability in the upper tail of the distribution to the right of our observed test-statistic, and we multiply by 2 because we are conducting a two-sided hypothesis test (and the N(0,1) distribution is symmetric). The p-value = `r round(p_value, 2)` is represented by the shaded region in Figure \@ref(fig:promotions-p-value). 
 
-### Regression Example
-
-We'll now demonstrate how to conduct a hypothesis test on regression coefficients by returning to our example from Chapter \@ref(regression) on teaching evaluations.
-
-Recall using simple linear regression \index{regression!simple linear} we modeled the relationship between
-
-1. A numerical outcome variable $y$, the instructor's teaching score and
-1. A single numerical explanatory variable $x$, the instructor's "beauty" score.
-
-We first created an `evals_ch5` data frame that selected a subset of variables from the `evals` data frame included in the `moderndive` package. This `evals_ch5` data frame contains only the variables of interest for our analysis, in particular the instructor's teaching `score` and the "beauty" rating `bty_avg`:
-
+We could also find the p-value using the function called `prop.test()`, similar to `t.test()`, which will perform all of the above calculations for us when dealing with proportions. `prop.test()` needs you to specify `x`, a vector (or column) of data containing the number of successes (in this case promotions) for each group, and `n`, a vector (or column) of data containing the total number of trials per group. Recall that we computed this information in `promotion_props`. There is a something called the Yates' continuity correction that is applied by default to tests of proportions in `prop.test()`, but because we did not use this correction when conducting the test "by hand", we will override this default by setting `correct = FALSE` for now. Let's see `prop.test()` in action on our promotions data. 
 ```{r}
-evals_ch5 <- evals %>%
-  select(ID, score, bty_avg, age)
-glimpse(evals_ch5)
-```
-```{r, echo=FALSE}
-cor_ch6 <- evals_ch5 %>%
-  summarize(correlation = cor(score, bty_avg)) %>%
-  pull(correlation) %>%
-  round(3)
+promotion_test <- prop.test(x = promotion_props$num_promoted, 
+                            n = promotion_props$n, 
+                            correct = FALSE)
+promotion_test
 ```
 
-In Section \@ref(model1EDA), we performed an exploratory data analysis of the relationship between these two variables. We saw there that there was a weakly positive correlation of `r cor_ch6` between the two variables. This was evidenced in Figure \@ref(fig:regline) of the scatterplot along with the "best-fitting" regression line that summarizes the linear relationship between the two variables. Recall in Subsection \@ref(leastsquares) that we defined a "best-fitting" line as the line that minimizes the *sum of squared residuals*.
-
-```{r regline, fig.cap="Relationship with regression line."}
-ggplot(evals_ch5, aes(x = bty_avg, y = score)) +
-  geom_point() +
-  labs(x = "Beauty Score", y = "Teaching Score",
-       title = "Relationship between teaching and beauty scores") +  
-  geom_smooth(method = "lm", se = FALSE)
-```
-
-Looking at this plot again, you might be asking "Does that line really have all that positive of a slope?" It does increase from left to right as the `bty_avg` variable increases, but by how much? To get to this information, we can follow a two-step procedure:
-
-1. We first "fit" the linear regression model using the `lm()` function with the formula `score ~ bty_avg`. We saved this model in `score_model`.
-1. We get the regression results by applying the `summary()` function to `score_model` and accessing the `coefficients` object stored in the summary results.
-
+Note that `prop.test()` returns values for $\hat{\pi}_m$ (`prop 1`) and $\hat{\pi}_f$ (`prop 2`), a 95% confidence interval, and a p-value for a `two.sided` alternative hypothesis. We can verify that this returns the same p-value of `r promotion_test$p.value`. 
+ 
 ```{r}
-# Fit regression model:
-score_model <- lm(score ~ bty_avg, data = evals_ch5)
-# Get regression results:
-summary(score_model)$coefficients
-```
-```{r regtable-12, echo=FALSE}
-# Fit regression model:
-score_model <- lm(score ~ bty_avg, data = evals_ch5)
-#summary(score_model)$coefficients %>%
- # knitr::kable(
-  #  digits = 5,
-   # caption = "Linear regression table.",
-  #  booktabs = TRUE
-  #) %>%
-  #kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-  #              latex_options = c("hold_position"))
-# slope:
-slope_row <- get_regression_table(score_model) %>%
-  filter(term == "bty_avg")
-beta_hat_1 <- slope_row %>% pull(estimate)
-se1 <- slope_row %>% pull(std_error)
-t1 <- slope_row %>% pull(statistic)
-lower1 <- slope_row %>% pull(lower_ci)
-upper1 <- slope_row %>% pull(upper_ci)
-# intercept:
-intercept_row <- get_regression_table(score_model) %>%
-  filter(term == "intercept")
-b0 <- intercept_row %>% pull(estimate)
-se0 <- intercept_row %>% pull(std_error)
-t0 <- intercept_row %>% pull(statistic)
-lower0 <- intercept_row %>% pull(lower_ci)
-upper0 <- intercept_row %>% pull(upper_ci)
+promotion_test$p.value
 ```
 
-Using the values in the `Estimate` column of the resulting regression table, we could then obtain the equation of the "best-fitting" regression line in Figure \@ref(fig:regline):
 
-$$
-\begin{aligned}
-\widehat{y} &= \hat{\beta}_0 + \hat{\beta}_1 \cdot x\\
-\widehat{\text{score}} &= \hat{\beta}_0 + b_{\text{bty}\_\text{avg}} \cdot\text{bty}\_\text{avg}\\
-&= 3.880 + 0.067\cdot\text{bty}\_\text{avg}
-\end{aligned}
-$$
+The p-value indicates that if gender discrimination did not exist (i.e. if the null hypothesis is true that $\pi_m = \pi_f$), then we would only expect to see a difference in proportions as large as we did about 2% of the time. Because our p-value is less than our pre-specified level of $\alpha = 0.05$, we **reject the null hypothesis** and conclude that there is sufficient evidence of gender discrimination in this context.
 
-where $\hat{\beta}_0$ is the fitted intercept and $\hat{\beta}_1$ is the fitted slope for `bty_avg`. Recall the interpretation of the $\hat{\beta}_1$ = `r beta_hat_1` value of the fitted slope:
 
-> For every increase of one unit in "beauty" rating, there is an associated increase, on average, of `r beta_hat_1` units of evaluation score.
-Thus, the slope value quantifies the relationship between the y variable of `score` and the x variable `bty_avg`. We also discussed the intercept value of $\hat{\beta}_0$ = `r get_regression_table(score_model) %>% filter(term == "intercept") %>% pull(estimate)` and its lack of practical interpretation, since the range of possible "beauty" scores does not include 0.
 
-We now want to formally test whether there is a relationship between teaching score and beauty score, beyond what we would expect simply due to chance. Recall the terminology and notation related to populations and samples that we studied in Chapter \@ref(populations). First, let's view the instructors for these `r nrow(evals_ch5)` courses as a *random sample* from a greater *population*. In our case, let's assume that the population is *all* instructors at UT Austin and that the sample of instructors who taught these 463 is a random sample. Unfortunately, we can only *assume* these two facts without more knowledge of the *sampling methodology*\index{sampling methodology} used by the researchers.
+### Movies example revisited
 
-Since we are viewing these $n$ = 463 courses as a sample, we can view our fitted slope $\hat{\beta}_1$ = `r beta_hat_1` as a *point estimate* of the *population slope* $\beta_1$. In other words, $\beta_1$ quantifies the relationship between teaching `score` and "beauty" average `bty_avg` for *all* instructors at UT Austin. Similarly, we can view our fitted intercept $\hat{\beta}_0$ = `r b0` as a *point estimate* of the *population intercept* $\beta_0$ for *all* instructors at UT Austin.
+Let's return to our movies example from Section \@ref(imdb), and this time set up a formal hypothesis test. Recall that we were interested in the question of whether or not average IMDB ratings differed for `action` movies ($\mu_1$) vs. `romance` movies ($\mu_2$). We can set up our hypotheses as follows:
 
-Putting these two ideas together, we can view the equation of the fitted line $\widehat{y}$ = $\hat{\beta}_0 + \hat{\beta}_1 \cdot x$ = $3.880 + 0.067 \cdot \text{bty}\_\text{avg}$ as an estimate of some true and unknown *population line* $y = \beta_0 + \beta_1 \cdot x$.
+$$H_0: \mu_1 = \mu_2$$
+$$H_1: \mu_1 \neq \mu_2$$
 
-In order to answer the question of whether there is a true relationship between teaching score and beauty score, we can test the following hypothesis:
+Note that we can re-write these as 
+
+$$H_0: \mu_1 - \mu_2 = 0$$
+$$H_1: \mu_1 - \mu_2 \neq 0,$$
+so that it's clear our parameter of interest is a difference in two means. We will test this hypothesis at the 95% confidence level (i.e. with $\alpha = 0.05$). 
+
+Recall that we already computed all the relevant values in Section \@ref(t.test) using `t.test`, but we show the code again here. 
+```{r}
+romance <- movies_sample %>% 
+  filter(genre == "Romance")
+
+action <- movies_sample %>% 
+  filter(genre == "Action") 
+
+movies_t.test <- t.test(x = romance$rating, y = action$rating)
+movies_t.test
+```
+
+Because we obtain a p-value of $0.005 < \alpha = 0.05$, we *reject the null hypothesis* and conclude there is sufficient evidence that action and romance movies do not recieve the same average ratings in the IMDB population database. It is important to note that the language of our conclusion must be consistent with how we set up our alternative hypothesis. Because we used a *two-sided* alternative that $\mu_1 \neq \mu_2$ and did not hypothesize a direction before conducting the test (e.g. $\mu_1 < \mu_2$ or $\mu_1 > \mu_2$), our conclusion must also simply conclude that there is *a difference* (i.e. $\mu_1 \neq \mu_2$) but should not specify a direction for that difference. 
+
+We could also conduct a hypothesis test for this same problem in the regression framework we demonstrated in Section \@ref(pvalues-regression). Recall we fit the model $$\widehat{rating} = b_0 + b_1*genre,$$
+and said $b_1$ could be interpreted as the difference in means. Recall that the slope $b_1$ in our sample is an estimate of the *population slope* $\beta_1$. Note that assuming there is no difference in means implies $\beta_1 = 0$. Therefore in this framework, our hypotheses would be:
 
 $$H_0: \beta_1 = 0$$
 $$H_1: \beta_1 \neq 0$$
-
-Note that our null hypothesis corresponds to scenario where the slope is 0, which implies the regression line is simply equal to the horizontal line $y= \beta_0$. That is, there is no relationship between $x$ and $y$. Since we are now viewing our fitted slope $\hat{\beta}_1$ as a *point estimate* based on a *sample*, this estimate is subject to *sampling variability*, as we've seen numerous times throughout this book. In other words, if we collected new sample of data on a different set of $n$ = 463 courses and their instructors, the new fitted slope $\hat{\beta}_1$ will likely differ from `r beta_hat_1`. 
-
-But by how much will it differ? In other words, by how much will this estimate *vary* across repeated samples? When taking sampling variation into account, do we still consider $\hat{\beta}_1$ to be different enough from 0 to reject the null hypothesis that $\beta_1 = 0$? The appropriate test statistic, which takes sampling variation into account via the standard error, will help us answer this question.
-
-The test statistic for this hypothesis test is $$test\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)} = \frac{\hat{\beta}_1 - 0}{SE(\hat{\beta}_1)}$$
-
-The standard error of $\hat{\beta}_1$ can be extracted from the regression summary output. We can store the model summary results in a new object called `model_results`. We can then access the coefficients and their standard errors by calling `model_results$coefficients`.
-
+Let's look again at the results of this model. 
 ```{r}
-model_results <- summary(score_model)
-model_results$coefficients
+movies_model <- lm(rating ~ genre, data = movies_sample)
+summary(movies_model)
 ```
-Note that  $\hat{\beta}_1$ and its standard error are located in the second row and first and second columns of this matrix respectively. We can use these numbers to calculate our test statistic.
+We again see the p-value of 0.005, which leads us to conclude there is a true difference in means in the population. 
 
+### Ride share example revisited
+
+Let's return to our ride share price example from Section \@ref(ride-share). Recall that we wanted to know whether $\mu_B = \$19.50$. We could test this with the following hypotheses, again specifying $\alpha = 0.05$ in advance:
+
+$$H_0: \mu_B = 19.50$$
+$$H_1: \mu_B \neq 19.50$$
+```{r, warnings = FALSE, message = FALSE}
+rides_B <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQpOEBZ5zXfOnoIeRxql4X1-djLqCZRkNg4X1yqhdYXCqm_exyaeYDgWaj4KJ2FgpqPZPoDvD71gYEr/pub?gid=0&single=true&output=csv")
+
+rides_t.test <- t.test(rides_B$price, mu = 19.5)
+rides_t.test$statistic
+rides_t.test$p.value
+```
+
+Recall that this produced a test-statistic of `r rides_t.test$statistic` and a p-value of `r rides_t.test$p.value`. Therefore because $p\_value = 0.13 > \alpha = 0.05$, we *do not reject* the null hypothesis. It is important to note that we do not conclude that the null hypothesis is true; we can only simply state that there is *not sufficient evidence* to overturn it. 
+
+We also considered this problem in the regression framework with the *intercept only model* $\widehat{price} = b_0$. In this case, our hypotheses are:
+
+$$H_0: \beta_0 = 19.50$$
+$$H_1: \beta_0 \neq 19.50$$
+Recall that in order to get the correct test statistic and p-value for this null value (as opposed to the defaul null value of zero in regression), we had to *center* our variable.
 ```{r}
-beta_hat_1 <- model_results$coefficients[2,1]
-SE_beta_hat_1 <- model_results$coefficients[2,2]
-test_stat <- beta_hat_1 / SE_beta_hat_1
-test_stat
+rides_B <- rides_B %>% 
+  mutate(price_centered = price - 19.5)
+
+ride_model_2 <- lm(price_centered ~ 1, data = rides_B)
+summary(ride_model_2)
 ```
 
-Similar to what we saw in Chapter \@ref(pvalues), this test statistic follows a t-distribution with a specified degrees of freedom. Table \@ref(tab:reg-df) gives the appropriate degrees of freedom for tests of regression coefficients. 
+This again gives the p-value of $0.13$ which leads us to *fail to reject $H_0$*. There is insufficient evidence to conclude that company B's prices differ from \$19.50 on average.
 
-```{r reg-df, echo=FALSE, message=FALSE}
-if(!file.exists("rds/reg_df.rds")){
-  reg_df <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTr6fghH9Et5CucPBRa87hagMV-UQjVpbH2Mxq18bT_S_XGVZtE9jy-mhYvWmUBTP3trPb2fSmhdsEy/pub?gid=0&single=true&output=csv" %>%
-    read_csv(na = "")
-    write_rds(reg_df, "rds/reg_df.rds")
-} else {
-  reg_df <- read_rds("rds/reg_df.rds")
-}
-reg_df %>%
-  kable(
-    caption = "t-test for regression coefficients",
-    booktabs = TRUE,
-    escape = FALSE
-  ) %>%
-  kable_styling(font_size = ifelse(knitr:::is_latex_output(), 10, 16),
-                latex_options = c("HOLD_position"))
-```
-
-Note the $p$ refers to the number of explanatory variables in the regression model. In this example, we only have one explanatory variable $x$, the beauty score, so $p = 1$, and the degrees of freedom are $df = n - p - 1 = n - 2$. We can now use this information to calculate our p-value. 
-
-```{r}
-n <- dim(evals_ch5)[1]
-p_value <- pt(test_stat, n-2, lower.tail = FALSE)*2
-p_value
-```
-Note that our calculated `test_stat = ` `r test_stat` is the same value reported in the `t value` column of the regression output, and our calculated p-value is the same as the value reported in the `Pr(>|t|)` column of the regression output. 
-
-```{r eval = FALSE, echo = FALSE}
-#manual calculation of SE(beta_hat_1)
-sx2 <- var(evals_ch5$bty_avg)
-sy2 <- var(evals_ch5$score)
-n <- dim(evals_ch5)[1]
-
-Syy <- (n-1)*sy2
-Sxy <- (n-1)*cov(evals_ch5$bty_avg, evals_ch5$score)
-Sxx <- (n-1)*sx2
-SSE <- Syy - Sxy^2/Sxx
-MSE <- SSE / (n-2)
-SE_beta_hat_1 <- sqrt(MSE)/sqrt(Sxx)
-```
-
-Because our $p-value < 0.05$, we can reject the null hypothesis and conclude there is a true relationship between beauty score and teaching score, beyond what would be expected by chance. 
 
 ## More advanced points to consider
 As this is an introductory book, we have introduced some concepts but not developed them in full detail. This does not mean that there are not things to say about these – more that there is simply too much to say at this time. These topics include:

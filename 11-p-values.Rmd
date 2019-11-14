@@ -211,7 +211,7 @@ We can calculate this probability using the `pt()`function in R, where we plug i
 
 In our IMDB movies example, we observe `t_stat = 2.91`, and we want to know what the probability of observing a $t\_stat$ value *as large in magnitude* as this would be under the null distribution. Note our approximate $df = min(n_1 - 1, n_2 - 1) = min(36 - 1, 32 - 1) = 31$, so our p-value is given by `2*pt(-2.91, 31)` = `r round(2*pt(-2.91, 31), 4)`. This tells us that if the null distribution is true (i.e. if there is no true difference between average ratings of romance and action movies on IMDB), we would only observe a difference as large as we did `r round(2*pt(-2.91, 31), 3)*100`% of the time. This provides evidence - via proof by contradiction - that the null distribution is likely false; that is, there is likely a true difference in average ratings of romance and action moview on IMDB.
 
-### p-values using `t.test`
+### p-values using `t.test` {#t.test}
 
 There is a convenient function in R called `t.test` that will conduct the above calculations for you, including $t\_stat$ and its $p-value$. For a difference in means like the IMDB example, `t.test` requires two arguments `x` and `y` that are numeric vectors of data values for each group you are comparing. In this example, `x` would be the ratings for romance movies and `y` would be the ratings for action movies. We can create these two vectors by using `filter()` on our `movies_sample` data.
 
@@ -233,7 +233,7 @@ movies_t.test$statistic
 
 Note the degrees of freedom in `movies_t.test` are different due to the fact that `t.test` is able to use the more complicated exact formula for degrees of freedom, whereas we used the conservative approximate formula $df = min(n_1 - 1, n_2 - 1)$. Using `t.test` gives a p-value of `r round(movies_t.test$p.value, 3)`, which is similar to the value we computed using formulas above `r round(2*pt(-2.91, 31), 4)`. Again, the p-values here will not match exactly due to the different degrees of freedom. 
 
-### p-values using regression
+### p-values using regression {#pvalues-regression}
 
 We can also use a regression model to estimate the difference between means. We can fit the model $$\widehat{rating} = b_0 + b_1*genre,$$ where `action` is the reference category (because it comes before `romance` in alphabetical order). Recalling what we learned in \@ref(model2), $b_0$ is interpreted as the average rating for `action` movies, and $b_1$ is the *offset* in average rating for `romance` movies, relative to `action` movies. That is, $b_1 = \bar{x}_{romance} - \bar{x}_{action}$, which is exactly the estimate we're interested in. Let's fit this model and take a look at its summary output.
 
@@ -245,7 +245,7 @@ The coefficient for $b_1$ (labeled `genreRomance`) does in fact give the estimat
 
 One important caveat is that when using the regression framework to estimate the difference between means, the regression model imposes an additional assumption on the data: that the variances are equal in both groups. The usual standard error formula for a difference in means is $\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}$, which allows there to be different variances in each group (i.e. $s_1^2$ and $s_2^2$ don't have to be equal). A regression model assumes they are equal, however, and only estimates one variance component that is pooled across all the data points. Doing so increases the degrees of freedom to $df = n - 2$. You should always be careful to consider whether or not equal variances is a reasonable assumption. In general, an equal variance assumption is usually valid when random assignment has been used to assign the two groups being compared. In the movies example, genres were not randomly assigned, but $s_1$ and $s_2$ were similar (1.36 vs. 1.61), so this is a somewhat reasonable assumption. 
 
-## Example: Ride-share prices
+## Example: Ride-share prices {#ride-share}
 
 Imagine you work for a ride share company, which we will call company A, and you want to know how your competitor's prices compare to yours. We will call your competitor company B. Because you work for company A, you have access to all of the company's data and know that the average price for a ride is $\mu_A = \$19.50$. However, you are only able to obtain a random sample of data on 100 rides from company B. Let's load in this sample data and take a look at it.
 
@@ -319,7 +319,7 @@ rides_t.test$statistic
 rides_t.test$p.value
 
 ```
-`t.test` gives all the same values we saw when using the formulas to calculate these quantities "by hand" via formulas.
+`t.test` gives all the same values we saw when using the formulas to calculate these quantities "by hand."
 
 ### Using regression
 
