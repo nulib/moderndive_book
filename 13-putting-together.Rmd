@@ -265,6 +265,3 @@ Here the slope $b_1 = 10.54$; this means that for every additional minifigure in
 ## Final thoughts and a checklist
 
 As we wrap up this course, take a moment to reflect on what you have learned. You now know how to explore, describe and visualize data. You also know some of the basic principles of statistical theory – the role of randomization and chance, the idea that your data is one version of hypothetically many other versions you could have, the fundamentals of how to use data to test and prove claims. And you know how to apply these principles to real data, to understand uncertainty, to determine when patterns are common or rare, and to test hypotheses. 
-
-
-
