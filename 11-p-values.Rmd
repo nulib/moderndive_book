@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   fig.align='center',
   warning = FALSE
   )
-options(scipen = 99, digits = 3)
+options(scipen = 5, digits = 3)
 # Set random number generator see value for replicable pseudorandomness. 
 set.seed(2018)
 ```

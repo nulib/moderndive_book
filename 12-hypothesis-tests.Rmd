@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   fig.align='center',
   warning = FALSE
   )
-options(scipen = 99, digits = 3)
+options(scipen = 5, digits = 3)
 # Set random number generator see value for replicable pseudorandomness.
 set.seed(2018)
 ```
@@ -213,10 +213,12 @@ Finally, there is one more piece of vocabulary that is important:
 
 In practice, conducting a hypothesis test is straightforward:
 
-* Determine the sampling distribution based upon the null model
-* Find the test-statistic value observed in your data
+* Specify your null and alternative hypotheses based upon your research question
+* Specify an $\alpha$ level based upon the Type I error rate you are willing to tolerate in the context of your research question
+* Determine the sampling distribution of the relevant estimator based upon the null hypothesis
+* Compute the test-statistic value observed in your data
 * Calculate a p-value
-* Reject the null hypothesis if the p-value is less than a pre-defined threshold $\alpha$.
+* Reject the null hypothesis if the p-value is less than your pre-defined threshold $\alpha$.
 
 This last point is important – for the hypothesis test to be valid, **you must pre-specify your threshold, not after you have seen the p-value in your data.**
 
@@ -265,7 +267,7 @@ So of the 24 male files, 21 were selected for promotion, for a proportion of 21/
 The question is however, does this provide *conclusive* evidence that there is gender discrimination in this context? Could a difference in promotion rates of `r observed_point_estimate*100`% still occur by chance, even in a hypothetical world where no gender-based discrimination existed? To answer this question, we can conduct the following hypothesis test:
 
 $$H_0: \pi_m = \pi_f$$
-$$H_1: \pi_m \neq \pi_f,$$
+$$H_A: \pi_m \neq \pi_f,$$
 where $\pi_f$ is the proportion of female files selected for promotion and $\pi_m$ is the proportion of male files selected for promotion. Here the null hypothesis corresponds to the scenario in which there is *no gender discrimination*; that is, males and females are promoted at identical rates. We will specify this test ahead of time to have $\alpha = 0.05$. That is, we are comfortable with a 5% Type I error rate, and we will reject the null hypothesis if $p < 0.05$.
 
 Note the null hypothesis can be rewritten as
@@ -275,11 +277,11 @@ Recall from Chapter \@ref(pvalues) that we calculate the standardized statistic 
 
 $$test\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)}$$
 
-In this example, we have $$test\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_m(1-\pi_m)}{n_m} + \frac{\pi_f(1-\pi_f)}{n_f}}}$$ Note that the null value here is $0$ because our null hypothesis states $\pi_m - \pi_f = 0$. In the hypothesis test context, because we are assuming $\pi_m = \pi_f$, we can use all of the data to compute one *pooled* proportion to plug in for $\pi_m$ and $\pi_f$ in the standard error formula instead of using separate estimates $\hat{\pi}_m$ and $\hat{\pi}_f$. This pooled estimate, which we will denote $\pi_0$ can be calculated by $$\pi_{0} = \frac{\# \ of \ successes_1 + \# of successes_2}{n_1 + n_2}.$$ Therefore, the test statistic is computed by $$test\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_0(1-\pi_0)}{n_m} + \frac{\pi_0(1-\pi_0)}{n_f}}}$$
+In this example, we have $$test\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\pi_m(1-\pi_m)}{n_m} + \frac{\pi_f(1-\pi_f)}{n_f}}}$$ Because our null hypothesis states $\pi_m - \pi_f = 0$, we plug in 0 for our null value. In the hypothesis test context, because we are assuming $\pi_m = \pi_f$, we can use all of the data to compute one *pooled* proportion to plug in for $\pi_m$ and $\pi_f$ in the standard error formula instead of using separate estimates $\hat{\pi}_m$ and $\hat{\pi}_f$. This pooled estimate, which we will denote $\hat{\pi}_0$ can be calculated by $$\hat{\pi}_0 = \frac{\# \ of \ successes_1 + \# of successes_2}{n_1 + n_2}.$$ Therefore, the test statistic is computed by $$test\_stat = \frac{(\hat{\pi}_m - \hat{\pi}_f) - (\pi_m - \pi_f)}{\sqrt{\frac{\hat{\pi}_0(1-\hat{\pi}_0)}{n_m} + \frac{\hat{\pi}_0(1-\hat{\pi}_0)}{n_f}}}=\frac{(\hat{\pi}_m - \hat{\pi}_f) - 0}{\sqrt{\frac{\hat{\pi}_0(1-\hat{\pi}_0)}{n_m} + \frac{\hat{\pi}_0(1-\hat{\pi}_0)}{n_f}}}$$
 
 Think about this intuition for a second: since we are working under the hypothesis that the two parameters $\pi_m$ and $\pi_f$ are equal, it is more efficient to use *all* of the information to estimate *one* parameter than to use half of the data to estimate $\pi_m$ and the other half of the data to estimate $\pi_f$.
 
-In the promotions example, $$\pi_0 = \frac{21 + 14}{24 + 24} = 0.729.$$ We can compute the test statistic with the following code.
+In the promotions example, $$\hat{\pi}_0 = \frac{21 + 14}{24 + 24} = 0.729.$$ We can compute the test statistic with the following code.
 
 ```{r, promotions-t-stat}
 estimates <- promotion_props %>% 
@@ -348,12 +350,12 @@ The p-value indicates that if gender discrimination did not exist (i.e. if the n
 Let's return to our movies example from Section \@ref(imdb), and this time set up a formal hypothesis test. Recall that we were interested in the question of whether or not average IMDB ratings differed for `action` movies ($\mu_1$) vs. `romance` movies ($\mu_2$). We can set up our hypotheses as follows:
 
 $$H_0: \mu_1 = \mu_2$$
-$$H_1: \mu_1 \neq \mu_2$$
+$$H_A: \mu_1 \neq \mu_2$$
 
 Note that we can re-write these as 
 
 $$H_0: \mu_1 - \mu_2 = 0$$
-$$H_1: \mu_1 - \mu_2 \neq 0,$$
+$$H_A: \mu_1 - \mu_2 \neq 0,$$
 so that it's clear our parameter of interest is a difference in two means. We will test this hypothesis at the 95% confidence level (i.e. with $\alpha = 0.05$). 
 
 Recall that we already computed all the relevant values in Section \@ref(t.test) using `t.test`, but we show the code again here. 
@@ -368,13 +370,13 @@ movies_t.test <- t.test(x = romance$rating, y = action$rating)
 movies_t.test
 ```
 
-Because we obtain a p-value of $0.005 < \alpha = 0.05$, we *reject the null hypothesis* and conclude there is sufficient evidence that action and romance movies do not recieve the same average ratings in the IMDB population database. It is important to note that the language of our conclusion must be consistent with how we set up our alternative hypothesis. Because we used a *two-sided* alternative that $\mu_1 \neq \mu_2$ and did not hypothesize a direction before conducting the test (e.g. $\mu_1 < \mu_2$ or $\mu_1 > \mu_2$), our conclusion must also simply conclude that there is *a difference* (i.e. $\mu_1 \neq \mu_2$) but should not specify a direction for that difference. 
+Because we obtain a p-value of $0.005 < \alpha = 0.05$, we *reject the null hypothesis* and conclude there is sufficient evidence that action and romance movies do not recieve the same average ratings in the IMDB population database. 
 
 We could also conduct a hypothesis test for this same problem in the regression framework we demonstrated in Section \@ref(pvalues-regression). Recall we fit the model $$\widehat{rating} = b_0 + b_1*genre,$$
 and said $b_1$ could be interpreted as the difference in means. Recall that the slope $b_1$ in our sample is an estimate of the *population slope* $\beta_1$. Note that assuming there is no difference in means implies $\beta_1 = 0$. Therefore in this framework, our hypotheses would be:
 
 $$H_0: \beta_1 = 0$$
-$$H_1: \beta_1 \neq 0$$
+$$H_A: \beta_1 \neq 0$$
 Let's look again at the results of this model. 
 ```{r}
 movies_model <- lm(rating ~ genre, data = movies_sample)
@@ -387,7 +389,7 @@ We again see the p-value of 0.005, which leads us to conclude there is a true di
 Let's return to our ride share price example from Section \@ref(ride-share). Recall that we wanted to know whether $\mu_B = \$19.50$. We could test this with the following hypotheses, again specifying $\alpha = 0.05$ in advance:
 
 $$H_0: \mu_B = 19.50$$
-$$H_1: \mu_B \neq 19.50$$
+$$H_A: \mu_B \neq 19.50$$
 ```{r, warnings = FALSE, message = FALSE}
 rides_B <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQpOEBZ5zXfOnoIeRxql4X1-djLqCZRkNg4X1yqhdYXCqm_exyaeYDgWaj4KJ2FgpqPZPoDvD71gYEr/pub?gid=0&single=true&output=csv")
 
@@ -401,7 +403,7 @@ Recall that this produced a test-statistic of `r rides_t.test$statistic` and a p
 We also considered this problem in the regression framework with the *intercept only model* $\widehat{price} = b_0$. In this case, our hypotheses are:
 
 $$H_0: \beta_0 = 19.50$$
-$$H_1: \beta_0 \neq 19.50$$
+$$H_A: \beta_0 \neq 19.50$$
 Recall that in order to get the correct test statistic and p-value for this null value (as opposed to the defaul null value of zero in regression), we had to *center* our variable.
 ```{r}
 rides_B <- rides_B %>% 
