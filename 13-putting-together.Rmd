@@ -108,7 +108,7 @@ This dataset includes 6 variables:
 
 **Model**: To answer this, we can use a regression model, treating `small` as a dummy variable:
 	
-	$$\widehat{math} = b_0 + b_1*small$$
+$$\widehat{math} = b_0 + b_1*small$$
 
 **Null Hypothesis**: We can use a **stochastic proof by contradiction** in order to prove that there is a difference. To do so, we begin by assuming that there is **no difference** (our null) and then look to see if our data shows a difference large enough to contradict this. 
 
@@ -145,7 +145,7 @@ beta_U_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTfEw5a
 
 **Model**: We can model the data from University students this using a regression model with only an intercept, since this provides the average value of the outcome. 
 		
-		$$\widehat{Important} = b_0$$
+$$\widehat{Important} = b_0$$
 This can be estimated in R using the following syntax: `lm(important ~ 1, data = beta_U_data)`.
 
 **Null Hypothesis**: We wish to know if the average percent of students in 2019 is different from that in 2002. To answer this, we conduct a **stochastic proof by contradiction**, in which we assume that there is no difference, in which case the average percent of students in 2019 would be 29% just as in 2002. Our null hypothesis is thus that the average percent is 29%.
