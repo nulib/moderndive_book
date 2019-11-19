@@ -115,7 +115,7 @@ $$\widehat{math} = b_0 + b_1*small$$
 $$H_0: \beta_1 = 0$$
 $$H_A: \beta_1 \neq 0$$
 
-Following conventions and guidelines in education research, we designed this study with a Type I error of 5%. 
+Because the treatment of having small class sizes is fairly costly (as it would require hiring and paying more teachers), we want to make sure we have pretty strong evidence that it is effective before recommending that it should be adopted as a policy. Therefore, we design our test to have a Type I error of $\alpha = 0.01$. That is, we will only tolerate a 1% probability of falsely finding the treatment to be effective when in fact it is not, so we will only reject the null hypothesis if $p < 0.01.$ 
 
 **Estimate**: Our estimated model is found in the table below.
 
@@ -125,9 +125,9 @@ summary(star_model)
 ```
 In this output, we can see that on average, students in small classes scored 19.46 points more than students in the regular-sized classes. We can use the statistic $$test\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)} = \frac{b_1 - 0}{SE(b_1)} = \frac{19.46}{7.82} = 2.49$$ to determine the probability that we would see a value this large if in fact there was no effect of class size. The p-value of $0.014$ reported in the regression output indicates that we would see an effect this large if there was actually no effect in about 1.4% of samples. 
 
-**Conclusion**: Since the p-value is 1.4%, which is less than 5%, reject our null hypothesis and conclude that the class-size reduction *did* increase learning. Furthermore, since students were randomized to these different class sizes, the effect we estimate indicates that being in a small class **causes** students to improve by, on average, 19.5 points. However, since this school was not randomly selected from a population, it is **difficult to generalize** the results beyond this school. 
+**Conclusion**: Since the p-value is 1.4%, which is greater than 1%, we fail to reject our null hypothesis and therefore conclude that there is insufficient evidence that class-size reduction increased learning. Note that because this school was not randomly selected from a population, it is **difficult to generalize** the results beyond this school. 
 
-## Example: Estimate a mean 
+## Example: Estimate a proportion 
 
 The General Social Survey is an annual probability survey of American adults. Randomly selected adults are contacted via telephone and asked questions regarding their attitudes and experiences. In 2002, one question asked,
 
@@ -139,23 +139,22 @@ In 2008, there was an economic downturn and increasing numbers of young adults r
 
 ```{r, message = FALSE, echo = FALSE}
 beta_U_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTfEw5anFVvZ6-lFXxhmeBdTJDkcJvJz-gHQxVwBARIMOouvpd6QwxJB190k3oxDCSjB6PqiEG0exey/pub?gid=0&single=true&output=csv")
+
+glimpse(beta_U_data)
 ```
+
+The variable `important` has a value of 1 if the student answered "extremely important" and a value of 0 otherwise. 
 
 **Question**: Do Beta University students in 2019 think it is as important for a young person to not live with their parents as people did in 2002? 
 
-**Model**: We can model the data from University students this using a regression model with only an intercept, since this provides the average value of the outcome. 
-		
-$$\widehat{Important} = b_0$$
-This can be estimated in R using the following syntax: `lm(important ~ 1, data = beta_U_data)`.
+**Null Hypothesis**: We wish to know if the average percent of students in 2019 is different from that in 2002. To answer this, we conduct a **stochastic proof by contradiction**, in which we assume that the percent of students in 2019 would be 29% just as in 2002. Our null hypothesis is thus that the proportion is 0.29.
 
-**Null Hypothesis**: We wish to know if the average percent of students in 2019 is different from that in 2002. To answer this, we conduct a **stochastic proof by contradiction**, in which we assume that there is no difference, in which case the average percent of students in 2019 would be 29% just as in 2002. Our null hypothesis is thus that the average percent is 29%.
-
-$$H_0: \beta_0 = 0.29$$
-$$H_A: \beta_0 \neq 0.29$$
+$$H_0: \pi = 0.29$$
+$$H_A: \pi \neq 0.29$$
 
 Given the cost of collecting this data and associated trade-offs, we decided to set our Type I error at 10%.
 
-**Estimate**: Let's fit the model and obtain our estimate.
+**Estimate**: Let's use `prop.test()` to obtain our estimate. Recall that `prop.test()` requires an argument `x` that gives the counts of "successes," which in this case means the number of people who responded "extremely important" (i.e. `important == 1` in the data), and an argument `n` for the total number of "trials," which in this case means the total number of people surveyed (i.e. `n = 100`). 
 
 ```{r, echo = FALSE, eval = FALSE}
 set.seed(43)
@@ -178,23 +177,36 @@ if(!file.exists("data/beta_U_data.csv")){
 ```
 
 ```{r}
+beta_U_summary <- beta_U_data %>% 
+  summarize(important = sum(important),
+            n = n())
+beta_U_summary
+```
+
+The default for `prop.test()` assumes the null hypothesis is $\pi = 0.5$, so we need to override that here by specifying `p = 0.29`. 
+```{r}
+prop.test(x = beta_U_summary$important, n = beta_U_summary$n, p = 0.29)
+```
+
+```{r, eval = FALSE, echo = FALSE}
+#regression framework
 univ_model <- lm(important ~ 1, data = beta_U_data)
 summary(univ_model)
 ```
 
-Importantly, this table automatically reports a p-value for the null hypothesis that the average outcome is 0% (i.e. $\beta_0 = 0$). However, this is not the null hypothesis we are interested in. Instead, we will need to conduct our analysis manually, using
-	$$test\_stat = \frac{b_0 - 0.29}{SE(b_0)} = \frac{0.32 - 0.29}{0.0469} = 0.64$$
-Since we have a sample of n = 100, we can compare this value to a t-distribution with $n – 1 = 99$ degrees of freedom (which is equivalent to the standard normal distribution). `2*pt(-0.64, df = 99)` = `r 2*pt(-0.64, df = 99)`
+<!-- Importantly, this table automatically reports a p-value for the null hypothesis that the average outcome is 0% (i.e. $\beta_0 = 0$). However, this is not the null hypothesis we are interested in. Instead, we will need to conduct our analysis manually, using -->
+<!-- 	$$test\_stat = \frac{b_0 - 0.29}{SE(b_0)} = \frac{0.32 - 0.29}{0.0469} = 0.64$$ -->
+<!-- Since we have a sample of n = 100, we can compare this value to a t-distribution with $n – 1 = 99$ degrees of freedom (which is equivalent to the standard normal distribution). `2*pt(-0.64, df = 99)` = `r 2*pt(-0.64, df = 99)` -->
 
-That is, if in fact 29% of Beta University undergraduates felt strongly that young adults needed to not live at home, then we would observe a value this different (32%) in our sample in about 52% of random samples collected in the same way.
+This results in a p-value of $0.6$. That is, if in fact 29% of Beta University undergraduates felt strongly that young adults needed to not live at home, then we would observe a value this different (32%) in our sample in about 60% of random samples collected in the same way.
 
 **Conclusion**: Since our p-value is greater than the stated 10% Type I error, we would *not* reject our null hypothesis. We can thus conclude that there is **not enough evidence** to suggest that the percent of students that feel that young adults should not live at home is different at Beta University in 2019 than in the general public in 2002. Importantly, this result only generalizes to all Beta University students if the sample was collected randomly. If it was collected based upon convenience, these results might not generalize. More information would be required to determine this. 
 
 ## Example: Estimate the relationship between two variables
 
-Let’s return to the Lego dataset we explored in the beginning of this course. One of the authors of this book is both a huge Harry Potter fan and a Lego connoisseur. After buying a few of these sets, he began to wonder if there was a relationship between the number of minifigures in these sets and the price of the set. To answer this, he returned to the `legosets` data, focusing only on the subset relevant to this question.
+Let’s return to the Lego dataset we explored in the beginning of this course. One of the authors of this book is both a huge Harry Potter fan and a Lego connoisseur. After buying a few of these sets, he began to wonder about the relationship between the number of minifigures in these sets and the price of the set. To answer this, he returned to the `legosets` data, focusing only on the subset relevant to this question.
 
-**Question**: Is there a relationship between the number of minifigures in a Harry Potter lego set and the price of the set? 
+**Question**: What is the relationship between the number of minifigures in a Harry Potter lego set and the price of the set? 
 
 Let's load in the data, create the relevant Harry Potter subset, and `skim` the relevant variables. Recall that `USD_MSRP` is our price variable in US dollars.
 
@@ -246,22 +258,31 @@ This model can be estimated in R using the following syntax.
 lego_model <- lm(USD_MSRP ~ Minifigures, data = legosets_HP)
 ```
 
-**Null hypothesis**: Recalling that we seek to prove that there is a relationship, we invoke a **stochastic proof by contradiction** by assuming that there is **no relationship** between the number of minifigures and price. In the model, this means assuming that the slope $\beta_1 = 0$. 
+Note that we do not necessarily need to use a hypothesis test here to make a *decision* about anything; rather, we are interested in simply *estimating* the magnitude of the relationship between minifigures and price in the population of Harry Potter legosets. Therefore, we can simply construct a confidence interval, rather than conducting a hypothesis test.  
 
-We decide to use a small Type I error (1%) for this test.
+<!-- **Null hypothesis**: Recalling that we seek to prove that there is a relationship, we invoke a **stochastic proof by contradiction** by assuming that there is **no relationship** between the number of minifigures and price. In the model, this means assuming that the slope $\beta_1 = 0$.  -->
 
-**Estimate**: We can see estimates from our data using `summary(lego_model)`, which provides us an estimate of this relationship. 
+<!-- We decide to use a small Type I error (1%) for this test. -->
+
+**Estimate**: We can obtain our estimate $b_1$ from our data using `summary(lego_model)`, which provides us an estimate of this relationship. 
 
 ```{r}
 summary(lego_model)
 ```
 
-Here the slope $b_1 = 10.54$; this means that for every additional minifigure in a Harry Potter lego set, the average price increases by \$10.54. Is this strong enough evidence to reject our null hypothesis? Since the null hypothesis is that $\beta_1 = 0$, we can use the built-in results from the model, which indicates that the p-value = `4e-13`. Note this is written in scientific notation $4*10^{-13} = 0.0000000000004$. Thus, if in fact there was no relationship between the number of minifigures and price, we would expect to find a slope this different in only a tiny percentage of samples. 
+Here the slope $b_1 = 10.54$; this means that for every additional minifigure in a Harry Potter lego set, the average price increases by \$10.54. How confident are we in this estimate? Is it precise? We can use the function `confint()` to construct a 95% confidence interval.
+
+```{r}
+confint(lego_model)
+```
+
+**Conclusion**: We are 95% confident that the true relationship between minifugures and price, $\beta_1$, is captured in the interval [8.38, 12.70]. Notably, this relationship cannot be generalized to all lego sets – only Harry Potter legosets. 
+
+<!-- Is this strong enough evidence to reject our null hypothesis? Since the null hypothesis is that $\beta_1 = 0$, we can use the built-in results from the model, which indicates that the p-value = `4e-13`. Note this is written in scientific notation $4*10^{-13} = 0.0000000000004$. Thus, if in fact there was no relationship between the number of minifigures and price, we would expect to find a slope this different in only a tiny percentage of samples. 
+
+**Conclusion**: Since our p-value is less than our pre-set Type I error (1%), we can reject the null hypothesis, thus concluding that there is a relationship between the number of minifigures and the price for Harry Potter lego sets. Notably, this relationship cannot be generalized to all lego sets – only Harry Potter legosets.  -->
 
 
-**Conclusion**: Since our p-value is less than our pre-set Type I error (1%), we can reject the null hypothesis, thus concluding that there is a relationship between the number of minifigures and the price for Harry Potter lego sets. Notably, this relationship cannot be generalized to all lego sets – only Harry Potter legosets. 
-
-
-## Final thoughts and a checklist
+## Final thoughts
 
 As we wrap up this course, take a moment to reflect on what you have learned. You now know how to explore, describe and visualize data. You also know some of the basic principles of statistical theory – the role of randomization and chance, the idea that your data is one version of hypothetically many other versions you could have, the fundamentals of how to use data to test and prove claims. And you know how to apply these principles to real data, to understand uncertainty, to determine when patterns are common or rare, and to test hypotheses. 
