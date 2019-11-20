@@ -18,6 +18,10 @@ options(scipen = 5, digits = 3)
 set.seed(2018)
 ```
 
+
+
+Over the course of this book, you have been introduced to methods for data cleaning, visualization, and analysis (Part I) and the underlying theory of estimation, generalizability, and causal inference (Parts II & III). In this chapter, we put all of these methods and theory together, illustrating how descriptive and inferential statistics can be used with real data. 
+
 ### Needed Packages {-}
 
 Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). If needed, read Section \@ref(packages) for information on how to install and load R packages.
@@ -35,8 +39,6 @@ library(patchwork)
 library(scales)
 ```
 
-
-Over the course of this book, you have been introduced to methods for data cleaning, visualization, and analysis (Part I) and the underlying theory of estimation, generalizability, and causal inference (Parts II & III). In this chapter, we put all of these methods and theory together, illustrating how descriptive and inferential statistics can be used with real data. 
 
 ## A general process for using statistics
 
@@ -90,7 +92,7 @@ if(!file.exists("data/star_data.csv")){
 }
 ```
 
-```{r, message = FALSE, echo = FALSE}
+```{r, message = FALSE}
 star_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTluVgdD7hdPLkKPMpN3OZjpBdZ1HloCGEQ1abcgfcWJHGYQppUGyXsGaPz74XQRwaMobDFLZgN3caU/pub?gid=0&single=true&output=csv")
 glimpse(star_data)
 ```
@@ -115,7 +117,7 @@ $$\widehat{math} = b_0 + b_1*small$$
 $$H_0: \beta_1 = 0$$
 $$H_A: \beta_1 \neq 0$$
 
-Because the treatment of having small class sizes is fairly costly (as it would require hiring and paying more teachers), we want to make sure we have pretty strong evidence that it is effective before recommending that it should be adopted as a policy. Therefore, we design our test to have a Type I error of $\alpha = 0.01$. That is, we will only tolerate a 1% probability of falsely finding the treatment to be effective when in fact it is not, so we will only reject the null hypothesis if $p < 0.01.$ 
+Notice here that the *population parameter* we are interested in is $\beta_1$, which we estimate by the *sample statistic* $b_1$ in our model. Because the treatment of having small class sizes is fairly costly (as it would require hiring and paying more teachers), we want to make sure we have pretty strong evidence that it is effective before recommending that it should be adopted as a policy. Therefore, we design our test to have a Type I error of $\alpha = 0.01$. That is, we are only willing to tolerate a 1% probability of falsely finding the treatment to be effective when in fact it is not, so we will only reject the null hypothesis if $p < 0.01.$ 
 
 **Estimate**: Our estimated model is found in the table below.
 
@@ -123,9 +125,9 @@ Because the treatment of having small class sizes is fairly costly (as it would 
 star_model <- lm(math ~ small, data = star_data)
 summary(star_model)
 ```
-In this output, we can see that on average, students in small classes scored 19.46 points more than students in the regular-sized classes. We can use the statistic $$test\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)} = \frac{b_1 - 0}{SE(b_1)} = \frac{19.46}{7.82} = 2.49$$ to determine the probability that we would see a value this large if in fact there was no effect of class size. The p-value of $0.014$ reported in the regression output indicates that we would see an effect this large if there was actually no effect in about 1.4% of samples. 
+In this output, we can see that on average, students in small classes scored 19.46 points more than students in the regular-sized classes. We can use the values from the model output to compute the statistic $$test\_stat = \frac{Estimate - Null \ \ value}{SE(Estimate)} = \frac{b_1 - 0}{SE(b_1)} = \frac{19.46}{7.82} = 2.49,$$ which will help us to determine the probability that we would see a value this large if in fact there was no effect of class size. The p-value of $0.014$ reported in the regression output indicates that we would see an effect this large if there was actually no effect in about 1.4% of samples. Note this is the same p-value we would obtain by using the `pt()` function, our `t value` (i.e. $test\_stat$), and the appropriate `degrees of freedom`: `pt(2.49, df = (137 - 2), lower.tail = FALSE)*2 = 0.014`.
 
-**Conclusion**: Since the p-value is 1.4%, which is greater than 1%, we fail to reject our null hypothesis and therefore conclude that there is insufficient evidence that class-size reduction increased learning. Note that because this school was not randomly selected from a population, it is **difficult to generalize** the results beyond this school. 
+**Conclusion**: Since the p-value is 1.4%, which is greater than 1% ($p > \alpha$), we fail to reject our null hypothesis and therefore conclude that there is **insufficient evidence** that class-size reduction increased learning. Note that because this school was not randomly selected from a population, it is **difficult to generalize** the results beyond this school. 
 
 ## Example: Estimate a proportion 
 
@@ -147,7 +149,7 @@ The variable `important` has a value of 1 if the student answered "extremely imp
 
 **Question**: Do Beta University students in 2019 think it is as important for a young person to not live with their parents as people did in 2002? 
 
-**Null Hypothesis**: We wish to know if the average percent of students in 2019 is different from that in 2002. To answer this, we conduct a **stochastic proof by contradiction**, in which we assume that the percent of students in 2019 would be 29% just as in 2002. Our null hypothesis is thus that the proportion is 0.29.
+**Null Hypothesis**: We wish to know if the average percent of students in 2019 is different from that in 2002. To answer this, we conduct a **stochastic proof by contradiction**, in which we assume that the percent of students in 2019 would be 29% just as in 2002. Our null hypothesis is thus that the *proportion* is 0.29.
 
 $$H_0: \pi = 0.29$$
 $$H_A: \pi \neq 0.29$$
@@ -198,9 +200,9 @@ summary(univ_model)
 <!-- 	$$test\_stat = \frac{b_0 - 0.29}{SE(b_0)} = \frac{0.32 - 0.29}{0.0469} = 0.64$$ -->
 <!-- Since we have a sample of n = 100, we can compare this value to a t-distribution with $n – 1 = 99$ degrees of freedom (which is equivalent to the standard normal distribution). `2*pt(-0.64, df = 99)` = `r 2*pt(-0.64, df = 99)` -->
 
-This results in a p-value of $0.6$. That is, if in fact 29% of Beta University undergraduates felt strongly that young adults needed to not live at home, then we would observe a value this different (32%) in our sample in about 60% of random samples collected in the same way.
+We see that the estimate from our sample is $\hat{\pi} = 0.32$. This results in a p-value of $0.6$. That is, if in fact 29% of Beta University undergraduates felt strongly that young adults needed to not live at home, then we would observe a value this different (32%) in our sample in about 60% of random samples collected in the same way.
 
-**Conclusion**: Since our p-value is greater than the stated 10% Type I error, we would *not* reject our null hypothesis. We can thus conclude that there is **not enough evidence** to suggest that the percent of students that feel that young adults should not live at home is different at Beta University in 2019 than in the general public in 2002. Importantly, this result only generalizes to all Beta University students if the sample was collected randomly. If it was collected based upon convenience, these results might not generalize. More information would be required to determine this. 
+**Conclusion**: Since our p-value is greater than the stated 10% Type I error, we would *not* reject our null hypothesis. We can thus conclude that there is **not enough evidence** to suggest that the percent of students that feel that young adults should not live at home is different at Beta University in 2019 than in the general public in 2002. Note that because the confidence interval `[0.232, 0.422]` contains the hypothesized value of 0.29, this is also an indication that there is insufficient evidence to overturn the null hypothesis. Importantly, this result only generalizes to all Beta University students if the sample was collected randomly. If it was collected based upon convenience, these results might not generalize. More information would be required to determine this. 
 
 ## Example: Estimate the relationship between two variables
 
@@ -253,7 +255,7 @@ Skim summary statistics
 	
 $$\widehat{USD\_MSRP} = b_0 + b_1*Minifigures$$
 
-This model can be estimated in R using the following syntax. 
+This model can be estimated in R using the following syntax:
 ```{r}
 lego_model <- lm(USD_MSRP ~ Minifigures, data = legosets_HP)
 ```
