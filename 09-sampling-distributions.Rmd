@@ -536,11 +536,11 @@ In Figure \@ref(fig:s2-bias-3) we visualize the sampling distribution of $s_n^2$
 ggplot(variances) + 
   geom_histogram(aes(x = s2_n, fill = "red"), color = "white", alpha = 0.5) +
   geom_histogram(aes(x = s2, fill = "blue"), color = "white", alpha = 0.5) +
-  geom_vline(xintercept = mean(variances$s2_n), color = "red") +
-  geom_vline(xintercept = mean(variances$s2), color = "blue") +
-  geom_vline(xintercept = var(gapminder_2016$life_expectancy), linetype = 2) +
-  scale_fill_manual(name="Estimator", values = c('red' = 'red','blue' = 'blue'), 
-          labels = expression(s_n^2, s^2)) +
+  geom_vline(xintercept = mean(variances$s2_n), color = "red", size = 1) +
+  geom_vline(xintercept = mean(variances$s2), color = "blue", size = 1) +
+  geom_vline(xintercept = var(gapminder_2016$life_expectancy), linetype = 2, size = 1) +
+  scale_fill_manual(name="Estimator", values = c('blue' = 'blue', 'red' = 'red'), 
+          labels = expression(s^2, s[n]^2)) +
   xlab("Sample variance estimate") +
   ylab("Number of samples")
 ```
