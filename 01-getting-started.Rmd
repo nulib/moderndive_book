@@ -357,10 +357,11 @@ If you are completely new to the world of coding, R, and RStudio and feel you co
 ![](images/gettting-used-to-R.png){ height=3.5in }
 </center>
 
-### What's to come?
+<!-- ### What's to come? -->
 
-As we stated earlier however, the best way to learn R is to learn by doing. We now start the "data science" portion of the book in Chapter \@ref(viz) with what we feel is the most important tool in a data scientist's toolbox: data visualization. We will continue to explore the data included in the `nycflights13` package through data visualization. We'll see that data visualization is a powerful tool to add to our toolbox for data exploring that provides additional insight to what the `View()` and `glimpse()` functions can provide. 
+<!-- As we stated earlier however, the best way to learn R is to learn by doing. We now start the "data science" portion of the book in Chapter \@ref(viz) with what we feel is the most important tool in a data scientist's toolbox: data visualization. We will continue to explore the data included in the `nycflights13` package through data visualization. We'll see that data visualization is a powerful tool to add to our toolbox for data exploring that provides additional insight to what the `View()` and `glimpse()` functions can provide.  -->
 
-```{r echo=FALSE, fig.cap="ModernDive flowchart", out.width='110%', fig.align='center'}
-knitr::include_graphics("images/flowcharts/flowchart/flowchart.004.png")
-```
+<!-- ```{r echo=FALSE, fig.cap="ModernDive flowchart", out.width='110%', fig.align='center'} -->
+<!-- knitr::include_graphics("images/flowcharts/flowchart/flowchart.004.png") -->
+<!-- ``` -->
+
