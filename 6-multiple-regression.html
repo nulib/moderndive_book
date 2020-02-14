@@ -1,0 +1,2698 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 Multiple Regression | Introduction to Statistics and Data Science</title>
+  <meta name="description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
+  <meta name="generator" content="bookdown 0.17.2 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 Multiple Regression | Introduction to Statistics and Data Science" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://nulib.github.io/moderndive_book/" />
+  <meta property="og:image" content="https://nulib.github.io/moderndive_book/images/logos/book_cover.png" />
+  <meta property="og:description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
+  <meta name="github-repo" content="nulib/moderndive_book" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Multiple Regression | Introduction to Statistics and Data Science" />
+  
+  <meta name="twitter:description" content="An open-source and fully-reproducible electronic textbook for teaching statistical inference using tidyverse data science tools." />
+  <meta name="twitter:image" content="https://nulib.github.io/moderndive_book/images/logos/book_cover.png" />
+
+<meta name="author" content="Chester Ismay, Albert Y. Kim, Arend M. Kuyper, Elizabeth Tipton, and Kaitlyn G. Fitzgerald" />
+
+
+<meta name="date" content="2020-02-14" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <link rel="apple-touch-icon-precomposed" sizes="152x152" href="images/logos/favicons/apple-touch-icon.png" />
+  <link rel="shortcut icon" href="images/logos/favicons/favicon.ico" type="image/x-icon" />
+<link rel="prev" href="5-regression.html"/>
+<link rel="next" href="7-causality.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<link href="libs/dygraphs-1.1.1/dygraph.css" rel="stylesheet" />
+<script src="libs/dygraphs-1.1.1/dygraph-combined.js"></script>
+<script src="libs/dygraphs-1.1.1/shapes.js"></script>
+<script src="libs/moment-2.8.4/moment.js"></script>
+<script src="libs/moment-timezone-0.2.5/moment-timezone-with-data.js"></script>
+<script src="libs/moment-fquarter-1.0.0/moment-fquarter.min.js"></script>
+<script src="libs/dygraphs-binding-1.1.1.6/dygraphs.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a><ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#introduction-for-students"><i class="fa fa-check"></i>Introduction for students</a><ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#what-you-will-learn-from-this-book"><i class="fa fa-check"></i>What you will learn from this book</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#datascience-pipeline"><i class="fa fa-check"></i>Data/science pipeline</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#reproducible-research"><i class="fa fa-check"></i>Reproducible research</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="1-getting-started.html"><a href="1-getting-started.html"><i class="fa fa-check"></i><b>1</b> Getting Started with Data in R</a><ul>
+<li class="chapter" data-level="1.1" data-path="1-getting-started.html"><a href="1-getting-started.html#r-rstudio"><i class="fa fa-check"></i><b>1.1</b> What are R and RStudio?</a><ul>
+<li class="chapter" data-level="1.1.1" data-path="1-getting-started.html"><a href="1-getting-started.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>1.1.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="1.1.2" data-path="1-getting-started.html"><a href="1-getting-started.html#using-r-via-rstudio"><i class="fa fa-check"></i><b>1.1.2</b> Using R via RStudio</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="1-getting-started.html"><a href="1-getting-started.html#code"><i class="fa fa-check"></i><b>1.2</b> How do I code in R?</a><ul>
+<li class="chapter" data-level="1.2.1" data-path="1-getting-started.html"><a href="1-getting-started.html#programming-concepts"><i class="fa fa-check"></i><b>1.2.1</b> Basic programming concepts and terminology</a></li>
+<li class="chapter" data-level="1.2.2" data-path="1-getting-started.html"><a href="1-getting-started.html#errors-warnings-and-messages"><i class="fa fa-check"></i><b>1.2.2</b> Errors, warnings, and messages</a></li>
+<li class="chapter" data-level="1.2.3" data-path="1-getting-started.html"><a href="1-getting-started.html#tips-on-learning-to-code"><i class="fa fa-check"></i><b>1.2.3</b> Tips on learning to code</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="1-getting-started.html"><a href="1-getting-started.html#packages"><i class="fa fa-check"></i><b>1.3</b> What are R packages?</a><ul>
+<li class="chapter" data-level="1.3.1" data-path="1-getting-started.html"><a href="1-getting-started.html#package-installation"><i class="fa fa-check"></i><b>1.3.1</b> Package installation</a></li>
+<li class="chapter" data-level="1.3.2" data-path="1-getting-started.html"><a href="1-getting-started.html#package-loading"><i class="fa fa-check"></i><b>1.3.2</b> Package loading</a></li>
+<li class="chapter" data-level="1.3.3" data-path="1-getting-started.html"><a href="1-getting-started.html#package-use"><i class="fa fa-check"></i><b>1.3.3</b> Package use</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="1-getting-started.html"><a href="1-getting-started.html#nycflights13"><i class="fa fa-check"></i><b>1.4</b> Explore your first dataset</a><ul>
+<li class="chapter" data-level="1.4.1" data-path="1-getting-started.html"><a href="1-getting-started.html#nycflights13-package"><i class="fa fa-check"></i><b>1.4.1</b> <code>nycflights13</code> package</a></li>
+<li class="chapter" data-level="1.4.2" data-path="1-getting-started.html"><a href="1-getting-started.html#flights-data-frame"><i class="fa fa-check"></i><b>1.4.2</b> <code>flights</code> data frame</a></li>
+<li class="chapter" data-level="1.4.3" data-path="1-getting-started.html"><a href="1-getting-started.html#exploredataframes"><i class="fa fa-check"></i><b>1.4.3</b> Exploring data frames</a></li>
+<li class="chapter" data-level="1.4.4" data-path="1-getting-started.html"><a href="1-getting-started.html#help-files"><i class="fa fa-check"></i><b>1.4.4</b> Help files</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="1-getting-started.html"><a href="1-getting-started.html#conclusion"><i class="fa fa-check"></i><b>1.5</b> Conclusion</a><ul>
+<li class="chapter" data-level="1.5.1" data-path="1-getting-started.html"><a href="1-getting-started.html#additional-resources"><i class="fa fa-check"></i><b>1.5.1</b> Additional resources</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>I Data Exploration via the tidyverse</b></span></li>
+<li class="chapter" data-level="2" data-path="2-viz.html"><a href="2-viz.html"><i class="fa fa-check"></i><b>2</b> Data Visualization</a><ul>
+<li class="chapter" data-level="" data-path="2-viz.html"><a href="2-viz.html#needed-packages"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="2.1" data-path="2-viz.html"><a href="2-viz.html#grammarofgraphics"><i class="fa fa-check"></i><b>2.1</b> The Grammar of Graphics</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="2-viz.html"><a href="2-viz.html#components-of-the-grammar"><i class="fa fa-check"></i><b>2.1.1</b> Components of the Grammar</a></li>
+<li class="chapter" data-level="2.1.2" data-path="2-viz.html"><a href="2-viz.html#gapminder"><i class="fa fa-check"></i><b>2.1.2</b> Gapminder data</a></li>
+<li class="chapter" data-level="2.1.3" data-path="2-viz.html"><a href="2-viz.html#other-components"><i class="fa fa-check"></i><b>2.1.3</b> Other components</a></li>
+<li class="chapter" data-level="2.1.4" data-path="2-viz.html"><a href="2-viz.html#ggplot2-package"><i class="fa fa-check"></i><b>2.1.4</b> ggplot2 package</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="2-viz.html"><a href="2-viz.html#FiveNG"><i class="fa fa-check"></i><b>2.2</b> Five Named Graphs - The 5NG</a></li>
+<li class="chapter" data-level="2.3" data-path="2-viz.html"><a href="2-viz.html#scatterplots"><i class="fa fa-check"></i><b>2.3</b> 5NG#1: Scatterplots</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="2-viz.html"><a href="2-viz.html#geompoint"><i class="fa fa-check"></i><b>2.3.1</b> Scatterplots via geom_point</a></li>
+<li class="chapter" data-level="2.3.2" data-path="2-viz.html"><a href="2-viz.html#overplotting"><i class="fa fa-check"></i><b>2.3.2</b> Over-plotting</a></li>
+<li class="chapter" data-level="2.3.3" data-path="2-viz.html"><a href="2-viz.html#summary"><i class="fa fa-check"></i><b>2.3.3</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="2-viz.html"><a href="2-viz.html#linegraphs"><i class="fa fa-check"></i><b>2.4</b> 5NG#2: Linegraphs</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="2-viz.html"><a href="2-viz.html#geomline"><i class="fa fa-check"></i><b>2.4.1</b> Linegraphs via geom_line</a></li>
+<li class="chapter" data-level="2.4.2" data-path="2-viz.html"><a href="2-viz.html#summary-1"><i class="fa fa-check"></i><b>2.4.2</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="2-viz.html"><a href="2-viz.html#histograms"><i class="fa fa-check"></i><b>2.5</b> 5NG#3: Histograms</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="2-viz.html"><a href="2-viz.html#geomhistogram"><i class="fa fa-check"></i><b>2.5.1</b> Histograms via geom_histogram</a></li>
+<li class="chapter" data-level="2.5.2" data-path="2-viz.html"><a href="2-viz.html#adjustbins"><i class="fa fa-check"></i><b>2.5.2</b> Adjusting the bins</a></li>
+<li class="chapter" data-level="2.5.3" data-path="2-viz.html"><a href="2-viz.html#summary-2"><i class="fa fa-check"></i><b>2.5.3</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="2-viz.html"><a href="2-viz.html#facets"><i class="fa fa-check"></i><b>2.6</b> Facets</a></li>
+<li class="chapter" data-level="2.7" data-path="2-viz.html"><a href="2-viz.html#boxplots"><i class="fa fa-check"></i><b>2.7</b> 5NG#4: Boxplots</a><ul>
+<li class="chapter" data-level="2.7.1" data-path="2-viz.html"><a href="2-viz.html#geomboxplot"><i class="fa fa-check"></i><b>2.7.1</b> Boxplots via geom_boxplot</a></li>
+<li class="chapter" data-level="2.7.2" data-path="2-viz.html"><a href="2-viz.html#summary-3"><i class="fa fa-check"></i><b>2.7.2</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="2.8" data-path="2-viz.html"><a href="2-viz.html#geombar"><i class="fa fa-check"></i><b>2.8</b> 5NG#5: Barplots</a><ul>
+<li class="chapter" data-level="2.8.1" data-path="2-viz.html"><a href="2-viz.html#barplots-via-geom_bar-or-geom_col"><i class="fa fa-check"></i><b>2.8.1</b> Barplots via geom_bar or geom_col</a></li>
+<li class="chapter" data-level="2.8.2" data-path="2-viz.html"><a href="2-viz.html#must-avoid-pie-charts"><i class="fa fa-check"></i><b>2.8.2</b> Must avoid pie charts!</a></li>
+<li class="chapter" data-level="2.8.3" data-path="2-viz.html"><a href="2-viz.html#two-categ-barplot"><i class="fa fa-check"></i><b>2.8.3</b> Two categorical variables</a></li>
+<li class="chapter" data-level="2.8.4" data-path="2-viz.html"><a href="2-viz.html#summary-4"><i class="fa fa-check"></i><b>2.8.4</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="2.9" data-path="2-viz.html"><a href="2-viz.html#conclusion-1"><i class="fa fa-check"></i><b>2.9</b> Conclusion</a><ul>
+<li class="chapter" data-level="2.9.1" data-path="2-viz.html"><a href="2-viz.html#summary-table"><i class="fa fa-check"></i><b>2.9.1</b> Summary table</a></li>
+<li class="chapter" data-level="2.9.2" data-path="2-viz.html"><a href="2-viz.html#argument-specification"><i class="fa fa-check"></i><b>2.9.2</b> Argument specification</a></li>
+<li class="chapter" data-level="2.9.3" data-path="2-viz.html"><a href="2-viz.html#additional-resources-1"><i class="fa fa-check"></i><b>2.9.3</b> Additional resources</a></li>
+<li class="chapter" data-level="2.9.4" data-path="2-viz.html"><a href="2-viz.html#whats-to-come-3"><i class="fa fa-check"></i><b>2.9.4</b> What’s to come</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-wrangling.html"><a href="3-wrangling.html"><i class="fa fa-check"></i><b>3</b> Data Wrangling</a><ul>
+<li class="chapter" data-level="" data-path="3-wrangling.html"><a href="3-wrangling.html#needed-packages-1"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="3.1" data-path="3-wrangling.html"><a href="3-wrangling.html#piping"><i class="fa fa-check"></i><b>3.1</b> The pipe operator: <code>%&gt;%</code></a></li>
+<li class="chapter" data-level="3.2" data-path="3-wrangling.html"><a href="3-wrangling.html#filter"><i class="fa fa-check"></i><b>3.2</b> <code>filter</code> rows</a></li>
+<li class="chapter" data-level="3.3" data-path="3-wrangling.html"><a href="3-wrangling.html#summarize"><i class="fa fa-check"></i><b>3.3</b> <code>summarize</code> variables</a></li>
+<li class="chapter" data-level="3.4" data-path="3-wrangling.html"><a href="3-wrangling.html#groupby"><i class="fa fa-check"></i><b>3.4</b> <code>group_by</code> rows</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="3-wrangling.html"><a href="3-wrangling.html#grouping-by-more-than-one-variable"><i class="fa fa-check"></i><b>3.4.1</b> Grouping by more than one variable</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="3-wrangling.html"><a href="3-wrangling.html#mutate"><i class="fa fa-check"></i><b>3.5</b> <code>mutate</code> existing variables</a></li>
+<li class="chapter" data-level="3.6" data-path="3-wrangling.html"><a href="3-wrangling.html#arrange"><i class="fa fa-check"></i><b>3.6</b> <code>arrange</code> and sort rows</a></li>
+<li class="chapter" data-level="3.7" data-path="3-wrangling.html"><a href="3-wrangling.html#joins"><i class="fa fa-check"></i><b>3.7</b> <code>join</code> data frames</a><ul>
+<li class="chapter" data-level="3.7.1" data-path="3-wrangling.html"><a href="3-wrangling.html#matching-key-variable-names"><i class="fa fa-check"></i><b>3.7.1</b> Matching “key” variable names</a></li>
+<li class="chapter" data-level="3.7.2" data-path="3-wrangling.html"><a href="3-wrangling.html#diff-key"><i class="fa fa-check"></i><b>3.7.2</b> Different “key” variable names</a></li>
+<li class="chapter" data-level="3.7.3" data-path="3-wrangling.html"><a href="3-wrangling.html#multiple-key-variables"><i class="fa fa-check"></i><b>3.7.3</b> Multiple “key” variables</a></li>
+<li class="chapter" data-level="3.7.4" data-path="3-wrangling.html"><a href="3-wrangling.html#normal-forms"><i class="fa fa-check"></i><b>3.7.4</b> Normal forms</a></li>
+</ul></li>
+<li class="chapter" data-level="3.8" data-path="3-wrangling.html"><a href="3-wrangling.html#other-verbs"><i class="fa fa-check"></i><b>3.8</b> Other verbs</a><ul>
+<li class="chapter" data-level="3.8.1" data-path="3-wrangling.html"><a href="3-wrangling.html#select"><i class="fa fa-check"></i><b>3.8.1</b> <code>select</code> variables</a></li>
+<li class="chapter" data-level="3.8.2" data-path="3-wrangling.html"><a href="3-wrangling.html#rename"><i class="fa fa-check"></i><b>3.8.2</b> <code>rename</code> variables</a></li>
+<li class="chapter" data-level="3.8.3" data-path="3-wrangling.html"><a href="3-wrangling.html#top_n-values-of-a-variable"><i class="fa fa-check"></i><b>3.8.3</b> <code>top_n</code> values of a variable</a></li>
+</ul></li>
+<li class="chapter" data-level="3.9" data-path="3-wrangling.html"><a href="3-wrangling.html#conclusion-2"><i class="fa fa-check"></i><b>3.9</b> Conclusion</a><ul>
+<li class="chapter" data-level="3.9.1" data-path="3-wrangling.html"><a href="3-wrangling.html#summary-table-1"><i class="fa fa-check"></i><b>3.9.1</b> Summary table</a></li>
+<li class="chapter" data-level="3.9.2" data-path="3-wrangling.html"><a href="3-wrangling.html#additional-resources-2"><i class="fa fa-check"></i><b>3.9.2</b> Additional resources</a></li>
+<li class="chapter" data-level="3.9.3" data-path="3-wrangling.html"><a href="3-wrangling.html#whats-to-come"><i class="fa fa-check"></i><b>3.9.3</b> What’s to come?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-tidy.html"><a href="4-tidy.html"><i class="fa fa-check"></i><b>4</b> Data Importing &amp; “Tidy” Data</a><ul>
+<li class="chapter" data-level="" data-path="4-tidy.html"><a href="4-tidy.html#needed-packages-2"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="4.1" data-path="4-tidy.html"><a href="4-tidy.html#csv"><i class="fa fa-check"></i><b>4.1</b> Importing data</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="4-tidy.html"><a href="4-tidy.html#using-the-console"><i class="fa fa-check"></i><b>4.1.1</b> Using the console</a></li>
+<li class="chapter" data-level="4.1.2" data-path="4-tidy.html"><a href="4-tidy.html#using-rstudios-interface"><i class="fa fa-check"></i><b>4.1.2</b> Using RStudio’s interface</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="4-tidy.html"><a href="4-tidy.html#tidy-data-ex"><i class="fa fa-check"></i><b>4.2</b> Tidy data</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="4-tidy.html"><a href="4-tidy.html#definition-of-tidy-data"><i class="fa fa-check"></i><b>4.2.1</b> Definition of “tidy” data</a></li>
+<li class="chapter" data-level="4.2.2" data-path="4-tidy.html"><a href="4-tidy.html#converting-to-tidy-data"><i class="fa fa-check"></i><b>4.2.2</b> Converting to “tidy” data</a></li>
+<li class="chapter" data-level="4.2.3" data-path="4-tidy.html"><a href="4-tidy.html#nycflights13-package-1"><i class="fa fa-check"></i><b>4.2.3</b> <code>nycflights13</code> package</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="4-tidy.html"><a href="4-tidy.html#case-study-tidy"><i class="fa fa-check"></i><b>4.3</b> Case study: Democracy in Guatemala</a></li>
+<li class="chapter" data-level="4.4" data-path="4-tidy.html"><a href="4-tidy.html#conclusion-3"><i class="fa fa-check"></i><b>4.4</b> Conclusion</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="4-tidy.html"><a href="4-tidy.html#tidyverse-package"><i class="fa fa-check"></i><b>4.4.1</b> <code>tidyverse</code> package</a></li>
+<li class="chapter" data-level="4.4.2" data-path="4-tidy.html"><a href="4-tidy.html#additional-resources-3"><i class="fa fa-check"></i><b>4.4.2</b> Additional resources</a></li>
+<li class="chapter" data-level="4.4.3" data-path="4-tidy.html"><a href="4-tidy.html#whats-to-come-1"><i class="fa fa-check"></i><b>4.4.3</b> What’s to come?</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>II Data Modeling</b></span></li>
+<li class="chapter" data-level="5" data-path="5-regression.html"><a href="5-regression.html"><i class="fa fa-check"></i><b>5</b> Basic Regression</a><ul>
+<li class="chapter" data-level="" data-path="5-regression.html"><a href="5-regression.html#needed-packages-3"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="5.1" data-path="5-regression.html"><a href="5-regression.html#model1"><i class="fa fa-check"></i><b>5.1</b> One numerical explanatory variable</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="5-regression.html"><a href="5-regression.html#model1EDA"><i class="fa fa-check"></i><b>5.1.1</b> Exploratory data analysis</a></li>
+<li class="chapter" data-level="5.1.2" data-path="5-regression.html"><a href="5-regression.html#model1table"><i class="fa fa-check"></i><b>5.1.2</b> Simple linear regression</a></li>
+<li class="chapter" data-level="5.1.3" data-path="5-regression.html"><a href="5-regression.html#model1points"><i class="fa fa-check"></i><b>5.1.3</b> Observed/fitted values and residuals</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="5-regression.html"><a href="5-regression.html#model2"><i class="fa fa-check"></i><b>5.2</b> One categorical explanatory variable</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="5-regression.html"><a href="5-regression.html#model2EDA"><i class="fa fa-check"></i><b>5.2.1</b> Exploratory data analysis</a></li>
+<li class="chapter" data-level="5.2.2" data-path="5-regression.html"><a href="5-regression.html#model2table"><i class="fa fa-check"></i><b>5.2.2</b> Linear regression</a></li>
+<li class="chapter" data-level="5.2.3" data-path="5-regression.html"><a href="5-regression.html#model2points"><i class="fa fa-check"></i><b>5.2.3</b> Observed/fitted values and residuals</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="5-regression.html"><a href="5-regression.html#related-topics"><i class="fa fa-check"></i><b>5.3</b> Related topics</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="5-regression.html"><a href="5-regression.html#correlationcoefficient"><i class="fa fa-check"></i><b>5.3.1</b> Correlation coefficient</a></li>
+<li class="chapter" data-level="5.3.2" data-path="5-regression.html"><a href="5-regression.html#correlation-is-not-causation"><i class="fa fa-check"></i><b>5.3.2</b> Correlation is not necessarily causation</a></li>
+<li class="chapter" data-level="5.3.3" data-path="5-regression.html"><a href="5-regression.html#leastsquares"><i class="fa fa-check"></i><b>5.3.3</b> Best-fitting line</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="5-regression.html"><a href="5-regression.html#conclusion-4"><i class="fa fa-check"></i><b>5.4</b> Conclusion</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="5-regression.html"><a href="5-regression.html#additional-resources-basic-regression"><i class="fa fa-check"></i><b>5.4.1</b> Additional resources</a></li>
+<li class="chapter" data-level="5.4.2" data-path="5-regression.html"><a href="5-regression.html#whats-to-come-2"><i class="fa fa-check"></i><b>5.4.2</b> What’s to come?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html"><i class="fa fa-check"></i><b>6</b> Multiple Regression</a><ul>
+<li class="chapter" data-level="" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#needed-packages-4"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="6.1" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#model3"><i class="fa fa-check"></i><b>6.1</b> Two numerical explanatory variables</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#model3EDA"><i class="fa fa-check"></i><b>6.1.1</b> Exploratory data analysis</a></li>
+<li class="chapter" data-level="6.1.2" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#model3table"><i class="fa fa-check"></i><b>6.1.2</b> Regression plane</a></li>
+<li class="chapter" data-level="6.1.3" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#model3points"><i class="fa fa-check"></i><b>6.1.3</b> Observed/fitted values and residuals</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#model4"><i class="fa fa-check"></i><b>6.2</b> One numerical &amp; one categorical explanatory variable</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#model4EDA"><i class="fa fa-check"></i><b>6.2.1</b> Exploratory data analysis</a></li>
+<li class="chapter" data-level="6.2.2" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#model4interactiontable"><i class="fa fa-check"></i><b>6.2.2</b> Interaction model</a></li>
+<li class="chapter" data-level="6.2.3" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#model4table"><i class="fa fa-check"></i><b>6.2.3</b> Parallel slopes model</a></li>
+<li class="chapter" data-level="6.2.4" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#model4points"><i class="fa fa-check"></i><b>6.2.4</b> Observed/fitted values and residuals</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#related-topics-1"><i class="fa fa-check"></i><b>6.3</b> Related topics</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#model-selection"><i class="fa fa-check"></i><b>6.3.1</b> Model selection</a></li>
+<li class="chapter" data-level="6.3.2" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#correlationcoefficient2"><i class="fa fa-check"></i><b>6.3.2</b> Correlation coefficient</a></li>
+<li class="chapter" data-level="6.3.3" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#simpsonsparadox"><i class="fa fa-check"></i><b>6.3.3</b> Simpson’s Paradox</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#conclusion-5"><i class="fa fa-check"></i><b>6.4</b> Conclusion</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="6-multiple-regression.html"><a href="6-multiple-regression.html#whats-to-come-4"><i class="fa fa-check"></i><b>6.4.1</b> What’s to come?</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>III Statistical Theory</b></span></li>
+<li class="chapter" data-level="7" data-path="7-causality.html"><a href="7-causality.html"><i class="fa fa-check"></i><b>7</b> Randomization and Causality</a><ul>
+<li class="chapter" data-level="" data-path="7-causality.html"><a href="7-causality.html#needed-packages-5"><i class="fa fa-check"></i>Needed Packages</a></li>
+<li class="chapter" data-level="7.1" data-path="7-causality.html"><a href="7-causality.html#causal-questions"><i class="fa fa-check"></i><b>7.1</b> Causal Questions</a></li>
+<li class="chapter" data-level="7.2" data-path="7-causality.html"><a href="7-causality.html#randomized-experiments"><i class="fa fa-check"></i><b>7.2</b> Randomized experiments</a><ul>
+<li class="chapter" data-level="7.2.1" data-path="7-causality.html"><a href="7-causality.html#random-processes-in-r"><i class="fa fa-check"></i><b>7.2.1</b> Random processes in R</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="7-causality.html"><a href="7-causality.html#omitted-variables"><i class="fa fa-check"></i><b>7.3</b> Omitted variables</a></li>
+<li class="chapter" data-level="7.4" data-path="7-causality.html"><a href="7-causality.html#the-magic-of-randomization"><i class="fa fa-check"></i><b>7.4</b> The magic of randomization</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="7-causality.html"><a href="7-causality.html#ed-data"><i class="fa fa-check"></i><b>7.4.1</b> Randomization Example</a></li>
+<li class="chapter" data-level="7.4.2" data-path="7-causality.html"><a href="7-causality.html#estimating-the-treatment-effect"><i class="fa fa-check"></i><b>7.4.2</b> Estimating the treatment effect</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="7-causality.html"><a href="7-causality.html#if-you-know-z-what-about-multiple-regression"><i class="fa fa-check"></i><b>7.5</b> If you know Z, what about multiple regression?</a></li>
+<li class="chapter" data-level="7.6" data-path="7-causality.html"><a href="7-causality.html#what-if-you-dont-know-z"><i class="fa fa-check"></i><b>7.6</b> What if you don’t know Z?</a></li>
+<li class="chapter" data-level="7.7" data-path="7-causality.html"><a href="7-causality.html#conclusion-6"><i class="fa fa-check"></i><b>7.7</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="8-populations.html"><a href="8-populations.html"><i class="fa fa-check"></i><b>8</b> Populations and Generalizability</a><ul>
+<li class="chapter" data-level="" data-path="8-populations.html"><a href="8-populations.html#needed-packages-6"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="8.1" data-path="8-populations.html"><a href="8-populations.html#terminology"><i class="fa fa-check"></i><b>8.1</b> Terminology &amp; Notation</a></li>
+<li class="chapter" data-level="8.2" data-path="8-populations.html"><a href="8-populations.html#sample-selection"><i class="fa fa-check"></i><b>8.2</b> Populations &amp; Sampling</a></li>
+<li class="chapter" data-level="8.3" data-path="8-populations.html"><a href="8-populations.html#imdb"><i class="fa fa-check"></i><b>8.3</b> Movies Example</a><ul>
+<li class="chapter" data-level="8.3.1" data-path="8-populations.html"><a href="8-populations.html#research-question"><i class="fa fa-check"></i><b>8.3.1</b> Research question</a></li>
+<li class="chapter" data-level="8.3.2" data-path="8-populations.html"><a href="8-populations.html#population-of-interest"><i class="fa fa-check"></i><b>8.3.2</b> Population of interest</a></li>
+<li class="chapter" data-level="8.3.3" data-path="8-populations.html"><a href="8-populations.html#development-of-population-frame"><i class="fa fa-check"></i><b>8.3.3</b> Development of population frame</a></li>
+<li class="chapter" data-level="8.3.4" data-path="8-populations.html"><a href="8-populations.html#sampling-plan"><i class="fa fa-check"></i><b>8.3.4</b> Sampling plan</a></li>
+</ul></li>
+<li class="chapter" data-level="8.4" data-path="8-populations.html"><a href="8-populations.html#samples"><i class="fa fa-check"></i><b>8.4</b> Samples from Unclear Populations</a></li>
+<li class="chapter" data-level="8.5" data-path="8-populations.html"><a href="8-populations.html#causality-vs.generalizability"><i class="fa fa-check"></i><b>8.5</b> Causality vs. Generalizability</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="9-sampling.html"><a href="9-sampling.html"><i class="fa fa-check"></i><b>9</b> Sampling Distributions</a><ul>
+<li class="chapter" data-level="" data-path="9-sampling.html"><a href="9-sampling.html#needed-packages-7"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="9.1" data-path="9-sampling.html"><a href="9-sampling.html#theory"><i class="fa fa-check"></i><b>9.1</b> Theory of Repeated Samples</a></li>
+<li class="chapter" data-level="9.2" data-path="9-sampling.html"><a href="9-sampling.html#sampling-activity"><i class="fa fa-check"></i><b>9.2</b> Sampling Activity</a><ul>
+<li class="chapter" data-level="9.2.1" data-path="9-sampling.html"><a href="9-sampling.html#what-proportion-of-this-bowls-balls-are-red"><i class="fa fa-check"></i><b>9.2.1</b> What proportion of this bowl’s balls are red?</a></li>
+<li class="chapter" data-level="9.2.2" data-path="9-sampling.html"><a href="9-sampling.html#taking-one-random-sample"><i class="fa fa-check"></i><b>9.2.2</b> Taking one random sample</a></li>
+<li class="chapter" data-level="9.2.3" data-path="9-sampling.html"><a href="9-sampling.html#student-shovels"><i class="fa fa-check"></i><b>9.2.3</b> Everyone takes a random sample (i.e., repeating this 33 times)</a></li>
+<li class="chapter" data-level="9.2.4" data-path="9-sampling.html"><a href="9-sampling.html#what-are-we-doing-here"><i class="fa fa-check"></i><b>9.2.4</b> What are we doing here?</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="9-sampling.html"><a href="9-sampling.html#sampling-simulation"><i class="fa fa-check"></i><b>9.3</b> Computer simulation</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="9-sampling.html"><a href="9-sampling.html#using-the-virtual-shovel-once"><i class="fa fa-check"></i><b>9.3.1</b> Using the virtual shovel once</a></li>
+<li class="chapter" data-level="9.3.2" data-path="9-sampling.html"><a href="9-sampling.html#using-the-virtual-shovel-10000-times"><i class="fa fa-check"></i><b>9.3.2</b> Using the virtual shovel 10,000 times</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="9-sampling.html"><a href="9-sampling.html#properties_s"><i class="fa fa-check"></i><b>9.4</b> Properties of Sampling Distributions</a><ul>
+<li class="chapter" data-level="9.4.1" data-path="9-sampling.html"><a href="9-sampling.html#dist"><i class="fa fa-check"></i><b>9.4.1</b> Distribution</a></li>
+<li class="chapter" data-level="9.4.2" data-path="9-sampling.html"><a href="9-sampling.html#bias"><i class="fa fa-check"></i><b>9.4.2</b> Mean of the sampling distribution</a></li>
+<li class="chapter" data-level="9.4.3" data-path="9-sampling.html"><a href="9-sampling.html#precision"><i class="fa fa-check"></i><b>9.4.3</b> Standard deviation of the sampling distribution</a></li>
+<li class="chapter" data-level="9.4.4" data-path="9-sampling.html"><a href="9-sampling.html#conf"><i class="fa fa-check"></i><b>9.4.4</b> Confusing concepts</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5" data-path="9-sampling.html"><a href="9-sampling.html#standardization"><i class="fa fa-check"></i><b>9.5</b> Standardization, Special Distributions, and Theory</a><ul>
+<li class="chapter" data-level="9.5.1" data-path="9-sampling.html"><a href="9-sampling.html#standard-errors-based-on-theory"><i class="fa fa-check"></i><b>9.5.1</b> Standard Errors based on Theory</a></li>
+<li class="chapter" data-level="9.5.2" data-path="9-sampling.html"><a href="9-sampling.html#standardization-1"><i class="fa fa-check"></i><b>9.5.2</b> Standardization</a></li>
+<li class="chapter" data-level="9.5.3" data-path="9-sampling.html"><a href="9-sampling.html#special-distributions"><i class="fa fa-check"></i><b>9.5.3</b> Special distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="9.6" data-path="9-sampling.html"><a href="9-sampling.html#size"><i class="fa fa-check"></i><b>9.6</b> Sample Size and Sampling Distributions</a><ul>
+<li class="chapter" data-level="9.6.1" data-path="9-sampling.html"><a href="9-sampling.html#eg1"><i class="fa fa-check"></i><b>9.6.1</b> Sampling balls with different sized shovels</a></li>
+</ul></li>
+<li class="chapter" data-level="9.7" data-path="9-sampling.html"><a href="9-sampling.html#clt"><i class="fa fa-check"></i><b>9.7</b> Central Limit Theorem (CLT)</a><ul>
+<li class="chapter" data-level="9.7.1" data-path="9-sampling.html"><a href="9-sampling.html#clt-conditions"><i class="fa fa-check"></i><b>9.7.1</b> CLT conditions</a></li>
+<li class="chapter" data-level="9.7.2" data-path="9-sampling.html"><a href="9-sampling.html#clt-example"><i class="fa fa-check"></i><b>9.7.2</b> CLT example</a></li>
+<li class="chapter" data-level="9.7.3" data-path="9-sampling.html"><a href="9-sampling.html#summary-of-sampling-distributions"><i class="fa fa-check"></i><b>9.7.3</b> Summary of Sampling Distributions</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>IV Statistical Inference</b></span></li>
+<li class="chapter" data-level="10" data-path="10-CIs.html"><a href="10-CIs.html"><i class="fa fa-check"></i><b>10</b> Confidence Intervals</a><ul>
+<li class="chapter" data-level="" data-path="10-CIs.html"><a href="10-CIs.html#needed-packages-8"><i class="fa fa-check"></i>Needed Packages</a></li>
+<li class="chapter" data-level="10.1" data-path="10-CIs.html"><a href="10-CIs.html#combining-an-estimate-with-its-precision"><i class="fa fa-check"></i><b>10.1</b> Combining an estimate with its precision</a><ul>
+<li class="chapter" data-level="10.1.1" data-path="10-CIs.html"><a href="10-CIs.html#sampling-distributions-of-standardized-statistics"><i class="fa fa-check"></i><b>10.1.1</b> Sampling distributions of standardized statistics</a></li>
+<li class="chapter" data-level="10.1.2" data-path="10-CIs.html"><a href="10-CIs.html#confidence-interval-with-the-normal-distribution"><i class="fa fa-check"></i><b>10.1.2</b> Confidence Interval with the Normal distribution</a></li>
+<li class="chapter" data-level="10.1.3" data-path="10-CIs.html"><a href="10-CIs.html#general-form-for-constructing-a-confidence-interval"><i class="fa fa-check"></i><b>10.1.3</b> General Form for Constructing a Confidence Interval</a></li>
+<li class="chapter" data-level="10.1.4" data-path="10-CIs.html"><a href="10-CIs.html#finding-critical-values"><i class="fa fa-check"></i><b>10.1.4</b> Finding critical values</a></li>
+<li class="chapter" data-level="10.1.5" data-path="10-CIs.html"><a href="10-CIs.html#example"><i class="fa fa-check"></i><b>10.1.5</b> Example</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2" data-path="10-CIs.html"><a href="10-CIs.html#interpreting-a-confidence-interval"><i class="fa fa-check"></i><b>10.2</b> Interpreting a Confidence Interval</a></li>
+<li class="chapter" data-level="10.3" data-path="10-CIs.html"><a href="10-CIs.html#margin-of-error-and-width-of-an-interval"><i class="fa fa-check"></i><b>10.3</b> Margin of Error and Width of an Interval</a></li>
+<li class="chapter" data-level="10.4" data-path="10-CIs.html"><a href="10-CIs.html#one-prop-ci"><i class="fa fa-check"></i><b>10.4</b> Example: One proportion</a><ul>
+<li class="chapter" data-level="10.4.1" data-path="10-CIs.html"><a href="10-CIs.html#observed-statistic"><i class="fa fa-check"></i><b>10.4.1</b> Observed Statistic</a></li>
+</ul></li>
+<li class="chapter" data-level="10.5" data-path="10-CIs.html"><a href="10-CIs.html#example-comparing-two-proportions"><i class="fa fa-check"></i><b>10.5</b> Example: Comparing two proportions</a><ul>
+<li class="chapter" data-level="10.5.1" data-path="10-CIs.html"><a href="10-CIs.html#compute-the-point-estimate"><i class="fa fa-check"></i><b>10.5.1</b> Compute the point estimate</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="11-pvalues.html"><a href="11-pvalues.html"><i class="fa fa-check"></i><b>11</b> P-values</a><ul>
+<li class="chapter" data-level="" data-path="11-pvalues.html"><a href="11-pvalues.html#needed-packages-9"><i class="fa fa-check"></i>Needed Packages</a></li>
+<li class="chapter" data-level="11.1" data-path="11-pvalues.html"><a href="11-pvalues.html#proof-by-contradiction"><i class="fa fa-check"></i><b>11.1</b> Stochastic Proof by Contradiction</a></li>
+<li class="chapter" data-level="11.2" data-path="11-pvalues.html"><a href="11-pvalues.html#repeated-samples-the-null-hypothesis-and-p-values"><i class="fa fa-check"></i><b>11.2</b> Repeated samples, the null hypothesis, and p-values</a><ul>
+<li class="chapter" data-level="11.2.1" data-path="11-pvalues.html"><a href="11-pvalues.html#null-hypothesis"><i class="fa fa-check"></i><b>11.2.1</b> Null hypothesis</a></li>
+<li class="chapter" data-level="11.2.2" data-path="11-pvalues.html"><a href="11-pvalues.html#p-values"><i class="fa fa-check"></i><b>11.2.2</b> P-values</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="11-pvalues.html"><a href="11-pvalues.html#p-value-and-null-distribution-example"><i class="fa fa-check"></i><b>11.3</b> P-value and Null Distribution Example</a><ul>
+<li class="chapter" data-level="11.3.1" data-path="8-populations.html"><a href="8-populations.html#imdb"><i class="fa fa-check"></i><b>11.3.1</b> IMDB data</a></li>
+<li class="chapter" data-level="11.3.2" data-path="11-pvalues.html"><a href="11-pvalues.html#p-values-using-formulas"><i class="fa fa-check"></i><b>11.3.2</b> p-values using formulas</a></li>
+<li class="chapter" data-level="11.3.3" data-path="11-pvalues.html"><a href="11-pvalues.html#t.test"><i class="fa fa-check"></i><b>11.3.3</b> p-values using <code>t.test</code></a></li>
+<li class="chapter" data-level="11.3.4" data-path="11-pvalues.html"><a href="11-pvalues.html#pvalues-regression"><i class="fa fa-check"></i><b>11.3.4</b> p-values using regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="11-pvalues.html"><a href="11-pvalues.html#ride-share"><i class="fa fa-check"></i><b>11.4</b> Example: Ride-share prices</a><ul>
+<li class="chapter" data-level="11.4.1" data-path="11-pvalues.html"><a href="11-pvalues.html#using-formulas"><i class="fa fa-check"></i><b>11.4.1</b> Using formulas</a></li>
+<li class="chapter" data-level="11.4.2" data-path="11-pvalues.html"><a href="11-pvalues.html#using-t.test"><i class="fa fa-check"></i><b>11.4.2</b> Using <code>t.test</code></a></li>
+<li class="chapter" data-level="11.4.3" data-path="11-pvalues.html"><a href="11-pvalues.html#using-regression"><i class="fa fa-check"></i><b>11.4.3</b> Using regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.5" data-path="11-pvalues.html"><a href="11-pvalues.html#interpretation-of-p-values"><i class="fa fa-check"></i><b>11.5</b> Interpretation of P-values</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html"><i class="fa fa-check"></i><b>12</b> Hypothesis tests</a><ul>
+<li class="chapter" data-level="" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#needed-packages-10"><i class="fa fa-check"></i>Needed Packages</a></li>
+<li class="chapter" data-level="12.1" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#decision-making"><i class="fa fa-check"></i><b>12.1</b> Decision making</a></li>
+<li class="chapter" data-level="12.2" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#trade-offs"><i class="fa fa-check"></i><b>12.2</b> Decision making trade-offs</a><ul>
+<li class="chapter" data-level="12.2.1" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#medicine"><i class="fa fa-check"></i><b>12.2.1</b> Medicine</a></li>
+<li class="chapter" data-level="12.2.2" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#law"><i class="fa fa-check"></i><b>12.2.2</b> Law</a></li>
+<li class="chapter" data-level="12.2.3" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#commonalities"><i class="fa fa-check"></i><b>12.2.3</b> Commonalities</a></li>
+</ul></li>
+<li class="chapter" data-level="12.3" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#ht"><i class="fa fa-check"></i><b>12.3</b> Hypothesis test: Decision making in statistics</a></li>
+<li class="chapter" data-level="12.4" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#conducting-hypothesis-tests"><i class="fa fa-check"></i><b>12.4</b> Conducting Hypothesis Tests</a><ul>
+<li class="chapter" data-level="12.4.1" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#ht-activity"><i class="fa fa-check"></i><b>12.4.1</b> Promotions Example</a></li>
+<li class="chapter" data-level="12.4.2" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#movies-example-revisited"><i class="fa fa-check"></i><b>12.4.2</b> Movies example revisited</a></li>
+<li class="chapter" data-level="12.4.3" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#ride-share-example-revisited"><i class="fa fa-check"></i><b>12.4.3</b> Ride share example revisited</a></li>
+</ul></li>
+<li class="chapter" data-level="12.5" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#more-advanced-points-to-consider"><i class="fa fa-check"></i><b>12.5</b> More advanced points to consider</a></li>
+<li class="chapter" data-level="12.6" data-path="12-hypothesis-tests.html"><a href="12-hypothesis-tests.html#american-statistical-association-asa-statistical-standards"><i class="fa fa-check"></i><b>12.6</b> American Statistical Association (ASA) Statistical Standards</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="13-putting-together.html"><a href="13-putting-together.html"><i class="fa fa-check"></i><b>13</b> Putting it all together</a><ul>
+<li class="chapter" data-level="" data-path="13-putting-together.html"><a href="13-putting-together.html#needed-packages-11"><i class="fa fa-check"></i>Needed Packages</a></li>
+<li class="chapter" data-level="13.1" data-path="13-putting-together.html"><a href="13-putting-together.html#a-general-process-for-using-statistics"><i class="fa fa-check"></i><b>13.1</b> A general process for using statistics</a></li>
+<li class="chapter" data-level="13.2" data-path="13-putting-together.html"><a href="13-putting-together.html#example-TE"><i class="fa fa-check"></i><b>13.2</b> Example: Treatment effect</a></li>
+<li class="chapter" data-level="13.3" data-path="13-putting-together.html"><a href="13-putting-together.html#example-estimate-a-proportion"><i class="fa fa-check"></i><b>13.3</b> Example: Estimate a proportion</a></li>
+<li class="chapter" data-level="13.4" data-path="13-putting-together.html"><a href="13-putting-together.html#example-estimate-the-relationship-between-two-variables"><i class="fa fa-check"></i><b>13.4</b> Example: Estimate the relationship between two variables</a></li>
+<li class="chapter" data-level="13.5" data-path="13-putting-together.html"><a href="13-putting-together.html#final-thoughts"><i class="fa fa-check"></i><b>13.5</b> Final thoughts</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="A-appendixA.html"><a href="A-appendixA.html"><i class="fa fa-check"></i><b>A</b> Statistical Background</a><ul>
+<li class="chapter" data-level="A.1" data-path="A-appendixA.html"><a href="A-appendixA.html#basic-statistical-terms"><i class="fa fa-check"></i><b>A.1</b> Basic statistical terms</a><ul>
+<li class="chapter" data-level="A.1.1" data-path="A-appendixA.html"><a href="A-appendixA.html#mean"><i class="fa fa-check"></i><b>A.1.1</b> Mean</a></li>
+<li class="chapter" data-level="A.1.2" data-path="A-appendixA.html"><a href="A-appendixA.html#median"><i class="fa fa-check"></i><b>A.1.2</b> Median</a></li>
+<li class="chapter" data-level="A.1.3" data-path="A-appendixA.html"><a href="A-appendixA.html#standard-deviation"><i class="fa fa-check"></i><b>A.1.3</b> Standard deviation</a></li>
+<li class="chapter" data-level="A.1.4" data-path="A-appendixA.html"><a href="A-appendixA.html#five-number-summary"><i class="fa fa-check"></i><b>A.1.4</b> Five-number summary</a></li>
+<li class="chapter" data-level="A.1.5" data-path="A-appendixA.html"><a href="A-appendixA.html#distribution"><i class="fa fa-check"></i><b>A.1.5</b> Distribution</a></li>
+<li class="chapter" data-level="A.1.6" data-path="A-appendixA.html"><a href="A-appendixA.html#outliers"><i class="fa fa-check"></i><b>A.1.6</b> Outliers</a></li>
+</ul></li>
+<li class="chapter" data-level="A.2" data-path="A-appendixA.html"><a href="A-appendixA.html#normal-distribution-discussion"><i class="fa fa-check"></i><b>A.2</b> Normal distribution discussion</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="B-appendixB.html"><a href="B-appendixB.html"><i class="fa fa-check"></i><b>B</b> Inference Examples</a><ul>
+<li class="chapter" data-level="" data-path="B-appendixB.html"><a href="B-appendixB.html#needed-packages-12"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="B.1" data-path="B-appendixB.html"><a href="B-appendixB.html#inference-mind-map"><i class="fa fa-check"></i><b>B.1</b> Inference mind map</a></li>
+<li class="chapter" data-level="B.2" data-path="B-appendixB.html"><a href="B-appendixB.html#one-mean"><i class="fa fa-check"></i><b>B.2</b> One mean</a><ul>
+<li class="chapter" data-level="B.2.1" data-path="B-appendixB.html"><a href="B-appendixB.html#problem-statement"><i class="fa fa-check"></i><b>B.2.1</b> Problem statement</a></li>
+<li class="chapter" data-level="B.2.2" data-path="B-appendixB.html"><a href="B-appendixB.html#competing-hypotheses"><i class="fa fa-check"></i><b>B.2.2</b> Competing hypotheses</a></li>
+<li class="chapter" data-level="B.2.3" data-path="B-appendixB.html"><a href="B-appendixB.html#exploring-the-sample-data"><i class="fa fa-check"></i><b>B.2.3</b> Exploring the sample data</a></li>
+<li class="chapter" data-level="B.2.4" data-path="B-appendixB.html"><a href="B-appendixB.html#non-traditional-methods"><i class="fa fa-check"></i><b>B.2.4</b> Non-traditional methods</a></li>
+<li class="chapter" data-level="B.2.5" data-path="B-appendixB.html"><a href="B-appendixB.html#traditional-methods"><i class="fa fa-check"></i><b>B.2.5</b> Traditional methods</a></li>
+<li class="chapter" data-level="B.2.6" data-path="B-appendixB.html"><a href="B-appendixB.html#comparing-results"><i class="fa fa-check"></i><b>B.2.6</b> Comparing results</a></li>
+</ul></li>
+<li class="chapter" data-level="B.3" data-path="B-appendixB.html"><a href="B-appendixB.html#one-proportion"><i class="fa fa-check"></i><b>B.3</b> One proportion</a><ul>
+<li class="chapter" data-level="B.3.1" data-path="B-appendixB.html"><a href="B-appendixB.html#problem-statement-1"><i class="fa fa-check"></i><b>B.3.1</b> Problem statement</a></li>
+<li class="chapter" data-level="B.3.2" data-path="B-appendixB.html"><a href="B-appendixB.html#competing-hypotheses-1"><i class="fa fa-check"></i><b>B.3.2</b> Competing hypotheses</a></li>
+<li class="chapter" data-level="B.3.3" data-path="B-appendixB.html"><a href="B-appendixB.html#exploring-the-sample-data-1"><i class="fa fa-check"></i><b>B.3.3</b> Exploring the sample data</a></li>
+<li class="chapter" data-level="B.3.4" data-path="B-appendixB.html"><a href="B-appendixB.html#non-traditional-methods-1"><i class="fa fa-check"></i><b>B.3.4</b> Non-traditional methods</a></li>
+<li class="chapter" data-level="B.3.5" data-path="B-appendixB.html"><a href="B-appendixB.html#traditional-methods-1"><i class="fa fa-check"></i><b>B.3.5</b> Traditional methods</a></li>
+<li class="chapter" data-level="B.3.6" data-path="B-appendixB.html"><a href="B-appendixB.html#comparing-results-1"><i class="fa fa-check"></i><b>B.3.6</b> Comparing results</a></li>
+</ul></li>
+<li class="chapter" data-level="B.4" data-path="B-appendixB.html"><a href="B-appendixB.html#two-proportions"><i class="fa fa-check"></i><b>B.4</b> Two proportions</a><ul>
+<li class="chapter" data-level="B.4.1" data-path="B-appendixB.html"><a href="B-appendixB.html#problem-statement-2"><i class="fa fa-check"></i><b>B.4.1</b> Problem statement</a></li>
+<li class="chapter" data-level="B.4.2" data-path="B-appendixB.html"><a href="B-appendixB.html#competing-hypotheses-2"><i class="fa fa-check"></i><b>B.4.2</b> Competing hypotheses</a></li>
+<li class="chapter" data-level="B.4.3" data-path="B-appendixB.html"><a href="B-appendixB.html#exploring-the-sample-data-2"><i class="fa fa-check"></i><b>B.4.3</b> Exploring the sample data</a></li>
+<li class="chapter" data-level="B.4.4" data-path="B-appendixB.html"><a href="B-appendixB.html#non-traditional-methods-2"><i class="fa fa-check"></i><b>B.4.4</b> Non-traditional methods</a></li>
+<li class="chapter" data-level="B.4.5" data-path="B-appendixB.html"><a href="B-appendixB.html#traditional-methods-2"><i class="fa fa-check"></i><b>B.4.5</b> Traditional methods</a></li>
+<li class="chapter" data-level="B.4.6" data-path="B-appendixB.html"><a href="B-appendixB.html#check-conditions-2"><i class="fa fa-check"></i><b>B.4.6</b> Check conditions</a></li>
+<li class="chapter" data-level="B.4.7" data-path="B-appendixB.html"><a href="B-appendixB.html#test-statistic-2"><i class="fa fa-check"></i><b>B.4.7</b> Test statistic</a></li>
+<li class="chapter" data-level="B.4.8" data-path="B-appendixB.html"><a href="B-appendixB.html#state-conclusion-2"><i class="fa fa-check"></i><b>B.4.8</b> State conclusion</a></li>
+<li class="chapter" data-level="B.4.9" data-path="B-appendixB.html"><a href="B-appendixB.html#comparing-results-2"><i class="fa fa-check"></i><b>B.4.9</b> Comparing results</a></li>
+</ul></li>
+<li class="chapter" data-level="B.5" data-path="B-appendixB.html"><a href="B-appendixB.html#two-means-independent-samples"><i class="fa fa-check"></i><b>B.5</b> Two means (independent samples)</a><ul>
+<li class="chapter" data-level="B.5.1" data-path="B-appendixB.html"><a href="B-appendixB.html#problem-statement-3"><i class="fa fa-check"></i><b>B.5.1</b> Problem statement</a></li>
+<li class="chapter" data-level="B.5.2" data-path="B-appendixB.html"><a href="B-appendixB.html#competing-hypotheses-3"><i class="fa fa-check"></i><b>B.5.2</b> Competing hypotheses</a></li>
+<li class="chapter" data-level="B.5.3" data-path="B-appendixB.html"><a href="B-appendixB.html#exploring-the-sample-data-3"><i class="fa fa-check"></i><b>B.5.3</b> Exploring the sample data</a></li>
+<li class="chapter" data-level="B.5.4" data-path="B-appendixB.html"><a href="B-appendixB.html#non-traditional-methods-3"><i class="fa fa-check"></i><b>B.5.4</b> Non-traditional methods</a></li>
+<li class="chapter" data-level="B.5.5" data-path="B-appendixB.html"><a href="B-appendixB.html#traditional-methods-3"><i class="fa fa-check"></i><b>B.5.5</b> Traditional methods</a></li>
+<li class="chapter" data-level="B.5.6" data-path="B-appendixB.html"><a href="B-appendixB.html#test-statistic-3"><i class="fa fa-check"></i><b>B.5.6</b> Test statistic</a></li>
+<li class="chapter" data-level="B.5.7" data-path="B-appendixB.html"><a href="B-appendixB.html#compute-p-value-1"><i class="fa fa-check"></i><b>B.5.7</b> Compute <span class="math inline">\(p\)</span>-value</a></li>
+<li class="chapter" data-level="B.5.8" data-path="B-appendixB.html"><a href="B-appendixB.html#state-conclusion-3"><i class="fa fa-check"></i><b>B.5.8</b> State conclusion</a></li>
+<li class="chapter" data-level="B.5.9" data-path="B-appendixB.html"><a href="B-appendixB.html#comparing-results-3"><i class="fa fa-check"></i><b>B.5.9</b> Comparing results</a></li>
+</ul></li>
+<li class="chapter" data-level="B.6" data-path="B-appendixB.html"><a href="B-appendixB.html#two-means-paired-samples"><i class="fa fa-check"></i><b>B.6</b> Two means (paired samples)</a><ul>
+<li class="chapter" data-level="B.6.1" data-path="B-appendixB.html"><a href="B-appendixB.html#competing-hypotheses-4"><i class="fa fa-check"></i><b>B.6.1</b> Competing hypotheses</a></li>
+<li class="chapter" data-level="B.6.2" data-path="B-appendixB.html"><a href="B-appendixB.html#exploring-the-sample-data-4"><i class="fa fa-check"></i><b>B.6.2</b> Exploring the sample data</a></li>
+<li class="chapter" data-level="B.6.3" data-path="B-appendixB.html"><a href="B-appendixB.html#non-traditional-methods-4"><i class="fa fa-check"></i><b>B.6.3</b> Non-traditional methods</a></li>
+<li class="chapter" data-level="B.6.4" data-path="B-appendixB.html"><a href="B-appendixB.html#traditional-methods-4"><i class="fa fa-check"></i><b>B.6.4</b> Traditional methods</a></li>
+<li class="chapter" data-level="B.6.5" data-path="B-appendixB.html"><a href="B-appendixB.html#comparing-results-4"><i class="fa fa-check"></i><b>B.6.5</b> Comparing results</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="C" data-path="C-appendixC.html"><a href="C-appendixC.html"><i class="fa fa-check"></i><b>C</b> Reach for the Stars</a><ul>
+<li class="chapter" data-level="" data-path="C-appendixC.html"><a href="C-appendixC.html#needed-packages-13"><i class="fa fa-check"></i>Needed packages</a></li>
+<li class="chapter" data-level="C.1" data-path="C-appendixC.html"><a href="C-appendixC.html#sorted-barplots"><i class="fa fa-check"></i><b>C.1</b> Sorted barplots</a></li>
+<li class="chapter" data-level="C.2" data-path="C-appendixC.html"><a href="C-appendixC.html#interactive-graphics"><i class="fa fa-check"></i><b>C.2</b> Interactive graphics</a><ul>
+<li class="chapter" data-level="C.2.1" data-path="C-appendixC.html"><a href="C-appendixC.html#interactive-linegraphs"><i class="fa fa-check"></i><b>C.2.1</b> Interactive linegraphs</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="D" data-path="D-appendixD.html"><a href="D-appendixD.html"><i class="fa fa-check"></i><b>D</b> Learning Check Solutions</a><ul>
+<li class="chapter" data-level="D.1" data-path="D-appendixD.html"><a href="D-appendixD.html#chapter-2-solutions"><i class="fa fa-check"></i><b>D.1</b> Chapter 2 Solutions</a></li>
+<li class="chapter" data-level="D.2" data-path="D-appendixD.html"><a href="D-appendixD.html#chapter-3-solutions"><i class="fa fa-check"></i><b>D.2</b> Chapter 3 Solutions</a></li>
+<li class="chapter" data-level="D.3" data-path="D-appendixD.html"><a href="D-appendixD.html#chapter-4-solutions"><i class="fa fa-check"></i><b>D.3</b> Chapter 4 Solutions</a></li>
+<li class="chapter" data-level="D.4" data-path="D-appendixD.html"><a href="D-appendixD.html#chapter-5-solutions"><i class="fa fa-check"></i><b>D.4</b> Chapter 5 Solutions</a></li>
+<li class="chapter" data-level="D.5" data-path="D-appendixD.html"><a href="D-appendixD.html#chapter-6-solutions"><i class="fa fa-check"></i><b>D.5</b> Chapter 6 Solutions</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Statistics and Data Science</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<html>
+<img src='https://nulib.github.io/moderndive_book/wide_format.png' alt="Intro to Statistics and Data Science">
+</html>
+<div id="multiple-regression" class="section level1">
+<h1><span class="header-section-number">Chapter 6</span> Multiple Regression</h1>
+<p>In Chapter <a href="5-regression.html#regression">5</a> we introduced ideas related to modeling for explanation, in particular that the goal of modeling is to make explicit the relationship between some outcome variable <span class="math inline">\(y\)</span> and some explanatory variable <span class="math inline">\(x\)</span>. While there are many approaches to modeling, we focused on one particular technique: <em>linear regression</em>, one of the most commonly-used and easy-to-understand approaches to modeling. Furthermore to keep things simple we only considered models with one explanatory <span class="math inline">\(x\)</span> variable that was either numerical in Section <a href="5-regression.html#model1">5.1</a> or categorical in Section <a href="5-regression.html#model2">5.2</a>.</p>
+<p>In this chapter on multiple regression, we’ll start considering models that include more than one explanatory variable <span class="math inline">\(x\)</span>. You can imagine when trying to model a particular outcome variable, like teaching evaluation scores as in Section <a href="5-regression.html#model1">5.1</a> or life expectancy as in Section <a href="5-regression.html#model2">5.2</a>, that it would be useful to include more than just one explanatory variable’s worth of information.</p>
+<p>Since our regression models will now consider more than one explanatory variable, the interpretation of the associated effect of any one explanatory variable must be made in conjunction with the other explanatory variables included in your model. Let’s begin!</p>
+<div id="needed-packages-4" class="section level3 unnumbered">
+<h3>Needed packages</h3>
+<p>Let’s load all the packages needed for this chapter (this assumes you’ve already installed them). Recall from our discussion in Section <a href="4-tidy.html#tidyverse-package">4.4.1</a> that loading the <code>tidyverse</code> package by running <code>library(tidyverse)</code> loads the following commonly used data science packages all at once:</p>
+<ul>
+<li><code>ggplot2</code> for data visualization</li>
+<li><code>dplyr</code> for data wrangling</li>
+<li><code>tidyr</code> for converting data to “tidy” format</li>
+<li><code>readr</code> for importing spreadsheet data into R</li>
+<li>As well as the more advanced <code>purrr</code>, <code>tibble</code>, <code>stringr</code>, and <code>forcats</code> packages</li>
+</ul>
+<p>If needed, read Section <a href="1-getting-started.html#packages">1.3</a> for information on how to install and load R packages.</p>
+<div class="sourceCode" id="cb185"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb185-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb185-2" data-line-number="2"><span class="kw">library</span>(moderndive)</a>
+<a class="sourceLine" id="cb185-3" data-line-number="3"><span class="kw">library</span>(skimr)</a>
+<a class="sourceLine" id="cb185-4" data-line-number="4"><span class="kw">library</span>(ISLR)</a></code></pre></div>
+</div>
+<div id="model3" class="section level2">
+<h2><span class="header-section-number">6.1</span> Two numerical explanatory variables</h2>
+<p>Let’s first consider a <em>multiple regression</em> model with two numerical explanatory variables. The dataset we’ll use is from <a href="http://www-bcf.usc.edu/~gareth/ISL/">“An Introduction to Statistical Learning with Applications in R (ISLR)”</a>, an intermediate-level textbook on statistical and machine learning. Its accompanying <code>ISLR</code> R package contains the datasets that the authors apply various machine learning methods to.</p>
+<p>One frequently used dataset in this book is the <code>Credit</code> dataset, where the outcome variable of interest is the credit card debt of 400 individuals. Other variables like income, credit limit, credit rating, and age are included as well. Note that the <code>Credit</code> data is not based on real individuals’ financial information, but rather is a simulated dataset used for educational purposes.</p>
+<p>In this section, we’ll fit a regression model where we have</p>
+<ol style="list-style-type: decimal">
+<li>A numerical outcome variable <span class="math inline">\(y\)</span>, the cardholder’s credit card debt</li>
+<li>Two explanatory variables:
+<ol style="list-style-type: decimal">
+<li>One numerical explanatory variable <span class="math inline">\(x_1\)</span>, the cardholder’s credit limit</li>
+<li>Another numerical explanatory variable <span class="math inline">\(x_2\)</span>, the cardholder’s income (in thousands of dollars).</li>
+</ol></li>
+</ol>
+<!--
+In the forthcoming Learning Checks, we'll consider a different regression model
+1. The same numerical outcome variable $y$, the cardholder's credit card debt
+1. Two different explanatory variables:
+    1. One numerical explanatory variable $x_1$, the cardholder's credit rating
+    1. Another numerical explanatory variable $x_2$, the cardholder's age.
+-->
+<div id="model3EDA" class="section level3">
+<h3><span class="header-section-number">6.1.1</span> Exploratory data analysis</h3>
+<p>Let’s load the <code>Credit</code> dataset, but to keep things simple let’s <code>select()</code> only the subset of the variables we’ll consider in this chapter, and save this data in a new data frame called <code>credit_ch6</code>. Notice our slightly different use of the <code>select()</code> verb here than we introduced in Subsection <a href="3-wrangling.html#select">3.8.1</a>. For example, we’ll select the <code>Balance</code> variable from <code>Credit</code> but then save it with a new variable name <code>debt</code>. We do this because here the term “debt” is a little more interpretable than “balance.”</p>
+<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb186-1" data-line-number="1"><span class="kw">library</span>(ISLR)</a>
+<a class="sourceLine" id="cb186-2" data-line-number="2">credit_ch6 &lt;-<span class="st"> </span>Credit <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb186-3" data-line-number="3"><span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb186-4" data-line-number="4"><span class="st">  </span><span class="kw">select</span>(<span class="dt">debt =</span> Balance, <span class="dt">credit_limit =</span> Limit, </a>
+<a class="sourceLine" id="cb186-5" data-line-number="5">         <span class="dt">income =</span> Income, <span class="dt">credit_rating =</span> Rating, <span class="dt">age =</span> Age)</a></code></pre></div>
+<p>Recall the three common steps in an exploratory data analysis we saw in Subsection <a href="5-regression.html#model1EDA">5.1.1</a>:</p>
+<ol style="list-style-type: decimal">
+<li>Looking at the raw data values.</li>
+<li>Computing summary statistics.</li>
+<li>Creating data visualizations.</li>
+</ol>
+<p>Let’s begin by looking at the raw values either in RStudio’s spreadsheet viewer or by using the <code>glimpse()</code> function from the <code>dplyr</code> package. You can observe the effect of our use of <code>select()</code> to keep and rename the relevant variables.</p>
+<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb187-1" data-line-number="1"><span class="kw">glimpse</span>(credit_ch6)</a></code></pre></div>
+<pre><code>Observations: 400
+Variables: 5
+$ debt          &lt;int&gt; 333, 903, 580, 964, 331, 1151, 203, 872, 279, 1350, 140…
+$ credit_limit  &lt;int&gt; 3606, 6645, 7075, 9504, 4897, 8047, 3388, 7114, 3300, 6…
+$ income        &lt;dbl&gt; 14.9, 106.0, 104.6, 148.9, 55.9, 80.2, 21.0, 71.4, 15.1…
+$ credit_rating &lt;int&gt; 283, 483, 514, 681, 357, 569, 259, 512, 266, 491, 589, …
+$ age           &lt;int&gt; 34, 82, 71, 36, 68, 77, 37, 87, 66, 41, 30, 64, 57, 49,…</code></pre>
+<p>Furthermore, let’s look at a random sample of five out of the 400 credit card holders in Table <a href="6-multiple-regression.html#tab:model3-data-preview">6.1</a>. Once again, note that due to the random nature of the sampling, you will likely end up with a different subset of five rows.</p>
+<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb189-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">9</span>)</a>
+<a class="sourceLine" id="cb189-2" data-line-number="2">credit_ch6 <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb189-3" data-line-number="3"><span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">5</span>)</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:model3-data-preview">TABLE 6.1: </span>Random sample of 5 credit card holders.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+debt
+</th>
+<th style="text-align:right;">
+credit_limit
+</th>
+<th style="text-align:right;">
+income
+</th>
+<th style="text-align:right;">
+credit_rating
+</th>
+<th style="text-align:right;">
+age
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1259
+</td>
+<td style="text-align:right;">
+8376
+</td>
+<td style="text-align:right;">
+123.3
+</td>
+<td style="text-align:right;">
+610
+</td>
+<td style="text-align:right;">
+89
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+227
+</td>
+<td style="text-align:right;">
+6033
+</td>
+<td style="text-align:right;">
+108.0
+</td>
+<td style="text-align:right;">
+449
+</td>
+<td style="text-align:right;">
+64
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+467
+</td>
+<td style="text-align:right;">
+4534
+</td>
+<td style="text-align:right;">
+32.8
+</td>
+<td style="text-align:right;">
+333
+</td>
+<td style="text-align:right;">
+44
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+846
+</td>
+<td style="text-align:right;">
+7576
+</td>
+<td style="text-align:right;">
+94.2
+</td>
+<td style="text-align:right;">
+527
+</td>
+<td style="text-align:right;">
+44
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+436
+</td>
+<td style="text-align:right;">
+4866
+</td>
+<td style="text-align:right;">
+45.0
+</td>
+<td style="text-align:right;">
+347
+</td>
+<td style="text-align:right;">
+30
+</td>
+</tr>
+</tbody>
+</table>
+<p>Now that we’ve looked at the raw values in our <code>credit_ch6</code> data frame and have a sense of the data, let’s move on to the next common step in an exploratory data analysis: computing summary statistics. As we did in our exploratory data analyses in Sections <a href="5-regression.html#model1EDA">5.1.1</a> and <a href="5-regression.html#model2EDA">5.2.1</a> from the previous chapter, let’s use the <code>skim()</code> function from the <code>skimr</code> package, being sure to only <code>select()</code> the variables of interest in our model:</p>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb190-1" data-line-number="1">credit_ch6 <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb190-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(debt, credit_limit, income) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb190-3" data-line-number="3"><span class="st">  </span><span class="kw">skim</span>()</a></code></pre></div>
+<pre><code>Skim summary statistics
+ n obs: 400 
+ n variables: 3 
+── Variable type:integer ───────────────────────────────────────────────────────
+  variable missing complete   n    mean      sd  p0     p25    p50     p75  p100
+credit_limit     0      400 400 4735.6  2308.2  855 3088    4622.5 5872.75 13913
+         debt    0      400 400  520.01  459.76   0   68.75  459.5  863     1999
+── Variable type:numeric ───────────────────────────────────────────────────────
+ variable missing complete   n  mean    sd    p0   p25   p50   p75   p100
+   income       0      400 400 45.22 35.24 10.35 21.01 33.12 57.47 186.63</code></pre>
+<p>Observe the summary statistics for the outcome variable <code>debt</code>: the mean and median credit card debt are $520.01 and $459.50 respectively and that 25% of card holders had debts of $68.75 or less. Let’s now look at one of the explanatory variables <code>credit_limit</code>: the mean and median credit card limit are $4735.6 and $4622.50 respectively while 75% of card holders had incomes of $57,470 or less.</p>
+<p>Since our outcome variable <code>debt</code> and the explanatory variables <code>credit_limit</code> and <code>income</code> are numerical, we can compute the correlation coefficient between the different possible pairs of these variables. First, we can run the <code>cor()</code> command as seen in Subsection <a href="5-regression.html#model1EDA">5.1.1</a> twice, once for each explanatory variable:</p>
+<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb192-1" data-line-number="1"><span class="kw">cor</span>(credit_ch6<span class="op">$</span>debt, credit_ch6<span class="op">$</span>credit_limit)</a>
+<a class="sourceLine" id="cb192-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb192-3" data-line-number="3"><span class="kw">cor</span>(credit_ch6<span class="op">$</span>debt, credit_ch6<span class="op">$</span>income)</a></code></pre></div>
+<p>Or we can simultaneously compute them by returning a <em>correlation matrix</em> which we display in Table <a href="6-multiple-regression.html#tab:model3-correlation">6.2</a>.  We can read off the correlation coefficient for any pair of variables by looking them up in the appropriate row/column combination.</p>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb193-1" data-line-number="1">credit_ch6 <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb193-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(debt, credit_limit, income) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb193-3" data-line-number="3"><span class="st">  </span><span class="kw">cor</span>()</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:model3-correlation">TABLE 6.2: </span>Correlation coefficients between credit card debt, credit limit, and income.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+debt
+</th>
+<th style="text-align:right;">
+credit_limit
+</th>
+<th style="text-align:right;">
+income
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+debt
+</td>
+<td style="text-align:right;">
+1.000
+</td>
+<td style="text-align:right;">
+0.862
+</td>
+<td style="text-align:right;">
+0.464
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+credit_limit
+</td>
+<td style="text-align:right;">
+0.862
+</td>
+<td style="text-align:right;">
+1.000
+</td>
+<td style="text-align:right;">
+0.792
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+income
+</td>
+<td style="text-align:right;">
+0.464
+</td>
+<td style="text-align:right;">
+0.792
+</td>
+<td style="text-align:right;">
+1.000
+</td>
+</tr>
+</tbody>
+</table>
+<p>For example, the correlation coefficient of:</p>
+<ol style="list-style-type: decimal">
+<li><code>debt</code> with itself is 1 as we would expect based on the definition of the correlation coefficient.</li>
+<li><code>debt</code> with <code>credit_limit</code> is 0.862. This indicates a strong positive linear relationship, which makes sense as only individuals with large credit limits can accrue large credit card debts.</li>
+<li><code>debt</code> with <code>income</code> is 0.464. This is suggestive of another positive linear relationship, although not as strong as the relationship between <code>debt</code> and <code>credit_limit</code>.</li>
+<li>As an added bonus, we can read off the correlation coefficient between the two explanatory variables of <code>credit_limit</code> and <code>income</code> as 0.792.</li>
+</ol>
+<p>We say there is a high degree of <em>collinearity</em> between the <code>credit_limit</code> and <code>income</code> explanatory variables. Collinearity (or multicollinearity) is a phenomenon where one explanatory variable in a multiple regression model is highly correlated with another.</p>
+<p>So in our case since <code>credit_limit</code> and <code>income</code> are highly correlated, if we knew someone’s <code>credit_limit</code>, we could make pretty good guesses about their <code>income</code> as well. Thus, these two variables provide somewhat redundant information. However, we’ll leave discussion on how to work with collinear explanatory variables to a more intermediate-level book on regression modeling.</p>
+<p>Let’s visualize the relationship of the outcome variable with each of the two explanatory variables in two separate plots in Figure <a href="6-multiple-regression.html#fig:2numxplot1">6.1</a>.</p>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb194-1" data-line-number="1"><span class="kw">ggplot</span>(credit_ch6, <span class="kw">aes</span>(<span class="dt">x =</span> credit_limit, <span class="dt">y =</span> debt)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb194-2" data-line-number="2"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb194-3" data-line-number="3"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Credit limit (in $)&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Credit card debt (in $)&quot;</span>, </a>
+<a class="sourceLine" id="cb194-4" data-line-number="4">       <span class="dt">title =</span> <span class="st">&quot;Debt and credit limit&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb194-5" data-line-number="5"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb194-6" data-line-number="6">  </a>
+<a class="sourceLine" id="cb194-7" data-line-number="7"><span class="kw">ggplot</span>(credit_ch6, <span class="kw">aes</span>(<span class="dt">x =</span> income, <span class="dt">y =</span> debt)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb194-8" data-line-number="8"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb194-9" data-line-number="9"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Income (in $1000)&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Credit card debt (in $)&quot;</span>, </a>
+<a class="sourceLine" id="cb194-10" data-line-number="10">       <span class="dt">title =</span> <span class="st">&quot;Debt and income&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb194-11" data-line-number="11"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;
+`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:2numxplot1"></span>
+<img src="ismaykimkuyper_files/figure-html/2numxplot1-1.png" alt="Relationship between credit card debt and credit limit/income." width="\textwidth" />
+<p class="caption">
+FIGURE 6.1: Relationship between credit card debt and credit limit/income.
+</p>
+</div>
+<p>Observe there is a positive relationship between credit limit and credit card debt: as credit limit increases so also does credit card debt. This is consistent with the strongly positive correlation coefficient of 0.862 we computed earlier. In the case of income, the positive relationship doesn’t appear as strong, given the weakly positive correlation coefficient of 0.464.</p>
+<p>However, the two plots in Figure <a href="6-multiple-regression.html#fig:2numxplot1">6.1</a> only focus on the relationship of the outcome variable with each of the two explanatory variables <em>separately</em>. To visualize the <em>joint</em> relationship of all three variables simultaneously, we need a 3-dimensional (3D) scatterplot as seen in Figure <a href="6-multiple-regression.html#fig:3D-scatterplot">6.2</a>. Each of the 400 observations in the <code>credit_ch6</code> data frame are marked with a blue point where</p>
+<ol style="list-style-type: decimal">
+<li>The numerical outcome variable <span class="math inline">\(y\)</span> <code>debt</code> is on the vertical axis</li>
+<li>The two numerical explanatory variables, <span class="math inline">\(x_1\)</span> <code>income</code> and <span class="math inline">\(x_2\)</span> <code>credit_limit</code>, are on the two axes that form the bottom plane.</li>
+</ol>
+<div class="figure" style="text-align: center"><span id="fig:3D-scatterplot"></span>
+<img src="images/credit_card_balance_regression_plane.png" alt="3D scatterplot and regression plane." width="60%" />
+<p class="caption">
+FIGURE 6.2: 3D scatterplot and regression plane.
+</p>
+</div>
+<p>Furthermore, we also include the <em>regression plane</em>. Recall from Subsection <a href="5-regression.html#leastsquares">5.3.3</a> that regression lines are “best-fitting” in that of all possible lines we can draw through a cloud of points, the regression line minimizes the <em>sum of squared residuals</em>. This concept also extends to models with two numerical explanatory variables. The difference is instead of a “best-fitting” line, we now have a “best-fitting” plane that similarly minimizes the sum of squared residuals. Head to <a href="https://beta.rstudioconnect.com/connect/#/apps/3214/">here</a> to open an interactive version of this plot in your browser.</p>
+<div class="learncheck">
+<p>
+<strong><em>Learning check</em></strong>
+</p>
+</div>
+<p><strong>(LC6.1)</strong> Conduct a new exploratory data analysis with the same outcome variable <span class="math inline">\(y\)</span> being <code>debt</code> but with <code>credit_rating</code> and <code>age</code> as the new explanatory variables <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>. Remember, this involves three things:</p>
+<ol style="list-style-type: decimal">
+<li>Most crucially: Looking at the raw data values.</li>
+<li>Computing summary statistics, such as means, medians, and interquartile ranges.</li>
+<li>Creating data visualizations.</li>
+</ol>
+<p>What can you say about the relationship between a credit card holder’s debt and their credit rating and age?</p>
+<div class="learncheck">
+
+</div>
+</div>
+<div id="model3table" class="section level3">
+<h3><span class="header-section-number">6.1.2</span> Regression plane</h3>
+<p>Let’s now fit a regression model and get the regression table corresponding to the regression plane in Figure <a href="6-multiple-regression.html#fig:3D-scatterplot">6.2</a>. We’ll consider a model fit with a formula of the form <code>y ~ x1 + x2</code>, where <code>x1</code> and <code>x2</code> represent our two explanatory variables <code>credit_limit</code> and <code>income</code>.</p>
+<p>Just like we did in Chapter <a href="5-regression.html#regression">5</a>, let’s get the regression table for this model using our two-step process and display the results in Table <a href="6-multiple-regression.html#tab:model3-table-output">6.3</a>.</p>
+<ol style="list-style-type: decimal">
+<li>We first “fit” the linear regression model using the <code>lm(y ~ x1 + x2, data)</code> function and save it in <code>debt_model</code>.</li>
+<li>We get the regression table by applying the <code>summary()</code> function to <code>debt_model</code>.</li>
+</ol>
+<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb196-1" data-line-number="1"><span class="co"># Fit regression model:</span></a>
+<a class="sourceLine" id="cb196-2" data-line-number="2">debt_model &lt;-<span class="st"> </span><span class="kw">lm</span>(debt <span class="op">~</span><span class="st"> </span>credit_limit <span class="op">+</span><span class="st"> </span>income, <span class="dt">data =</span> credit_ch6)</a>
+<a class="sourceLine" id="cb196-3" data-line-number="3"><span class="co"># Get regression table:</span></a>
+<a class="sourceLine" id="cb196-4" data-line-number="4"><span class="kw">summary</span>(debt_model)<span class="op">$</span>coefficients</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:model3-table-output">TABLE 6.3: </span>Multiple regression table
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-385.179
+</td>
+<td style="text-align:right;">
+19.465
+</td>
+<td style="text-align:right;">
+-19.8
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+credit_limit
+</td>
+<td style="text-align:right;">
+0.264
+</td>
+<td style="text-align:right;">
+0.006
+</td>
+<td style="text-align:right;">
+45.0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+income
+</td>
+<td style="text-align:right;">
+-7.663
+</td>
+<td style="text-align:right;">
+0.385
+</td>
+<td style="text-align:right;">
+-19.9
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>Let’s interpret the three values in the <code>Estimate</code> column. First, the <code>Intercept</code> value is -$385.179. This intercept represents the credit card debt for an individual who has <code>credit_limit</code> of $0 and <code>income</code> of $0. In our data however, the intercept has limited practical interpretation since no individuals had <code>credit_limit</code> or <code>income</code> values of $0. Rather, the intercept is used to situate the regression plane in 3D space.</p>
+<p>Second, the <code>credit_limit</code> value is $0.264. Taking into account all the other explanatory variables in our model, for every increase of one dollar in <code>credit_limit</code>, there is an associated increase of on average $0.26 in credit card debt. Just as we did in Subsection <a href="5-regression.html#model1table">5.1.2</a>, we are cautious to <em>not</em> imply causality as we saw in Subsection <a href="5-regression.html#correlation-is-not-causation">5.3.2</a> that “correlation is not necessarily causation.” We do this merely stating there was an <em>associated</em> increase.</p>
+<p>Furthermore, we preface our interpretation with the statement “taking into account all the other explanatory variables in our model.” Here, by all other explanatory variables we mean <code>income</code>. We do this to emphasize that we are now jointly interpreting the associated effect of multiple explanatory variables in the same model at the same time.</p>
+<p>Third, <code>income</code> = -$7.663. Taking into account all the other explanatory variables in our model, for every increase of one unit in the variable <code>income</code>, in other words $1000 in actual income, there is an associated decrease of on average $7.663 in credit card debt.</p>
+<p>Putting these results together, the equation of the regression plane that gives us fitted values <span class="math inline">\(\widehat{y}\)</span> = <span class="math inline">\(\widehat{\text{debt}}\)</span> is:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y} &amp;= b_0 + b_1 \cdot x_1 +  b_2 \cdot x_2\\
+\widehat{\text{debt}} &amp;= b_0 + b_{\text{limit}} \cdot \text{limit} + b_{\text{income}} \cdot \text{income}\\
+&amp;= -385.179 + 0.264 \cdot\text{limit} - 7.663 \cdot\text{income}
+\end{aligned}
+\]</span></p>
+<p>Recall in the right-hand plot of Figure <a href="6-multiple-regression.html#fig:2numxplot1">6.1</a> that when plotting the relationship between <code>debt</code> and <code>income</code> in isolation, there appeared to be a <em>positive</em> relationship. In the last discussed multiple regression however, when <em>jointly</em> modeling the relationship between <code>debt</code>, <code>credit_limit</code>, and <code>income</code>, there appears to be a <em>negative</em> relationship of <code>debt</code> and <code>income</code> as evidenced by the negative slope for <code>income</code> of -$7.663. What explains these contradictory results? A phenomenon known as <em>Simpson’s Paradox</em>, whereby overall trends that exist in aggregate either disappear or reverse when the data are broken down into groups. In Subsection <a href="6-multiple-regression.html#simpsonsparadox">6.3.3</a> we elaborate on this idea by looking at the relationship between <code>credit_limit</code> and credit card <code>debt</code>, but split along different <code>income</code> brackets.</p>
+<div class="learncheck">
+<p>
+<strong><em>Learning check</em></strong>
+</p>
+</div>
+<p><strong>(LC6.2)</strong> Fit a new simple linear regression using <code>lm(debt ~ credit_rating + age, data = credit_ch6)</code> where <code>credit_rating</code> and <code>age</code> are the new numerical explanatory variables <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>. Get information about the “best-fitting” regression plane from the regression table by applying the <code>summary()</code> function. How do the regression results match up with the results from your previous exploratory data analysis?</p>
+<div class="learncheck">
+
+</div>
+</div>
+<div id="model3points" class="section level3">
+<h3><span class="header-section-number">6.1.3</span> Observed/fitted values and residuals</h3>
+<p>Let’s also compute all fitted values and residuals for our regression model using the code from Subsection <a href="5-regression.html#model1points">5.1.3</a> and present only the first 10 rows of output in Table <a href="6-multiple-regression.html#tab:model3-points-table">6.4</a>. Remember that the coordinates of each of the blue points in our 3D scatterplot in Figure <a href="6-multiple-regression.html#fig:3D-scatterplot">6.2</a> can be found in the <code>income</code>, <code>credit_limit</code>, and <code>debt</code> columns. The fitted values on the regression plane are found in the <code>debt_hat</code> column and are computed using our equation for the regression plane in the previous section:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y} = \widehat{\text{debt}} &amp;= -385.179 + 0.264 \cdot \text{limit} - 7.663 \cdot \text{income}
+\end{aligned}
+\]</span></p>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb197-1" data-line-number="1">debt_model_data &lt;-<span class="st"> </span>credit_ch6 <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb197-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(debt, credit_limit, income) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb197-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">debt_hat =</span> <span class="kw">fitted</span>(debt_model),</a>
+<a class="sourceLine" id="cb197-4" data-line-number="4">         <span class="dt">residual =</span> <span class="kw">residuals</span>(debt_model)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb197-5" data-line-number="5"><span class="st">  </span><span class="kw">rownames_to_column</span>(<span class="st">&quot;ID&quot;</span>)</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:model3-points-table">TABLE 6.4: </span>Regression points (First 10 credit card holders out of 400).
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+ID
+</th>
+<th style="text-align:right;">
+debt
+</th>
+<th style="text-align:right;">
+credit_limit
+</th>
+<th style="text-align:right;">
+income
+</th>
+<th style="text-align:right;">
+debt_hat
+</th>
+<th style="text-align:right;">
+residual
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+333
+</td>
+<td style="text-align:right;">
+3606
+</td>
+<td style="text-align:right;">
+14.9
+</td>
+<td style="text-align:right;">
+454
+</td>
+<td style="text-align:right;">
+-120.8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:right;">
+903
+</td>
+<td style="text-align:right;">
+6645
+</td>
+<td style="text-align:right;">
+106.0
+</td>
+<td style="text-align:right;">
+559
+</td>
+<td style="text-align:right;">
+344.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:right;">
+580
+</td>
+<td style="text-align:right;">
+7075
+</td>
+<td style="text-align:right;">
+104.6
+</td>
+<td style="text-align:right;">
+683
+</td>
+<td style="text-align:right;">
+-103.4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:right;">
+964
+</td>
+<td style="text-align:right;">
+9504
+</td>
+<td style="text-align:right;">
+148.9
+</td>
+<td style="text-align:right;">
+986
+</td>
+<td style="text-align:right;">
+-21.7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+5
+</td>
+<td style="text-align:right;">
+331
+</td>
+<td style="text-align:right;">
+4897
+</td>
+<td style="text-align:right;">
+55.9
+</td>
+<td style="text-align:right;">
+481
+</td>
+<td style="text-align:right;">
+-150.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+6
+</td>
+<td style="text-align:right;">
+1151
+</td>
+<td style="text-align:right;">
+8047
+</td>
+<td style="text-align:right;">
+80.2
+</td>
+<td style="text-align:right;">
+1127
+</td>
+<td style="text-align:right;">
+23.6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+7
+</td>
+<td style="text-align:right;">
+203
+</td>
+<td style="text-align:right;">
+3388
+</td>
+<td style="text-align:right;">
+21.0
+</td>
+<td style="text-align:right;">
+349
+</td>
+<td style="text-align:right;">
+-146.4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+8
+</td>
+<td style="text-align:right;">
+872
+</td>
+<td style="text-align:right;">
+7114
+</td>
+<td style="text-align:right;">
+71.4
+</td>
+<td style="text-align:right;">
+948
+</td>
+<td style="text-align:right;">
+-76.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+9
+</td>
+<td style="text-align:right;">
+279
+</td>
+<td style="text-align:right;">
+3300
+</td>
+<td style="text-align:right;">
+15.1
+</td>
+<td style="text-align:right;">
+371
+</td>
+<td style="text-align:right;">
+-92.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+10
+</td>
+<td style="text-align:right;">
+1350
+</td>
+<td style="text-align:right;">
+6819
+</td>
+<td style="text-align:right;">
+71.1
+</td>
+<td style="text-align:right;">
+873
+</td>
+<td style="text-align:right;">
+477.3
+</td>
+</tr>
+</tbody>
+</table>
+<p>Let’s interpret these results for the third card holder. Our regression model tells us that for a person with a <code>credit_limit</code> of $7,075 and an <code>income</code> of $104,600, we would expect them to have credit card <code>debt</code> of $683, on average. We calculated this number by plugging into our regression equation:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y} = \widehat{\text{debt}} &amp;= -385.179 + 0.264 \cdot \text{limit} - 7.663 \cdot \text{income} \\
+&amp;= -385.179 + 0.264(7075) - 7.663(104.6) \\
+&amp;= 683
+\end{aligned}
+\]</span></p>
+<p>However, this person had an actual credit card <code>debt</code> of $580, so the residual for this observation is <span class="math inline">\(y - \widehat{y} = \$580 - \$683.37 = -\$103.37\)</span>. Note that Table <a href="6-multiple-regression.html#tab:model3-points-table">6.4</a> presents rounded values for <code>debt_hat</code> and <code>residual</code>.</p>
+</div>
+</div>
+<div id="model4" class="section level2">
+<h2><span class="header-section-number">6.2</span> One numerical &amp; one categorical explanatory variable</h2>
+<p>Let’s revisit the instructor evaluation data from UT Austin we introduced in Section <a href="5-regression.html#model1">5.1</a>. We studied the relationship between teaching evaluation scores as given by students and “beauty” scores. The variable teaching <code>score</code> was the numerical outcome variable <span class="math inline">\(y\)</span> and the variable “beauty” score (<code>bty_avg</code>) was the numerical explanatory <span class="math inline">\(x\)</span> variable.</p>
+<p>In this section, we are going to consider a different model. Our outcome variable will still be teaching score, but now we’ll now include two different explanatory variables: age and gender. Could it be that instructors who are older receive better teaching evaluations from students? Or could it instead be that younger instructors receive better evaluations? Are there differences in evaluations given by students for instructors of different genders? We’ll answer these questions by modeling the relationship between these variables using <em>multiple regression</em>, where we have:</p>
+<ol style="list-style-type: decimal">
+<li>A numerical outcome variable <span class="math inline">\(y\)</span>, the instructor’s teaching score, and</li>
+<li>Two explanatory variables:
+<ol style="list-style-type: decimal">
+<li>A numerical explanatory variable <span class="math inline">\(x_1\)</span>, the instructor’s age</li>
+<li>A categorical explanatory variable <span class="math inline">\(x_2\)</span>, the instructor’s (binary) gender.</li>
+</ol></li>
+</ol>
+<div id="model4EDA" class="section level3">
+<h3><span class="header-section-number">6.2.1</span> Exploratory data analysis</h3>
+<p>Recall that data on the 463 courses at UT Austin can be found in the <code>evals</code> data frame included in the <code>moderndive</code> package. However, to keep things simple, let’s <code>select()</code> only the subset of the variables we’ll consider in this chapter, and save this data in a new data frame called <code>evals_ch6</code>. Note that these are different than the variables chosen in Chapter <a href="5-regression.html#regression">5</a>.</p>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb198-1" data-line-number="1">evals_ch6 &lt;-<span class="st"> </span>evals <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb198-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(ID, score, age, gender)</a></code></pre></div>
+<p>Let’s first look at the raw data values by either looking at <code>evals_ch6</code> using RStudio’s spreadsheet viewer or by using the <code>glimpse()</code> function:</p>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb199-1" data-line-number="1"><span class="kw">glimpse</span>(evals_ch6)</a></code></pre></div>
+<pre><code>Observations: 463
+Variables: 4
+$ ID     &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,…
+$ score  &lt;dbl&gt; 4.7, 4.1, 3.9, 4.8, 4.6, 4.3, 2.8, 4.1, 3.4, 4.5, 3.8, 4.5, 4.…
+$ age    &lt;int&gt; 36, 36, 36, 36, 59, 59, 59, 51, 51, 40, 40, 40, 40, 40, 40, 40…
+$ gender &lt;fct&gt; female, female, female, female, male, male, male, male, male, …</code></pre>
+<p>Let’s also display a random sample of 5 rows of the 463 rows corresponding to different courses in Table <a href="6-multiple-regression.html#tab:model4-data-preview">6.5</a>. Remember due to the random nature of the sampling, you will likely end up with a different subset of 5 rows.</p>
+<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb201-1" data-line-number="1">evals_ch6 <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb201-2" data-line-number="2"><span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">5</span>)</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:model4-data-preview">TABLE 6.5: </span>A random sample of 5 out of the 463 courses at UT Austin
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+ID
+</th>
+<th style="text-align:right;">
+score
+</th>
+<th style="text-align:right;">
+age
+</th>
+<th style="text-align:left;">
+gender
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+129
+</td>
+<td style="text-align:right;">
+3.7
+</td>
+<td style="text-align:right;">
+62
+</td>
+<td style="text-align:left;">
+male
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+109
+</td>
+<td style="text-align:right;">
+4.7
+</td>
+<td style="text-align:right;">
+46
+</td>
+<td style="text-align:left;">
+female
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:right;">
+4.8
+</td>
+<td style="text-align:right;">
+62
+</td>
+<td style="text-align:left;">
+male
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+434
+</td>
+<td style="text-align:right;">
+2.8
+</td>
+<td style="text-align:right;">
+62
+</td>
+<td style="text-align:left;">
+male
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+330
+</td>
+<td style="text-align:right;">
+4.0
+</td>
+<td style="text-align:right;">
+64
+</td>
+<td style="text-align:left;">
+male
+</td>
+</tr>
+</tbody>
+</table>
+<p>Now that we’ve looked at the raw values in our <code>evals_ch6</code> data frame and have a sense of the data, let’s compute summary statistics.</p>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb202-1" data-line-number="1">evals_ch6 <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb202-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(score, age, gender) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb202-3" data-line-number="3"><span class="st">  </span><span class="kw">skim</span>()</a></code></pre></div>
+<pre><code>Skim summary statistics
+ n obs: 463 
+ n variables: 3 
+── Variable type:factor ────────────────────────────────────────────────────────
+ variable missing complete   n n_unique                top_counts ordered
+   gender       0      463 463        2 mal: 268, fem: 195, NA: 0   FALSE
+── Variable type:integer ───────────────────────────────────────────────────────
+ variable missing complete   n  mean  sd p0 p25 p50 p75 p100
+      age       0      463 463 48.37 9.8 29  42  48  57   73
+── Variable type:numeric ───────────────────────────────────────────────────────
+ variable missing complete   n mean   sd  p0 p25 p50 p75 p100
+    score       0      463 463 4.17 0.54 2.3 3.8 4.3 4.6    5</code></pre>
+<p>Observe for example that we have no missing data, that there are 268 courses taught by male instructors and 195 courses taught by female instructors, and that the average instructor age is 48.37. Recall however that each row of our data represents a particular course and that the same instructor often teaches more than one course. Therefore the average age of the unique instructors may differ.</p>
+<p>Furthermore, let’s compute the correlation coefficient between our two numerical variables: <code>score</code> and <code>age</code>. Recall from Subsection <a href="5-regression.html#model1EDA">5.1.1</a> that correlation coefficients only exist between numerical variables. We observe that they are “weakly negatively” correlated.</p>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb204-1" data-line-number="1">evals_ch6 <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb204-2" data-line-number="2"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">correlation =</span> <span class="kw">cor</span>(score, age))</a></code></pre></div>
+<pre><code># A tibble: 1 x 1
+  correlation
+        &lt;dbl&gt;
+1      -0.107</code></pre>
+<p>Let’s now perform the last of the three common steps in an exploratory data analysis: creating data visualizations. Given that the outcome variable <code>score</code> and explanatory variable <code>age</code> are both numerical, we’ll use a scatterplot to display their relationship. How can we incorporate the categorical variable <code>gender</code> however? By <code>mapping</code> the variable <code>gender</code> to the <code>color</code> aesthetic, thereby creating a <em>colored</em> scatterplot. The following code is similar to the code that created the scatterplot of teaching score over “beauty” score in Figure <a href="5-regression.html#fig:numxplot1">5.2</a>, but with <code>color = gender</code> added to the <code>aes()</code>thetic mapping.</p>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb206-1" data-line-number="1"><span class="kw">ggplot</span>(evals_ch6, <span class="kw">aes</span>(<span class="dt">x =</span> age, <span class="dt">y =</span> score, <span class="dt">color =</span> gender)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb206-2" data-line-number="2"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb206-3" data-line-number="3"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Age&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Teaching Score&quot;</span>, <span class="dt">color =</span> <span class="st">&quot;Gender&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb206-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:numxcatxplot1"></span>
+<img src="ismaykimkuyper_files/figure-html/numxcatxplot1-1.png" alt="Colored scatterplot of relationship of teaching and beauty scores." width="\textwidth" />
+<p class="caption">
+FIGURE 6.3: Colored scatterplot of relationship of teaching and beauty scores.
+</p>
+</div>
+<p>In the resulting Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a>, observe that <code>ggplot()</code> assigns a default in red/blue color scheme to the points and to the lines associated with the two levels of <code>gender</code>: <code>female</code> and <code>male</code>. Furthermore the <code>geom_smooth(method = &quot;lm&quot;, se = FALSE)</code> layer automatically fits a different regression line for each group.</p>
+<p>We notice some interesting trends. First, there are almost no women faculty over the age of 60 as evidenced by lack of red dots above <span class="math inline">\(x\)</span> = 60. Second, while both regression lines are negatively sloped with age (i.e. older instructors tend to have lower scores), the slope for age for the female instructors is <em>more</em> negative. In other words, female instructors are paying a harsher penalty for their age than the male instructors.</p>
+</div>
+<div id="model4interactiontable" class="section level3">
+<h3><span class="header-section-number">6.2.2</span> Interaction model</h3>
+<p>Let’s now quantify the relationship of our outcome variable <span class="math inline">\(y\)</span> and the two explanatory variables using one type of multiple regression model known as an <em>interaction model</em>.  We’ll explain where the term “interaction” comes from at the end of this section.</p>
+<p>In particular, we’ll write out the equation of the two regression lines in Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a> using the values from a regression table. Before we do this however, let’s go over a brief refresher of regression when you have a categorical explanatory variable <span class="math inline">\(x\)</span>.</p>
+<p>Recall in Subsection <a href="5-regression.html#model2table">5.2.2</a> we fit a regression model for countries’ life expectancies as a function of which continent the country was in. In other words, we had a numerical outcome variable <span class="math inline">\(y\)</span> = <code>lifeExp</code> and a categorical explanatory variable <span class="math inline">\(x\)</span> = <code>continent</code> which had 5 levels: <code>Africa</code>, <code>Americas</code>, <code>Asia</code>, <code>Europe</code>, and <code>Oceania</code>. Let’s re-display the regression table you saw in Table <a href="5-regression.html#tab:catxplot4b">5.10</a>:</p>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-202">TABLE 6.6: </span>Linear regression table
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+54.8
+</td>
+<td style="text-align:right;">
+1.02
+</td>
+<td style="text-align:right;">
+53.45
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+continentAmericas
+</td>
+<td style="text-align:right;">
+18.8
+</td>
+<td style="text-align:right;">
+1.80
+</td>
+<td style="text-align:right;">
+10.45
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+continentAsia
+</td>
+<td style="text-align:right;">
+15.9
+</td>
+<td style="text-align:right;">
+1.65
+</td>
+<td style="text-align:right;">
+9.68
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+continentEurope
+</td>
+<td style="text-align:right;">
+22.8
+</td>
+<td style="text-align:right;">
+1.70
+</td>
+<td style="text-align:right;">
+13.47
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+continentOceania
+</td>
+<td style="text-align:right;">
+25.9
+</td>
+<td style="text-align:right;">
+5.33
+</td>
+<td style="text-align:right;">
+4.86
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>Recall our interpretation of the <code>Estimate</code> column. Since <code>Africa</code> was the “baseline for comparison” group, the <code>Intercept</code> term corresponds to the mean life expectancy for all countries in Africa of 54.8 years. The other four values of <code>Estimate</code> correspond to “offsets” relative to the baseline group. So, for example, the “offset” corresponding to the Americas is +18.8 as compared to the baseline for comparison group Africa. In other words, the average life expectancy for countries in the Americas is 18.8 years <em>higher</em>. Thus the mean life expectancy for all countries in the Americas is 54.8 + 18.8 = 73.6. The same interpretation holds for Asia, Europe, and Oceania.</p>
+<p>Going back to our multiple regression model for teaching <code>score</code> using <code>age</code> and <code>gender</code> in Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a>, we generate the regression table using the same two-step approach from Chapter <a href="5-regression.html#regression">5</a>: we first “fit” the model using the <code>lm()</code> “linear model” function and then we apply the <code>summary()</code> function. This time however, our model formula won’t be of the form <code>y ~ x</code>, but rather of the form <code>y ~ x1 + x2 + x1 * x2</code>. In other words, we include a <em>main effect</em> for each of our two explanatory variables <code>x1</code> and <code>x2</code>, as well as an <em>interaction term</em> <code>x1 * x2</code>. In terms of the general mathematical equation, an interaction model with two explanatory variables is of the form:</p>
+<p><span class="math display">\[\widehat{y} = b_0 + b_1 \cdot x_1 + b_2 \cdot x_2 + b_{1,2} \cdot x_1 \cdot x_2\]</span></p>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb208-1" data-line-number="1"><span class="co"># Fit regression model:</span></a>
+<a class="sourceLine" id="cb208-2" data-line-number="2">score_model_interaction &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>gender <span class="op">+</span><span class="st"> </span>age <span class="op">*</span><span class="st"> </span>gender, <span class="dt">data =</span> evals_ch6)</a>
+<a class="sourceLine" id="cb208-3" data-line-number="3"><span class="co"># Get regression table:</span></a>
+<a class="sourceLine" id="cb208-4" data-line-number="4"><span class="kw">summary</span>(score_model_interaction)<span class="op">$</span>coefficients</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:regtable-interaction">TABLE 6.7: </span>Regression table for interaction model.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+4.883
+</td>
+<td style="text-align:right;">
+0.205
+</td>
+<td style="text-align:right;">
+23.80
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:right;">
+-0.018
+</td>
+<td style="text-align:right;">
+0.004
+</td>
+<td style="text-align:right;">
+-3.92
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gendermale
+</td>
+<td style="text-align:right;">
+-0.446
+</td>
+<td style="text-align:right;">
+0.265
+</td>
+<td style="text-align:right;">
+-1.68
+</td>
+<td style="text-align:right;">
+0.094
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age:gendermale
+</td>
+<td style="text-align:right;">
+0.014
+</td>
+<td style="text-align:right;">
+0.006
+</td>
+<td style="text-align:right;">
+2.45
+</td>
+<td style="text-align:right;">
+0.015
+</td>
+</tr>
+</tbody>
+</table>
+<p>Looking at the regression table output in Table <a href="6-multiple-regression.html#tab:regtable-interaction">6.7</a>, we see there are four rows of values in the <code>Estimate</code> column that correspond to the 4 estimated components of the model: <span class="math inline">\(b_0, \ b_1, \ b_2,\)</span> and <span class="math inline">\(b_{1,2}\)</span>. Note that we chose to use the notation <span class="math inline">\(b_{1,2}\)</span> to make it clear this is the coefficient for the interaction term between <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>, but we could have easily decided to denote this as <span class="math inline">\(b_3\)</span> instead. While it is not immediately apparent, using these four values we can write out the equations of both lines in Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a>.</p>
+<p>First, since the word <code>female</code> comes alphabetically before <code>male</code>, female instructors are the “baseline for comparison” group. Therefore <code>Intercept</code> is the intercept <em>for only the female instructors</em>. This holds similarly for <code>age</code>. It is the slope for age <em>for only the female instructors</em>. Thus the red regression line in Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a> has an intercept of 4.883 and slope for age of -0.018. Remember that for this particular data, while the intercept has a mathematical interpretation, it has no <em>practical</em> interpretation since there can’t be any instructors with age zero.</p>
+<p>What about the intercept and slope for age of the male instructors (i.e. the blue line in Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a>)? This is where our notion of “offsets” comes into play once again. The value for <code>gendermale</code> of -0.446 is not the intercept for the male instructors, but rather the <em>offset</em> in intercept for male instructors relative to female instructors. Therefore, the intercept for the male instructors is <code>Intercept + gendermale</code> = 4.883 + (-0.446) = 4.883 - 0.446 = 4.437.</p>
+<p>Similarly, <code>age:gendermale</code> = 0.014 is not the slope for age for the male instructors, but rather the <em>offset</em> in slope for the male instructors. Therefore, the slope for age for the male instructors is <code>age + age:gendermale</code> = -0.018 + 0.014 = -0.004. Therefore the blue regression line in Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a> has intercept 4.437 and slope for age of -0.004.</p>
+<p>Let’s summarize these values in Table <a href="6-multiple-regression.html#tab:interaction-summary">6.8</a> and focus on the two slopes for age:</p>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:interaction-summary">TABLE 6.8: </span>Comparison of intercepts and slopes for interaction model.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Gender
+</th>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+Slope for age
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Female instructors
+</td>
+<td style="text-align:right;">
+4.883
+</td>
+<td style="text-align:right;">
+-0.018
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Male instructors
+</td>
+<td style="text-align:right;">
+4.437
+</td>
+<td style="text-align:right;">
+-0.004
+</td>
+</tr>
+</tbody>
+</table>
+<p>Since the slope for age for the female instructors was -0.018, it means that on average, a female instructor who is a year older would have a teaching score that is 0.018 units <em>lower</em>. For the male instructors however, the corresponding associated decrease was on average only 0.004 units. While both slopes for age were negative, the slope for age for the female instructors is <em>more negative</em>. This is consistent with our observation from Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a>, that this model is suggesting that age impacts teaching scores for female instructors more than for male instructors.</p>
+<p>Let’s now write the equation for our regression lines, which we can use to compute our fitted values <span class="math inline">\(\widehat{y} = \widehat{\text{score}}\)</span>.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y} = \widehat{\text{score}} &amp;= b_0 + b_{\mbox{age}} \cdot \mbox{age} + b_{\mbox{male}} \cdot \mathbb{1}_{\mbox{is male}}(x) + b_{\mbox{age,male}} \cdot \mbox{age} \cdot \mathbb{1}_{\mbox{is male}}\\
+&amp;= 4.883 -0.018 \cdot \mbox{age} - 0.446 \cdot \mathbb{1}_{\mbox{is male}}(x) + 0.014 \cdot \mbox{age} \cdot \mathbb{1}_{\mbox{is male}}
+\end{aligned}
+\]</span></p>
+<p>Whoa! That’s even more daunting than the equation you saw for the life expectancy as a function of continent in Subsection <a href="5-regression.html#model2table">5.2.2</a>! However if you recall what an “indicator function” AKA “dummy variable” does, the equation simplifies greatly. In the previous equation, we have one indicator function of interest:</p>
+<p><span class="math display">\[
+\mathbb{1}_{\mbox{is male}}(x) = \left\{
+\begin{array}{ll}
+1 &amp; \text{if } \text{instructor } x \text{ is male} \\
+0 &amp; \text{otherwise}\end{array}
+\right.
+\]</span></p>
+<p>Second, let’s match coefficients in the previous equation with values in the <code>Estimate</code> column in our regression table in Table <a href="6-multiple-regression.html#tab:regtable-interaction">6.7</a>:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(b_0\)</span> is the <code>Intercept</code> = 4.883 for the female instructors</li>
+<li><span class="math inline">\(b_{\mbox{age}}\)</span> is the slope for <code>age</code> = -0.018 for the female instructors</li>
+<li><span class="math inline">\(b_{\mbox{male}}\)</span> is the offset in intercept for the male instructors</li>
+<li><span class="math inline">\(b_{\mbox{age,male}}\)</span> is the offset in slope for age for the male instructors</li>
+</ol>
+<p>Let’s put this all together and compute the fitted value <span class="math inline">\(\widehat{y} = \widehat{\text{score}}\)</span> for female instructors. Since for female instructors <span class="math inline">\(\mathbb{1}_{\mbox{is male}}(x)\)</span> = 0, the previous equation becomes</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y} = \widehat{\text{score}} &amp;= 4.883 - 0.018   \cdot \mbox{age} - 0.446 \cdot 0 + 0.014 \cdot \mbox{age} \cdot 0\\
+&amp;= 4.883 - 0.018    \cdot \mbox{age} - 0 + 0\\
+&amp;= 4.883 - 0.018    \cdot \mbox{age}\\
+\end{aligned}
+\]</span></p>
+<p>which is the equation of the red regression line in Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a> corresponding to the female instructors in Table <a href="6-multiple-regression.html#tab:interaction-summary">6.8</a>. Correspondingly, since for male instructors <span class="math inline">\(\mathbb{1}_{\mbox{is male}}(x)\)</span> = 1, the previous equation becomes</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y} = \widehat{\text{score}} &amp;= 4.883 - 0.018   \cdot \mbox{age} - 0.446 + 0.014 \cdot \mbox{age}\\
+&amp;= (4.883 - 0.446) + (- 0.018 + 0.014) * \mbox{age}\\
+&amp;= 4.437 - 0.004    \cdot \mbox{age}\\
+\end{aligned}
+\]</span></p>
+<p>which is the equation of the blue regression line in Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a> corresponding to the male instructors in Table <a href="6-multiple-regression.html#tab:interaction-summary">6.8</a>.</p>
+<p>Phew! That was a lot of arithmetic! Don’t fret however, this is as hard as modeling will get in this book. If you’re still a little unsure about using indicator functions and using categorical explanatory variables in a regression model, we <em>highly</em> suggest you re-read Subsection <a href="5-regression.html#model2table">5.2.2</a>. This involves only a single categorical explanatory variable and thus is much simpler.</p>
+<p>Before we end this section, we explain why we refer to this type of model as an “interaction model.” The <span class="math inline">\(b_{\mbox{age,male}}\)</span> term in the equation for the fitted value <span class="math inline">\(\widehat{y}\)</span> = <span class="math inline">\(\widehat{\text{score}}\)</span> is what’s known in statistical modeling as an “interaction effect.” The interaction term corresponds to the <code>age:gendermale</code> = 0.014 in the final row of the regression table in Table <a href="6-multiple-regression.html#tab:regtable-interaction">6.7</a>.</p>
+<p>We say there is an interaction effect if the associated effect of one variable <em>depends on the value of another variable</em>. In other words, the two variables are “interacting” with each other. In our case, the associated effect of the variable age <em>depends</em> on the value of the other variable gender. This was evidenced by the difference in slopes for age of +0.014 of male instructors relative to female instructors. </p>
+<p>Another way of thinking about interaction effects on teaching scores is as follows. For a given instructor at UT Austin, there might be an associated effect of their age <em>by itself</em>, there might be an associated effect of their gender <em>by itself</em>, but when age and gender are considered <em>together</em> there might an <em>additional effect</em> above and beyond the two individual effects.</p>
+</div>
+<div id="model4table" class="section level3">
+<h3><span class="header-section-number">6.2.3</span> Parallel slopes model</h3>
+<p>When creating regression models with one numerical and one categorical explanatory variable, we are not just limited to interaction models as we just saw. Another type of model we can use is known as a <em>parallel slopes</em> model. Unlike interaction models where the regression lines can have different intercepts and different slopes, parallel slopes models still allow for different intercepts but <em>force</em> all lines to have the same slope. The resulting regression lines are thus parallel. We can think of a parallel slopes model as a restricted case of the interaction model where we’ve forced <span class="math inline">\(b_{1,2}\)</span>, the coefficient of the interaction term <span class="math inline">\(x_{1} \cdot x_2\)</span>, to be zero. Therefore, the mathematical equation for a parallel slopes model with two explanatory variables is of the form:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y} = \widehat{\text{score}} &amp;= b_0 + b_{1} \cdot x_1 + b_{2} \cdot x_2 + b_{1,2} \cdot x_1 \cdot x_2\\
+&amp;= b_0 + b_{1} \cdot x_1 + b_{2} \cdot x_2 + 0 \cdot x_1 \cdot x_2\\
+&amp;= b_0 + b_{1} \cdot x_1 + b_{2} \cdot x_2
+\end{aligned}
+\]</span></p>
+<p>Unfortunately, the <code>ggplot2</code> package does not have a convenient way to plot a parallel slopes model, so we just display it for you in Figure <a href="6-multiple-regression.html#fig:numxcatx-parallel">6.4</a> but leave the code for a more advanced data visualization class.</p>
+<pre><code>Plotting parallel slopes models is now much easier using the
+`geom_parallel_slopes()` function. We suggest you use
+`geom_parallel_slopes()` instead of `gg_parallel_slopes()`; read the help
+file by running `?geom_parallel_slopes` to learn how.</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:numxcatx-parallel"></span>
+<img src="ismaykimkuyper_files/figure-html/numxcatx-parallel-1.png" alt="Parallel slopes model of relationship of score with age and gender." width="\textwidth" />
+<p class="caption">
+FIGURE 6.4: Parallel slopes model of relationship of score with age and gender.
+</p>
+</div>
+<p>Observe in Figure <a href="6-multiple-regression.html#fig:numxcatx-parallel">6.4</a> that we have parallel lines corresponding to the female and male instructors respectively: here they have the same negative slope. This is different from the interaction model displayed in Figure <a href="6-multiple-regression.html#fig:numxcatxplot1">6.3</a>, which allowed <code>male</code> and <code>female</code> to have different slopes. Figure <a href="6-multiple-regression.html#fig:numxcatx-parallel">6.4</a> is telling us that instructors who are older will tend to receive lower teaching scores than instructors who are younger. Furthermore, since the lines are parallel, the associated penalty for aging is assumed to be the same for both female and male instructors.</p>
+<p>However, observe also in Figure <a href="6-multiple-regression.html#fig:numxcatx-parallel">6.4</a> that these two lines have different intercepts as evidenced by the fact that the blue line corresponding to the male instructors is higher than the red line corresponding to the female instructors. This is telling us that irrespective of age, female instructors tended to receive lower teaching scores than male instructors.</p>
+<p>In order to obtain the precise numerical values of the two intercepts and the single common slope, we once again “fit” the model using the <code>lm()</code> “linear model” function and then apply the <code>summary()</code> function. Our model formula this time is of the form <code>y ~ x1 + x2</code>, where <code>x1</code> and <code>x2</code> represent the two predictor variables, <code>age</code> and <code>gender</code>, but we do not include the extra interaction term <code>x1 * x2</code>.</p>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb210-1" data-line-number="1"><span class="co"># Fit regression model:</span></a>
+<a class="sourceLine" id="cb210-2" data-line-number="2">score_model_parallel_slopes &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>gender, <span class="dt">data =</span> evals_ch6)</a>
+<a class="sourceLine" id="cb210-3" data-line-number="3"><span class="co"># Get regression table:</span></a>
+<a class="sourceLine" id="cb210-4" data-line-number="4"><span class="kw">summary</span>(score_model_parallel_slopes)<span class="op">$</span>coefficients</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:regtable-parallel-slopes">TABLE 6.9: </span>Regression table for parallel slopes model.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+4.484
+</td>
+<td style="text-align:right;">
+0.125
+</td>
+<td style="text-align:right;">
+35.79
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:right;">
+-0.009
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+<td style="text-align:right;">
+-3.28
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gendermale
+</td>
+<td style="text-align:right;">
+0.191
+</td>
+<td style="text-align:right;">
+0.052
+</td>
+<td style="text-align:right;">
+3.63
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+</tbody>
+</table>
+<p>Looking at the regression table output in Table <a href="6-multiple-regression.html#tab:regtable-parallel-slopes">6.9</a>, we see there are three rows of values in the <code>Estimate</code> column. Similar to what we did in Subsection <a href="6-multiple-regression.html#model4interactiontable">6.2.2</a>, using these three values we can write out the equations of both lines in Figure <a href="6-multiple-regression.html#fig:numxcatx-parallel">6.4</a>.</p>
+<p>Again, since the word <code>female</code> comes alphabetically before <code>male</code>, female instructors are the “baseline for comparison” group. Therefore, <code>Intercept</code> is the intercept <em>for only the female instructors</em>. Thus the red regression line in Figure <a href="6-multiple-regression.html#fig:numxcatx-parallel">6.4</a> has an intercept of 4.484.</p>
+<p>Remember, the value for <code>gendermale</code> of 0.191 is not the intercept for the male instructors, but rather the <em>offset</em> in intercept for male instructors relative to female instructors. Therefore, the intercept for male instructors is <code>Intercept + gendermale</code> = <span class="math inline">\(4.484 + 0.191 = 4.675\)</span>. In other words, in Figure <a href="6-multiple-regression.html#fig:numxcatx-parallel">6.4</a> the red regression line corresponding to the female instructors has an intercept of 4.484 while the blue regression line corresponding to the male instructors has an intercept of 4.675. Once again, since there aren’t any instructors of age 0, the intercepts only have a mathematical interpretation but no practical one.</p>
+<p>Unlike in Table <a href="6-multiple-regression.html#tab:regtable-interaction">6.7</a> however, we now only have a single slope for age of -0.009. This is because the model specifies that both the female and male instructors have a common slope for age.  This is telling us that an instructor who is a year older than another instructor received a teaching score that is on average 0.018 units <em>lower</em>. This penalty for aging applies equally for both female and male instructors.</p>
+<p>Let’s summarize these values in Table <a href="6-multiple-regression.html#tab:parallel-slopes-summary">6.10</a>, noting the different intercepts but common slopes:</p>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:parallel-slopes-summary">TABLE 6.10: </span>Comparison of intercepts and slope for parallel slopes model.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Gender
+</th>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+Slope for age
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Female instructors
+</td>
+<td style="text-align:right;">
+4.484
+</td>
+<td style="text-align:right;">
+-0.009
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Male instructors
+</td>
+<td style="text-align:right;">
+4.675
+</td>
+<td style="text-align:right;">
+-0.009
+</td>
+</tr>
+</tbody>
+</table>
+<p>Recall that the common slope occurs because we chose not to include the interaction term <span class="math inline">\(\mbox{age} \cdot \mathbb{1}_{\mbox{is male}}\)</span> in our model. This is equivalent to assuming <span class="math inline">\(b_{age,male} = 0\)</span> and therefore not allowing there to be an “offset” in slope for males.</p>
+<p>Let’s now write the equation for our parallel slopes regression lines, which we can use to compute our fitted values <span class="math inline">\(\widehat{y} = \widehat{\text{score}}\)</span>.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y} = \widehat{\text{score}} &amp;= b_0 + b_{\mbox{age}} \cdot \mbox{age} + b_{\mbox{male}} \cdot \mathbb{1}_{\mbox{is male}}(x)\\
+&amp;= 4.484 -0.009 \cdot \mbox{age} + 0.191 \cdot \mathbb{1}_{\mbox{is male}}(x) 
+\end{aligned}
+\]</span></p>
+<p>Let’s put this all together and compute the fitted value <span class="math inline">\(\widehat{y} = \widehat{\text{score}}\)</span> for female instructors. Since for female instructors the indicator function <span class="math inline">\(\mathbb{1}_{\mbox{is male}}(x)\)</span> = 0, the previous equation becomes</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y} = \widehat{\text{score}} &amp;= 4.484 -0.009    \cdot \mbox{age} + 0.191 \cdot 0\\
+&amp;= 4.484 -0.009 \cdot \mbox{age}
+\end{aligned}
+\]</span></p>
+<p>which is the equation of the red regression line in Figure <a href="6-multiple-regression.html#fig:numxcatx-parallel">6.4</a> corresponding to the female instructors. Correspondingly, since for male instructors the indicator function <span class="math inline">\(\mathbb{1}_{\mbox{is male}}(x)\)</span> = 1, the previous equation becomes</p>
+<p><span class="math display">\[
+\begin{aligned}
+\widehat{y} = \widehat{\text{score}} &amp;= 4.484 -0.009    \cdot \mbox{age} + 0.191 \cdot 1\\
+&amp;= (4.484 + 0.191) - 0.009 \cdot \mbox{age}\\
+&amp;= 4.67 -0.009 \cdot \mbox{age}
+\end{aligned}
+\]</span></p>
+<p>which is the equation of the blue regression line in Figure <a href="6-multiple-regression.html#fig:numxcatx-parallel">6.4</a> corresponding to the male instructors.</p>
+<p>Great! We’ve considered both an interaction model and a parallel slopes model for our data. Let’s compare the visualizations for both models side-by-side in Figure <a href="6-multiple-regression.html#fig:numxcatx-comparison">6.5</a>.</p>
+<pre><code>Plotting parallel slopes models is now much easier using the
+`geom_parallel_slopes()` function. We suggest you use
+`geom_parallel_slopes()` instead of `gg_parallel_slopes()`; read the help
+file by running `?geom_parallel_slopes` to learn how.</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:numxcatx-comparison"></span>
+<img src="ismaykimkuyper_files/figure-html/numxcatx-comparison-1.png" alt="Comparison of interaction and parallel slopes models." width="\textwidth" />
+<p class="caption">
+FIGURE 6.5: Comparison of interaction and parallel slopes models.
+</p>
+</div>
+<p>At this point, you might be asking yourself: “Why would we ever use a parallel slopes model?” Looking at the left-hand plot in Figure <a href="6-multiple-regression.html#fig:numxcatx-comparison">6.5</a>, the two lines definitely do not appear to be parallel, so why would we <em>force</em> them to be parallel? For this data, we agree! It can easily be argued that the interaction model is more appropriate. However, in the upcoming Subsection <a href="6-multiple-regression.html#model-selection">6.3.1</a> on model selection, we’ll present an example where it can be argued that the case for a parallel slopes model might be stronger.</p>
+</div>
+<div id="model4points" class="section level3">
+<h3><span class="header-section-number">6.2.4</span> Observed/fitted values and residuals</h3>
+<p>For brevity’s sake, in this section we’ll only compute the observed values, fitted values, and residuals for the interaction model which we saved in <code>score_model_interaction</code>. You’ll have an opportunity to study these values for the parallel slopes model in the upcoming Learning Check.</p>
+<p>Say you have a professor who is female and is 36 years old. What fitted value <span class="math inline">\(\widehat{y}\)</span> = <span class="math inline">\(\widehat{\text{score}}\)</span> would our model yield? Say you have another professor who is male and is 59 years old. What would their fitted value <span class="math inline">\(\widehat{y}\)</span> be?</p>
+<p>We answer this question visually first by finding the intersection of the red regression line and the vertical line at <span class="math inline">\(x\)</span> = age = 36. We mark this value with a large red dot in Figure <a href="6-multiple-regression.html#fig:fitted-values">6.6</a>. Similarly, we can identify the fitted value <span class="math inline">\(\widehat{y}\)</span> = <span class="math inline">\(\widehat{\text{score}}\)</span> for the male instructor by finding the intersection of the blue regression line and the vertical line at <span class="math inline">\(x\)</span> = age = 59. We mark this value with a large blue dot in Figure <a href="6-multiple-regression.html#fig:fitted-values">6.6</a>.</p>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:fitted-values"></span>
+<img src="ismaykimkuyper_files/figure-html/fitted-values-1.png" alt="Fitted values for two new professors." width="\textwidth" />
+<p class="caption">
+FIGURE 6.6: Fitted values for two new professors.
+</p>
+</div>
+<p>What are these two values of <span class="math inline">\(\widehat{y}\)</span> = <span class="math inline">\(\widehat{\text{score}}\)</span> precisely? We can use the equations of the two regression lines we computed in Subsection <a href="6-multiple-regression.html#model4interactiontable">6.2.2</a>, which in turn were based on values from the regression table in Table <a href="6-multiple-regression.html#tab:regtable-interaction">6.7</a>:</p>
+<ul>
+<li>For all female instructors: <span class="math inline">\(\widehat{y} = \widehat{\text{score}} = 4.883 - 0.018 \cdot \mbox{age}\)</span></li>
+<li>For all male instructors: <span class="math inline">\(\widehat{y} = \widehat{\text{score}} = 4.437 - 0.004 \cdot \mbox{age}\)</span></li>
+</ul>
+<p>So our fitted values would be: 4.883 - 0.018 <span class="math inline">\(\cdot\)</span> 36 = 4.25 and 4.437 - 0.004 <span class="math inline">\(\cdot\)</span> 59 = 4.20 respectively.</p>
+<p>Now what if we want the fitted values not just for the instructors of these two courses, but for the instructors of all 463 courses included in the <code>evals_ch6</code> data frame? Doing this by hand would be long and tedious! This is where our data wrangling code from Subsection <a href="5-regression.html#model1points">5.1.3</a> can help: it will quickly automate this for all 463 courses. We present a preview of just the first 10 rows out of 463 in Table <a href="6-multiple-regression.html#tab:model4-points-table">6.11</a>.</p>
+<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb214-1" data-line-number="1">score_model_interaction_data &lt;-<span class="st"> </span>evals_ch6 <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb214-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(score, age, gender) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb214-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">score_hat =</span> <span class="kw">fitted</span>(score_model_interaction),</a>
+<a class="sourceLine" id="cb214-4" data-line-number="4">         <span class="dt">residual =</span> <span class="kw">residuals</span>(score_model_interaction)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb214-5" data-line-number="5"><span class="st">  </span><span class="kw">rownames_to_column</span>(<span class="st">&quot;ID&quot;</span>)</a>
+<a class="sourceLine" id="cb214-6" data-line-number="6">score_model_interaction_data</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:model4-points-table">TABLE 6.11: </span>Regression points (First 10 out of 463 courses)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+ID
+</th>
+<th style="text-align:right;">
+score
+</th>
+<th style="text-align:right;">
+age
+</th>
+<th style="text-align:left;">
+gender
+</th>
+<th style="text-align:right;">
+score_hat
+</th>
+<th style="text-align:right;">
+residual
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+4.7
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+4.25
+</td>
+<td style="text-align:right;">
+0.448
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:right;">
+4.1
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+4.25
+</td>
+<td style="text-align:right;">
+-0.152
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:right;">
+3.9
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+4.25
+</td>
+<td style="text-align:right;">
+-0.352
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:right;">
+4.8
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+4.25
+</td>
+<td style="text-align:right;">
+0.548
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+5
+</td>
+<td style="text-align:right;">
+4.6
+</td>
+<td style="text-align:right;">
+59
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+4.20
+</td>
+<td style="text-align:right;">
+0.399
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+6
+</td>
+<td style="text-align:right;">
+4.3
+</td>
+<td style="text-align:right;">
+59
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+4.20
+</td>
+<td style="text-align:right;">
+0.099
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+7
+</td>
+<td style="text-align:right;">
+2.8
+</td>
+<td style="text-align:right;">
+59
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+4.20
+</td>
+<td style="text-align:right;">
+-1.401
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+8
+</td>
+<td style="text-align:right;">
+4.1
+</td>
+<td style="text-align:right;">
+51
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+4.23
+</td>
+<td style="text-align:right;">
+-0.133
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+9
+</td>
+<td style="text-align:right;">
+3.4
+</td>
+<td style="text-align:right;">
+51
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+4.23
+</td>
+<td style="text-align:right;">
+-0.833
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+10
+</td>
+<td style="text-align:right;">
+4.5
+</td>
+<td style="text-align:right;">
+40
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:right;">
+4.18
+</td>
+<td style="text-align:right;">
+0.318
+</td>
+</tr>
+</tbody>
+</table>
+<p>In fact, it turns out that the female instructor of age 36 taught the first four courses, while the male instructor taught the next 3. The resulting <span class="math inline">\(\widehat{y}\)</span> = <span class="math inline">\(\widehat{\text{score}}\)</span> fitted values are in the <code>score_hat</code> column. The residuals <span class="math inline">\(y-\widehat{y}\)</span> are displayed in the <code>residuals</code> column. Notice for example the first and fourth courses the female instructor of age 36 taught had positive residuals, indicating that the actual teaching score they received from students was more than their fitted score of 4.25. On the other hand, the second and third course this instructor taught had negative residuals, indicating that the actual teaching score they received from students was less than their fitted score of 4.25.</p>
+<div class="learncheck">
+<p>
+<strong><em>Learning check</em></strong>
+</p>
+</div>
+<p><strong>(LC6.3)</strong> Compute the observed values, fitted values, and residuals not for the interaction model as we just did, but rather for the parallel slopes model we saved in <code>score_model_parallel_slopes</code>.</p>
+<div class="learncheck">
+
+</div>
+</div>
+</div>
+<div id="related-topics-1" class="section level2">
+<h2><span class="header-section-number">6.3</span> Related topics</h2>
+<div id="model-selection" class="section level3">
+<h3><span class="header-section-number">6.3.1</span> Model selection</h3>
+<p>When do we use an interaction model versus a parallel slopes model? Recall in Sections <a href="6-multiple-regression.html#model4interactiontable">6.2.2</a> and <a href="6-multiple-regression.html#model4table">6.2.3</a> we fit both interaction and parallel slopes models for the outcome variable <span class="math inline">\(y\)</span> (teaching score) using a numerical explanatory variable <span class="math inline">\(x_1\)</span> (age) and a categorical explanatory variable <span class="math inline">\(x_2\)</span> (gender). We compared these models in Figure <a href="6-multiple-regression.html#fig:numxcatx-comparison">6.5</a>, which we display again now.</p>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:recall-parallel-vs-interaction"></span>
+<img src="ismaykimkuyper_files/figure-html/recall-parallel-vs-interaction-1.png" alt="Previously seen comparison of interaction and parallel slopes models." width="\textwidth" />
+<p class="caption">
+FIGURE 6.7: Previously seen comparison of interaction and parallel slopes models.
+</p>
+</div>
+<p>A lot of you might have asked yourselves: “Why would I force the lines to have parallel slopes (as seen in the right-hand plot) when they clearly have different slopes (as seen in the left-hand plot).”</p>
+<p>The answer lies in a philosophical principle known as “Occam’s Razor.” It states that “all other things being equal, simpler solutions are more likely to be correct than complex ones.” When viewed in a modeling framework, Occam’s Razor  can be restated as “all other things being equal, simpler models are to be preferred over complex ones.” In other words, we should only favor the more complex model if the additional complexity is <em>warranted</em>.</p>
+<p>Let’s revisit the equations for the regression line for both the interaction and parallel slopes model:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{Interaction} &amp;: \widehat{y} = \widehat{\text{score}} = b_0 + b_{\mbox{age}} \cdot \mbox{age} + b_{\mbox{male}} \cdot \mathbb{1}_{\mbox{is male}}(x) + \\
+&amp; \qquad b_{\mbox{age,male}} \cdot \mbox{age} \cdot \mathbb{1}_{\mbox{is male}}\\
+\text{Parallel slopes} &amp;: \widehat{y} = \widehat{\text{score}} = b_0 + b_{\mbox{age}} \cdot \mbox{age} + b_{\mbox{male}} \cdot \mathbb{1}_{\mbox{is male}}(x)
+\end{aligned}
+\]</span></p>
+<p>The interaction model is “more complex” in that there is an additional <span class="math inline">\(b_{\mbox{age,male}} \cdot \mbox{age} \cdot \mathbb{1}_{\mbox{is male}}\)</span> element to the equation not present for the parallel slopes model. Or viewed alternatively, the regression table for the interaction model in Table <a href="6-multiple-regression.html#tab:regtable-interaction">6.7</a> has <em>four</em> rows, whereas the regression table for the parallel slopes model in Table <a href="6-multiple-regression.html#tab:regtable-parallel-slopes">6.9</a> has <em>three</em> rows. The question becomes: “Is this additional complexity warranted?” In this case, it can be argued that this additional complexity is warranted, as evidenced by the clear x-shaped pattern of the two regression lines in the left-hand plot of Figure <a href="6-multiple-regression.html#fig:recall-parallel-vs-interaction">6.7</a>.</p>
+<p>However, let’s consider an example where the additional complexity might <em>not</em> be warranted. Let’s consider the <code>MA_schools</code> data which contains 2017 data on Massachusetts public high schools provided by the Massachusetts Department of Education; read the help file for this data by running <code>?MA_schools</code> if you would like more details on this data included in the <code>moderndive</code> package.</p>
+<p>Let’s model the numerical outcome variable <span class="math inline">\(y\)</span>, average SAT math score for that high school, as a function of two explanatory variables:</p>
+<ol style="list-style-type: decimal">
+<li>A numerical explanatory variable <span class="math inline">\(x_1\)</span>, the percentage of that high school’s student body that are economically disadvantaged and</li>
+<li>A categorical explanatory variable <span class="math inline">\(x_2\)</span>, the school size as measured by enrollment: small (13-341 students), medium (342-541 students), and large (542-4264 students).</li>
+</ol>
+<p>Figure <a href="6-multiple-regression.html#fig:numxcatx-comparison-2">6.8</a> visualizes both the interaction and parallel slopes models.</p>
+<pre><code>Plotting parallel slopes models is now much easier using the
+`geom_parallel_slopes()` function. We suggest you use
+`geom_parallel_slopes()` instead of `gg_parallel_slopes()`; read the help
+file by running `?geom_parallel_slopes` to learn how.</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:numxcatx-comparison-2"></span>
+<img src="ismaykimkuyper_files/figure-html/numxcatx-comparison-2-1.png" alt="Comparison of interaction and parallel slopes models for MA schools." width="\textwidth" />
+<p class="caption">
+FIGURE 6.8: Comparison of interaction and parallel slopes models for MA schools.
+</p>
+</div>
+<p>Look closely at the left-hand plot of Figure <a href="6-multiple-regression.html#fig:numxcatx-comparison-2">6.8</a> corresponding to an interaction model. While the slopes are indeed different, they do not differ <em>by much</em>. In other words, they are nearly identical. Now compare the left-hand plot with the right-hand plot corresponding to a parallel slopes model. The two models don’t appear all that different. Therefore in this case, it can be argued that the additional complexity of the interaction model is <em>not warranted</em>. Thus following Occam’s Razor, we should prefer the “simpler” parallel slopes model.</p>
+<p>Let’s explicitly define what “simpler” means in this case. Let’s compare the regression tables for the interaction and parallel slopes models in Tables <a href="6-multiple-regression.html#tab:model2-interaction">6.12</a> and <a href="6-multiple-regression.html#tab:model2-parallel-slopes">6.13</a>.</p>
+<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb218-1" data-line-number="1">model_<span class="dv">2</span>_interaction &lt;-<span class="st"> </span><span class="kw">lm</span>(average_sat_math <span class="op">~</span><span class="st"> </span>perc_disadvan <span class="op">*</span><span class="st"> </span>size, </a>
+<a class="sourceLine" id="cb218-2" data-line-number="2">                          <span class="dt">data =</span> MA_schools)</a>
+<a class="sourceLine" id="cb218-3" data-line-number="3"><span class="kw">summary</span>(model_<span class="dv">2</span>_interaction)<span class="op">$</span>coefficients</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:model2-interaction">TABLE 6.12: </span>Interaction model regression table
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+594.327
+</td>
+<td style="text-align:right;">
+13.288
+</td>
+<td style="text-align:right;">
+44.726
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+perc_disadvan
+</td>
+<td style="text-align:right;">
+-2.932
+</td>
+<td style="text-align:right;">
+0.294
+</td>
+<td style="text-align:right;">
+-9.961
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sizemedium
+</td>
+<td style="text-align:right;">
+-17.764
+</td>
+<td style="text-align:right;">
+15.827
+</td>
+<td style="text-align:right;">
+-1.122
+</td>
+<td style="text-align:right;">
+0.263
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sizelarge
+</td>
+<td style="text-align:right;">
+-13.293
+</td>
+<td style="text-align:right;">
+13.813
+</td>
+<td style="text-align:right;">
+-0.962
+</td>
+<td style="text-align:right;">
+0.337
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+perc_disadvan:sizemedium
+</td>
+<td style="text-align:right;">
+0.146
+</td>
+<td style="text-align:right;">
+0.371
+</td>
+<td style="text-align:right;">
+0.393
+</td>
+<td style="text-align:right;">
+0.694
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+perc_disadvan:sizelarge
+</td>
+<td style="text-align:right;">
+0.189
+</td>
+<td style="text-align:right;">
+0.323
+</td>
+<td style="text-align:right;">
+0.586
+</td>
+<td style="text-align:right;">
+0.559
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb219-1" data-line-number="1">model_<span class="dv">2</span>_parallel_slopes &lt;-<span class="st"> </span><span class="kw">lm</span>(average_sat_math <span class="op">~</span><span class="st"> </span>perc_disadvan <span class="op">+</span><span class="st"> </span>size, </a>
+<a class="sourceLine" id="cb219-2" data-line-number="2">                              <span class="dt">data =</span> MA_schools)</a>
+<a class="sourceLine" id="cb219-3" data-line-number="3"><span class="kw">summary</span>(model_<span class="dv">2</span>_parallel_slopes)<span class="op">$</span>coefficients</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:model2-parallel-slopes">TABLE 6.13: </span>Parallel slopes regression table
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+588.19
+</td>
+<td style="text-align:right;">
+7.607
+</td>
+<td style="text-align:right;">
+77.325
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+perc_disadvan
+</td>
+<td style="text-align:right;">
+-2.78
+</td>
+<td style="text-align:right;">
+0.106
+</td>
+<td style="text-align:right;">
+-26.120
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sizemedium
+</td>
+<td style="text-align:right;">
+-11.91
+</td>
+<td style="text-align:right;">
+7.535
+</td>
+<td style="text-align:right;">
+-1.581
+</td>
+<td style="text-align:right;">
+0.115
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sizelarge
+</td>
+<td style="text-align:right;">
+-6.36
+</td>
+<td style="text-align:right;">
+6.923
+</td>
+<td style="text-align:right;">
+-0.919
+</td>
+<td style="text-align:right;">
+0.359
+</td>
+</tr>
+</tbody>
+</table>
+<p>Observe how the regression table for the interaction model has 2 more rows (6 versus 4). This reflects the additional “complexity” of the interaction model over the parallel slopes model.</p>
+<p>Furthermore, note in Table <a href="6-multiple-regression.html#tab:model2-interaction">6.12</a> how the <em>offsets for the slopes</em> <code>perc_disadvan:sizemedium</code> being 0.146 and <code>perc_disadvan:sizelarge</code> being 0.189 are small relative to the <em>slope for the baseline group</em> of small schools. In other words, all three slopes are similarly negative: <span class="math inline">\(-2.932\)</span> for small schools, <span class="math inline">\(-2.786\)</span> <span class="math inline">\((= -2.932 + 0.146)\)</span> for medium schools, and <span class="math inline">\(-2.743\)</span> <span class="math inline">\((= -2.932 + 0.146)\)</span> for large schools. These results are suggesting that irrespective of school size, the relationship between average math SAT scores and the percent of the student body that is economically disadvantaged is similar and, alas, quite negative.</p>
+<p>What you have just performed is a rudimentary <em>model selection</em>: choosing which model fits data best among a set of candidate models. While the model selection you just performed was in somewhat qualitative fashion, more statistically rigorous methods exist. If you’re curious, take a course on multiple regression or statistical/machine learning!</p>
+</div>
+<div id="correlationcoefficient2" class="section level3">
+<h3><span class="header-section-number">6.3.2</span> Correlation coefficient</h3>
+<p>Recall from Table <a href="6-multiple-regression.html#tab:model3-correlation">6.2</a> that the correlation coefficient between <code>income</code> in thousands of dollars and credit card <code>debt</code> was 0.464. What if instead we looked at the correlation coefficient between <code>income</code> and credit card <code>debt</code>, but where <code>income</code> was in dollars and not thousands of dollars? This can be done by multiplying <code>income</code> by 1000.</p>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb220-1" data-line-number="1">credit_ch6 <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb220-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(debt, income) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb220-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">income =</span> income <span class="op">*</span><span class="st"> </span><span class="dv">1000</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb220-4" data-line-number="4"><span class="st">  </span><span class="kw">cor</span>()</a></code></pre></div>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:cor-credit-2">TABLE 6.14: </span>Correlation between income (in dollars) and credit card debt
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+debt
+</th>
+<th style="text-align:right;">
+income
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+debt
+</td>
+<td style="text-align:right;">
+1.000
+</td>
+<td style="text-align:right;">
+0.464
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+income
+</td>
+<td style="text-align:right;">
+0.464
+</td>
+<td style="text-align:right;">
+1.000
+</td>
+</tr>
+</tbody>
+</table>
+<p>We see it is the same! We say that the correlation coefficient is <em>invariant to linear transformations</em>! In other words, the correlation between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> will be the same as the correlation between <span class="math inline">\(a\cdot x + b\)</span> and <span class="math inline">\(y\)</span> for any numerical values <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>.</p>
+</div>
+<div id="simpsonsparadox" class="section level3">
+<h3><span class="header-section-number">6.3.3</span> Simpson’s Paradox</h3>
+<p>Recall in Section <a href="6-multiple-regression.html#model3">6.1</a>, we saw the two seemingly contradictory results when studying the relationship between credit card debt and income. On the one hand, the right hand plot of Figure <a href="6-multiple-regression.html#fig:2numxplot1">6.1</a> suggested that the relationship between credit card debt and income was <em>positive</em>. We re-display this plot in Figure <a href="6-multiple-regression.html#fig:2numxplot1-repeat">6.9</a>.</p>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:2numxplot1-repeat"></span>
+<img src="ismaykimkuyper_files/figure-html/2numxplot1-repeat-1.png" alt="Relationship between credit card debt and income." width="\textwidth" />
+<p class="caption">
+FIGURE 6.9: Relationship between credit card debt and income.
+</p>
+</div>
+<p>On the other hand, the multiple regression table in Table <a href="6-multiple-regression.html#tab:model3-table-output">6.3</a> suggested that the relationship between debt and income was <em>negative</em>. We re-display this table in Table <a href="6-multiple-regression.html#tab:model3-table-output-repeat">6.15</a>.</p>
+<table class="table" style="font-size: 16px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:model3-table-output-repeat">TABLE 6.15: </span>Multiple regression table
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std_error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p_value
+</th>
+<th style="text-align:right;">
+lower_ci
+</th>
+<th style="text-align:right;">
+upper_ci
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+intercept
+</td>
+<td style="text-align:right;">
+-385.179
+</td>
+<td style="text-align:right;">
+19.465
+</td>
+<td style="text-align:right;">
+-19.8
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-423.446
+</td>
+<td style="text-align:right;">
+-346.912
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+credit_limit
+</td>
+<td style="text-align:right;">
+0.264
+</td>
+<td style="text-align:right;">
+0.006
+</td>
+<td style="text-align:right;">
+45.0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.253
+</td>
+<td style="text-align:right;">
+0.276
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+income
+</td>
+<td style="text-align:right;">
+-7.663
+</td>
+<td style="text-align:right;">
+0.385
+</td>
+<td style="text-align:right;">
+-19.9
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-8.420
+</td>
+<td style="text-align:right;">
+-6.906
+</td>
+</tr>
+</tbody>
+</table>
+<p>Observe how the slope for income is -7.663 and, most importantly for now, it is negative. This contradicts our observation in Figure <a href="6-multiple-regression.html#fig:2numxplot1-repeat">6.9</a> that the relationship is positive. How can this be? Recall the interpretation of the slope for <code>income</code> in the context of a multiple regression model: <em>taking into account all the other explanatory variables in our model</em>, for every increase of one unit in income (i.e. $1000), there is an associated decrease of on average $7.663 in debt.</p>
+<p>In other words, while in <em>isolation</em> the relationship between debt and income may be positive, when taking into account credit limit as well, this relationship becomes negative. These seemingly paradoxical results are due to a phenomenon aptly named <a href="https://en.wikipedia.org/wiki/Simpson%27s_paradox"><em>Simpson’s Paradox</em></a>. Simpson’s Paradox occurs when trends that exist for the data in aggregate either disappear or reverse when the data are broken down into groups.</p>
+<p>Let’s show how Simpson’s Paradox manifests itself in the <code>credit_ch6</code> data. Let’s first visualize the distribution of the numerical explanatory variable credit limit with a histogram in Figure <a href="6-multiple-regression.html#fig:credit-limit-quartiles">6.10</a>.</p>
+<div class="figure" style="text-align: center"><span id="fig:credit-limit-quartiles"></span>
+<img src="ismaykimkuyper_files/figure-html/credit-limit-quartiles-1.png" alt="Histogram of credit limits and brackets." width="\textwidth" />
+<p class="caption">
+FIGURE 6.10: Histogram of credit limits and brackets.
+</p>
+</div>
+<p>The vertical dashed lines are the <em>quartiles</em> that cut up the variable credit limit into four equally-sized groups. Let’s think of these quartiles as converting our numerical variable credit limit into a categorical variable “credit limit bracket” with four levels. This means</p>
+<ol style="list-style-type: decimal">
+<li>25% of credit limits were between $0 and $3088. Let’s assign these 100 people to the “low” credit limit bracket.</li>
+<li>25% of credit limits were between $3088 and $4622. Let’s assign these 100 people to the “medium-low” credit limit bracket.</li>
+<li>25% of credit limits were between $4622 and $5873. Let’s assign these 100 people to the “medium-high” credit limit bracket.</li>
+<li>25% of credit limits were over $5873. Let’s assign these 100 people to the “high” credit limit bracket.</li>
+</ol>
+<p>Now in Figure <a href="6-multiple-regression.html#fig:2numxplot4">6.11</a> let’s re-display two versions of the scatterplot of debt and income from Figure <a href="6-multiple-regression.html#fig:2numxplot1-repeat">6.9</a>, but with a slight twist:</p>
+<ol style="list-style-type: decimal">
+<li>The left-hand plot shows the regular scatterplot and the single regression line, just as you saw previously.</li>
+<li>The right-hand plot shows the <em>colored scatterplot</em>, where the color aesthetic is mapped to “credit limit bracket.” Furthermore, there are now four separate regression lines.</li>
+<li>In other words, the location of the 400 points are the same in both scatterplots, but the right-hand plot shows an additional variable of information: credit limit bracket.</li>
+</ol>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;
+`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure" style="text-align: center"><span id="fig:2numxplot4"></span>
+<img src="ismaykimkuyper_files/figure-html/2numxplot4-1.png" alt="Relationship between credit card debt and income by credit limit bracket." width="\textwidth" />
+<p class="caption">
+FIGURE 6.11: Relationship between credit card debt and income by credit limit bracket.
+</p>
+</div>
+<p>The left-hand plot of Figure <a href="6-multiple-regression.html#fig:2numxplot4">6.11</a> focuses on the relationship between debt and income in <em>aggregate</em>. It is suggesting that overall there exists a positive relationship between debt and income. However, the right-hand plot of Figure <a href="6-multiple-regression.html#fig:2numxplot4">6.11</a> focuses on the relationship between debt and income <em>broken down by credit limit bracket</em>. In other words, we focus on four <em>separate</em> relationships between debt and income: one for the “low” credit limit bracket, one for the “medium-low” credit limit bracket, and so on.</p>
+<p>Observe in the right-hand plot that the relationship between debt and income is clearly negative for the “medium-low” and “medium-high” credit limit brackets, while the relationship is somewhat flat for the “low” credit limit bracket. The only credit limit bracket where the relationship remains positive is for the “high” credit limit bracket. However, this relationship is less positive than in the relationship in aggregate, since the slope is shallower than the slope of the regression line in the left-hand plot.</p>
+<p>In this example of Simpson’s Paradox, the credit limit is a <em>confounding variable</em> of the relationship between credit card debt and income as we defined in Subsection <a href="5-regression.html#correlation-is-not-causation">5.3.2</a>. Thus, the credit limit needs to be accounted for in any appropriate model for the relationship between debt and income.</p>
+</div>
+</div>
+<div id="conclusion-5" class="section level2">
+<h2><span class="header-section-number">6.4</span> Conclusion</h2>
+<!-- ### Additional resources -->
+<!-- ```{r echo=FALSE, purl=FALSE, results="asis"} -->
+<!-- generate_r_file_link("06-multiple-regression.R") -->
+<!-- ``` -->
+<div id="whats-to-come-4" class="section level3">
+<h3><span class="header-section-number">6.4.1</span> What’s to come?</h3>
+<p>Congratulations! We’ve completed the “Data modeling” portion of this book. We’re ready to proceed to the next part of the book: “Statistical Theory.” These chapters will lay the foundation for key ideas in statistics such as randomization (Chapter <a href="7-causality.html#causality">7</a>), populations and samples (Chapter <a href="8-populations.html#populations">8</a>), and sampling distributions (Chapter <a href="9-sampling.html#sampling">9</a>).</p>
+<p>In Parts I and II of the book, we’ve been focusing only on exploratory data analysis and exploring relationships that exist <em>in our observed dataset</em>. Once we’ve established some of the statistical theory in Part III, we will be able to move beyond exploratory data analysis and into “statistical inference” in Part IV, where we will learn how (and when it is appropirate) to make inferences about statistical relationships <em>in a population beyond our dataset</em>.</p>
+
+</div>
+</div>
+</div>
+
+
+
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="5-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="7-causality.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/nulib/moderndive_book/edit/master/06-multiple-regression.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
